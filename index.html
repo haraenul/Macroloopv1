@@ -212,6 +212,9 @@
 </div>
 
 <script type="module">
+window.onerror = (msg, src, line, col, err) => {
+  alert(msg + "\n" + src + ":" + line);
+};
   import {
     onAuthChange, signUp, signIn, signOutUser,
     getProfile, saveProfile,
