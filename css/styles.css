@@ -1,1 +1,491 @@
+/* ==========================================================================
+   MacroLoop — Phase 1 styles
+   Design direction: calm, clinical-but-warm, "does real math" — a
+   quantified-health dashboard, not a diet-culture app. Dark by default.
+   Deliberately not the cream+terracotta or near-black+acid-green defaults.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+:root {
+  --bg: #12141a;
+  --surface: #1b1e27;
+  --surface-2: #242833;
+  --border: rgba(240, 237, 230, 0.09);
+
+  --text-primary: #f0ede6;
+  --text-secondary: #9b9691;
+  --text-tertiary: #6b6862;
+
+  --accent-energy: #e8a94c; /* calories — energy, not alarm */
+  --accent-protein: #4fb8ae;
+  --accent-carb: #8b7fd9;
+  --accent-fat: #d98a7a;
+
+  --success: #7fa88c;
+  --warning: #d97060; /* reserved for safety-floor warnings only — never "you went over" */
+
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --radius: 16px;
+  --radius-sm: 10px;
+  --max-width: 480px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+}
+
+#app {
+  width: 100%;
+  max-width: var(--max-width);
+  min-height: 100vh;
+  padding: 20px 20px 96px;
+  position: relative;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+}
+
+p {
+  margin: 0 0 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.numeric {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Layout helpers ---- */
+
+.screen {
+  display: none;
+  animation: fade-in 0.25s ease;
+}
+.screen.active {
+  display: block;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.top-bar .brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: -0.01em;
+}
+
+/* ---- Buttons ---- */
+
+button {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  min-height: 44px; /* brief 8: large touch targets */
+  transition: transform 0.1s ease, opacity 0.15s ease;
+}
+button:active {
+  transform: scale(0.98);
+}
+button:focus-visible {
+  outline: 2px solid var(--accent-energy);
+  outline-offset: 2px;
+}
+
+.btn-primary {
+  width: 100%;
+  background: var(--accent-energy);
+  color: #1a1408;
+  font-weight: 600;
+  padding: 13px 20px;
+}
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  width: 100%;
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  padding: 13px 20px;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  padding: 8px 12px;
+  font-size: 0.85rem;
+}
+
+.btn-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--text-primary);
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+/* ---- Forms ---- */
+
+label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.field {
+  margin-bottom: 18px;
+}
+
+input[type='text'],
+input[type='number'],
+input[type='email'],
+input[type='password'] {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  padding: 12px 14px;
+  min-height: 44px;
+}
+input:focus-visible {
+  outline: 2px solid var(--accent-energy);
+  outline-offset: 1px;
+}
+
+.segmented {
+  display: flex;
+  gap: 8px;
+}
+.segmented button {
+  flex: 1;
+  background: var(--surface-2);
+  color: var(--text-secondary);
+  padding: 11px 8px;
+  font-size: 0.9rem;
+}
+.segmented button.selected {
+  background: var(--accent-energy);
+  color: #1a1408;
+  font-weight: 600;
+}
+
+.error-text {
+  color: var(--warning);
+  font-size: 0.85rem;
+  margin: -8px 0 12px;
+}
+
+/* ---- Onboarding ---- */
+
+.onboarding-step {
+  margin-bottom: 28px;
+}
+.onboarding-step .step-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.result-card {
+  text-align: center;
+  padding: 28px 20px;
+}
+.result-card .target-number {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--accent-energy);
+  line-height: 1;
+}
+.result-card .target-unit {
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+/* ---- Today screen: calorie ring ---- */
+
+.ring-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin: 12px 0 20px;
+}
+
+.ring-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  font-family: var(--font-display);
+}
+.ring-center .ring-number {
+  font-size: 2.4rem;
+  font-weight: 700;
+}
+.ring-center .ring-label {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+/* ---- Macro bars ---- */
+
+.macro-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.macro-item {
+  flex: 1;
+}
+.macro-item .macro-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+.macro-bar-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.macro-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+.macro-protein .macro-bar-fill {
+  background: var(--accent-protein);
+}
+.macro-carb .macro-bar-fill {
+  background: var(--accent-carb);
+}
+.macro-fat .macro-bar-fill {
+  background: var(--accent-fat);
+}
+
+/* ---- Food log list ---- */
+
+.log-entry {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.log-entry:last-child {
+  border-bottom: none;
+}
+.log-entry .entry-name {
+  font-weight: 500;
+}
+.log-entry .entry-meta {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+.log-entry .entry-cal {
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+}
+.log-entry .entry-delete {
+  background: none;
+  color: var(--text-tertiary);
+  min-height: auto;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font-size: 1.1rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--text-tertiary);
+}
+
+/* ---- Quick add row ---- */
+
+.quick-add-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.quick-add-row button {
+  flex: 1;
+  background: var(--surface-2);
+  color: var(--text-primary);
+  padding: 12px;
+  font-size: 0.9rem;
+}
+
+/* ---- Log Meal sheet (modal) ---- */
+
+.sheet-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+.sheet-backdrop.active {
+  display: block;
+}
+
+.sheet {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--max-width);
+  max-height: 85vh;
+  background: var(--bg);
+  border-radius: 20px 20px 0 0;
+  padding: 20px;
+  overflow-y: auto;
+  z-index: 11;
+}
+
+.search-result {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+  background: var(--surface);
+  cursor: pointer;
+}
+.search-result:hover {
+  background: var(--surface-2);
+}
+.search-result .result-source {
+  font-size: 0.7rem;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+}
+
+.quantity-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 16px 0;
+}
+.quantity-stepper input {
+  width: 90px;
+  text-align: center;
+}
+
+/* ---- Toast ---- */
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface-2);
+  color: var(--text-primary);
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  font-size: 0.9rem;
+  z-index: 20;
+  max-width: calc(100% - 40px);
+  text-align: center;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent-energy);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin: 0 auto;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+    }
 
