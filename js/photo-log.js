@@ -99,8 +99,9 @@ export async function analyzeMealPhoto(imageBase64, idToken) {
   });
 
   if (res.status === 429) {
-    const body = await res.json().catch(() => ({}));
-    throw new PhotoLimitError(body.limit ?? 3);
+  const body = await res.json().catch(() => ({}));
+  if (body.error === 'too_frequent') throw new Error('too_frequent');
+  throw new PhotoLimitError(body.limit ?? 3);
   }
   if (!res.ok) {
     throw new Error(`Photo analysis failed (${res.status})`);
@@ -115,14 +116,15 @@ export async function logPhotoItems(uid, date, items) {
   for (const item of items) {
     ids.push(
       await addFoodLogEntry(uid, date, {
-        name: item.name,
-        calories: Math.round(item.calories),
-        protein_g: item.protein_g,
-        carbs_g: item.carbs_g,
-        fat_g: item.fat_g,
-        source: 'photo',
-        timestamp: new Date().toISOString(),
-      })
+  name: item.name,
+  estimated_portion: item.estimated_portion,
+  calories: Math.round(item.calories),
+  protein_g: item.protein_g,
+  carbs_g: item.carbs_g,
+  fat_g: item.fat_g,
+  source: 'photo',
+  timestamp: new Date().toISOString(),
+})
     );
   }
   return ids;
