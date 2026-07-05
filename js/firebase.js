@@ -185,3 +185,8 @@ export function saveAlgorithmState(uid, algoState) {
 export function recordAlgorithmHistory(uid, date, entry) {
   return set(ref(db, `users/${uid}/algorithm_state/history/${date}`), entry);
 }
+
+export async function getAlgorithmHistory(uid) {
+  const snap = await get(ref(db, `users/${uid}/algorithm_state/history`));
+  return snap.exists() ? snap.val() : {};
+}
