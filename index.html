@@ -167,7 +167,9 @@
     <div class="quick-add-row">
       <button id="open-search-btn">🔍 Search</button>
       <button id="open-recent-btn">⭐ Recent</button>
+      <button id="open-photo-btn">📷 Photo</button>
     </div>
+    <input type="file" id="photo-file-input" accept="image/*" capture="environment" style="display:none;" />
 
     <h3>Today's log</h3>
     <div id="food-log-list"></div>
@@ -285,6 +287,29 @@
     <button class="btn-primary" id="confirm-weight-btn">Save</button>
   </div>
 
+  <!-- Photo review sheet — an editable draft, brief 4.3: never auto-commit a photo estimate -->
+  <div class="sheet" id="photo-review-sheet" style="display:none;">
+    <div class="top-bar">
+      <h3 style="margin:0;">Review your meal</h3>
+      <button class="btn-icon" id="photo-sheet-close" aria-label="Close">&times;</button>
+    </div>
+    <p style="font-size:0.8rem; margin-bottom:16px;">Estimated from your photo — check the numbers, especially anything flagged low confidence, before logging.</p>
+    <div id="photo-review-items"></div>
+    <div class="card" style="text-align:center;">
+      <div class="numeric" id="photo-review-total" style="font-size:1.6rem; font-weight:600; color:var(--accent-energy);">0 kcal</div>
+      <div class="target-unit" id="photo-review-total-macros">0p / 0c / 0f</div>
+    </div>
+    <button class="btn-primary" id="confirm-photo-log-btn">Log this meal</button>
+  </div>
+
+  <!-- Photo analyzing overlay -->
+  <div class="sheet-backdrop" id="photo-loading-backdrop" style="display:none;">
+    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center;">
+      <div class="spinner" style="width:32px; height:32px; margin-bottom:12px;"></div>
+      <p style="color:var(--text-primary);">Analyzing your photo&hellip;</p>
+    </div>
+  </div>
+
   <div class="toast" id="toast" style="display:none;"></div>
 </div>
 
@@ -310,6 +335,7 @@
   } from './js/food-log.js';
   import { ACTIVITIES, calculateCaloriesBurned, logExercise } from './js/exercise-log.js';
   import { renderLineChart } from './js/charts.js';
+  import { compressImageToBase64, analyzeMealPhoto, logPhotoItems, PhotoLimitError } from './js/photo-log.js';
 
   // ---- Screen management ----
 
@@ -802,10 +828,28 @@
     updateScaledPreview();
   });
 
+  const LARGE_ENTRY_KCAL_THRESHOLD = 1500;
+
+  /**
+   * Soft confirmation for unusually large single entries — a typo (1000g
+   * instead of 100g, 300 minutes instead of 30) is far more likely than a
+   * genuine 1500+ kcal single item or exercise session, and an unchecked
+   * exercise entry directly inflates the day's eat-back budget with
+   * nothing catching it. A confirmation, not a hard block: real edge
+   * cases (a big meal out, a long endurance session) do exist and
+   * shouldn't be refused outright.
+   */
+  function confirmLargeEntry(calories, description) {
+    if (calories <= LARGE_ENTRY_KCAL_THRESHOLD) return true;
+    return window.confirm(`That's ${Math.round(calories)} kcal ${description} — unusually high for one entry. Log it anyway?`);
+  }
+
   document.getElementById('confirm-log-btn').addEventListener('click', async () => {
     const user = getState('user');
     const grams = Number(document.getElementById('qty-grams').value);
     if (!selectedFoodItem || !grams || grams <= 0) return;
+    const scaled = scaleToGrams(selectedFoodItem, grams);
+    if (!confirmLargeEntry(scaled.calories, 'in this entry')) return;
     await logFood(user.uid, todayLocalDate(), selectedFoodItem, grams);
     closeActiveSheet();
     showToast(`Logged ${selectedFoodItem.name}`);
@@ -860,6 +904,7 @@
       showToast('Enter a duration (or calories, for a custom activity) first.');
       return;
     }
+    if (!confirmLargeEntry(caloriesBurned, 'burned')) return;
     await logExercise(user.uid, todayLocalDate(), {
       activityLabel: activity.label,
       durationMin: duration,
@@ -971,18 +1016,17 @@
     const algoState = await getAlgorithmState(uid);
     const historyMap = await getAlgorithmHistory(uid);
     const historyEntries = Object.entries(historyMap).sort((a, b) => (a[0] < b[0] ? -1 : 1));
-  const personalized = historyEntries.filter(([, e]) => e.mode === 'personalized');
 
-  if (!algoState || algoState.mode !== 'personalized' || personalized.length < 2) {
-    panel.innerHTML = `
-      <h3 style="margin-bottom:8px;">Personalization</h3>
-      <p style="margin-bottom:0;">Still in <strong>Learning Mode</strong>, using the standard formula. Personalizes automatically once you've logged food most days for about two weeks.</p>
-    `;
-    return;
-  }
+    if (!algoState || algoState.mode !== 'personalized' || historyEntries.length < 2) {
+      panel.innerHTML = `
+        <h3 style="margin-bottom:8px;">Personalization</h3>
+        <p style="margin-bottom:0;">Still in <strong>Learning Mode</strong>, using the standard formula. Personalizes automatically once you've logged food most days for about two weeks.</p>
+      `;
+      return;
+    }
 
-  const [startDate, startEntry] = personalized[0];
-  const [, latestEntry] = personalized[personalized.length - 1];
+    const [startDate, startEntry] = historyEntries[0];
+    const [, latestEntry] = historyEntries[historyEntries.length - 1];
     const days = daysBetween(startDate, todayLocalDate());
 
     const weightKg = getState('today').weightKg;
@@ -1044,6 +1088,130 @@
     // not just the Progress chart.
     await loadAndRenderToday();
     await loadAndRenderProgress();
+  });
+
+  // ---- Photo logging (brief 4.3) ----
+
+  let photoReviewItems = [];
+
+  document.getElementById('open-photo-btn').addEventListener('click', () => {
+    document.getElementById('photo-file-input').click();
+  });
+
+  document.getElementById('photo-file-input').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    e.target.value = ''; // lets the same file be picked again next time
+    if (!file) return;
+
+    const backdrop = document.getElementById('photo-loading-backdrop');
+    backdrop.style.display = 'block';
+    try {
+      const user = getState('user');
+      const [imageBase64, idToken] = await Promise.all([compressImageToBase64(file), user.getIdToken()]);
+      const result = await analyzeMealPhoto(imageBase64, idToken);
+
+      if (result.items.length === 0) {
+        showToast('Could not identify any food in that photo — try a clearer shot, or search manually.');
+        return;
+      }
+      photoReviewItems = result.items;
+      renderPhotoReview();
+      openActiveSheet('photo-review-sheet');
+    } catch (err) {
+      if (err instanceof PhotoLimitError) {
+        showToast(`You've used your ${err.limit} free photo scans this month. Manual search still works anytime.`);
+      } else {
+        console.error(err);
+        showToast('Photo analysis failed — check your connection and try again.');
+      }
+    } finally {
+      backdrop.style.display = 'none';
+    }
+  });
+
+  function renderPhotoReview() {
+    const container = document.getElementById('photo-review-items');
+
+    if (photoReviewItems.length === 0) {
+      container.innerHTML = '<div class="empty-state">All items removed. Close and retake the photo, or log manually instead.</div>';
+      updatePhotoReviewTotal();
+      return;
+    }
+
+    container.innerHTML = photoReviewItems
+      .map(
+        (item, i) => `
+        <div class="card photo-item">
+          <div class="photo-item-header">
+            <input type="text" class="photo-item-name" data-index="${i}" value="${escapeHtml(item.name)}" />
+            <button class="btn-ghost photo-item-remove" data-index="${i}">Remove</button>
+          </div>
+          <div class="photo-item-meta-row">
+            <span class="entry-meta">${escapeHtml(item.estimated_portion || '')}</span>
+            <span class="confidence-badge confidence-${item.confidence}">${item.confidence} confidence</span>
+          </div>
+          <div class="photo-item-macro-grid">
+            <label>kcal<input type="number" class="photo-item-field" data-index="${i}" data-field="calories" value="${item.calories}" /></label>
+            <label>protein<input type="number" class="photo-item-field" data-index="${i}" data-field="protein_g" value="${item.protein_g}" /></label>
+            <label>carbs<input type="number" class="photo-item-field" data-index="${i}" data-field="carbs_g" value="${item.carbs_g}" /></label>
+            <label>fat<input type="number" class="photo-item-field" data-index="${i}" data-field="fat_g" value="${item.fat_g}" /></label>
+          </div>
+        </div>
+      `
+      )
+      .join('');
+
+    container.querySelectorAll('.photo-item-name').forEach((input) => {
+      input.addEventListener('input', (e) => {
+        photoReviewItems[Number(e.target.dataset.index)].name = e.target.value;
+      });
+    });
+    container.querySelectorAll('.photo-item-field').forEach((input) => {
+      input.addEventListener('input', (e) => {
+        photoReviewItems[Number(e.target.dataset.index)][e.target.dataset.field] = Number(e.target.value) || 0;
+        updatePhotoReviewTotal();
+      });
+    });
+    container.querySelectorAll('.photo-item-remove').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        photoReviewItems.splice(Number(e.target.dataset.index), 1);
+        renderPhotoReview();
+      });
+    });
+
+    updatePhotoReviewTotal();
+  }
+
+  function updatePhotoReviewTotal() {
+    const totals = photoReviewItems.reduce(
+      (acc, item) => ({
+        calories: acc.calories + item.calories,
+        protein_g: acc.protein_g + item.protein_g,
+        carbs_g: acc.carbs_g + item.carbs_g,
+        fat_g: acc.fat_g + item.fat_g,
+      }),
+      { calories: 0, protein_g: 0, carbs_g: 0, fat_g: 0 }
+    );
+    document.getElementById('photo-review-total').textContent = `${Math.round(totals.calories)} kcal`;
+    document.getElementById('photo-review-total-macros').textContent =
+      `${Math.round(totals.protein_g)}p / ${Math.round(totals.carbs_g)}c / ${Math.round(totals.fat_g)}f`;
+  }
+
+  document.getElementById('photo-sheet-close').addEventListener('click', closeActiveSheet);
+
+  document.getElementById('confirm-photo-log-btn').addEventListener('click', async () => {
+    if (photoReviewItems.length === 0) {
+      showToast('Nothing to log — remove all items or retake the photo.');
+      return;
+    }
+    const totalCalories = photoReviewItems.reduce((s, item) => s + item.calories, 0);
+    if (!confirmLargeEntry(totalCalories, 'in this meal')) return;
+
+    const user = getState('user');
+    await logPhotoItems(user.uid, todayLocalDate(), photoReviewItems);
+    closeActiveSheet();
+    showToast(`Logged ${photoReviewItems.length} item${photoReviewItems.length > 1 ? 's' : ''}`);
+    await loadAndRenderToday();
   });
 
   // ---- Nav ----
