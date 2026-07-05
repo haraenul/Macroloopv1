@@ -1,0 +1,5 @@
+{
+  "type": "module",
+  "private": true,
+  "description": "Scopes ES module resolution to this folder for `node js/algorithm.test.js`. Not published; the app itself has no build step."
+}
