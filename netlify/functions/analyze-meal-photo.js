@@ -24,7 +24,7 @@ if (!admin.apps.length) {
   });
 }
 
-const FREE_MONTHLY_LIMIT = 3; // brief section 5's pricing table
+const FREE_MONTHLY_LIMIT = 50; // TEMP: raised for testing, revert to 3 before launch
 const MIN_SECONDS_BETWEEN_SCANS = 10; // cheap guard against accidental double-submits or scripted spam
 
 // Close to the brief's own prompt verbatim — it's specific and well-reasoned,
