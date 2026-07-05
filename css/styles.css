@@ -518,3 +518,70 @@ input:focus-visible {
 .nav-item.active {
   color: var(--accent-energy);
 }
+
+/* ---- Photo review ---- */
+
+.photo-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 8px;
+}
+
+.photo-item-name {
+  border: none;
+  background: none;
+  padding: 0;
+  font-weight: 600;
+  font-size: 1rem;
+  flex: 1;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  min-height: auto;
+}
+
+.photo-item-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.photo-item-macro-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.photo-item-macro-grid label {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.photo-item-macro-grid input {
+  margin-top: 4px;
+  padding: 8px;
+  font-size: 0.9rem;
+  min-height: 38px;
+}
+
+.confidence-badge {
+  font-size: 0.7rem;
+  padding: 3px 10px;
+  border-radius: 20px;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+.confidence-high {
+  background: rgba(127, 168, 140, 0.15);
+  color: var(--success);
+}
+.confidence-medium {
+  background: rgba(240, 237, 230, 0.1);
+  color: var(--text-secondary);
+}
+.confidence-low {
+  background: rgba(217, 112, 96, 0.15);
+  color: var(--warning);
+}
