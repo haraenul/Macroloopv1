@@ -97,6 +97,13 @@ export async function getLatestWeight(uid) {
   return entry.weight_kg;
 }
 
+/** Same range-read pattern as getFoodLogRange — for the Progress weight trend. */
+export async function getWeightRange(uid, startDate, endDate) {
+  const q = query(ref(db, `users/${uid}/weight_log`), orderByKey(), startAt(startDate), endAt(endDate));
+  const snap = await get(q);
+  return snap.exists() ? snap.val() : {};
+}
+
 // ---- Food log ----
 
 export async function getFoodLogForDate(uid, date) {
@@ -124,6 +131,24 @@ export async function getFoodLogRange(uid, startDate, endDate) {
   const q = query(ref(db, `users/${uid}/food_log`), orderByKey(), startAt(startDate), endAt(endDate));
   const snap = await get(q);
   return snap.exists() ? snap.val() : {};
+}
+
+// ---- Exercise log ----
+// Same shape as food_log — brief section 6 already specified this path.
+
+export async function getExerciseLogForDate(uid, date) {
+  const snap = await get(ref(db, `users/${uid}/exercise_log/${date}`));
+  return snap.exists() ? snap.val() : {};
+}
+
+export async function addExerciseLogEntry(uid, date, entry) {
+  const entryRef = push(ref(db, `users/${uid}/exercise_log/${date}`));
+  await set(entryRef, entry);
+  return entryRef.key;
+}
+
+export function deleteExerciseLogEntry(uid, date, entryId) {
+  return set(ref(db, `users/${uid}/exercise_log/${date}/${entryId}`), null);
 }
 
 // ---- Frequent foods — maintained on write, read on every quick-add (brief 4.2) ----
@@ -160,4 +185,3 @@ export function saveAlgorithmState(uid, algoState) {
 export function recordAlgorithmHistory(uid, date, entry) {
   return set(ref(db, `users/${uid}/algorithm_state/history/${date}`), entry);
 }
-
