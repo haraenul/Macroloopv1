@@ -1119,8 +1119,10 @@
       openActiveSheet('photo-review-sheet');
     } catch (err) {
       if (err instanceof PhotoLimitError) {
-        showToast(`You've used your ${err.limit} free photo scans this month. Manual search still works anytime.`);
-      } else {
+  showToast(`You've used your ${err.limit} free photo scans this month. Manual search still works anytime.`);
+} else if (err.message === 'too_frequent') {
+  showToast('Give it a few seconds between scans.');
+} else {
         console.error(err);
         showToast('Photo analysis failed — check your connection and try again.');
       }
