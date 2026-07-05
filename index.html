@@ -1,9 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-<script>
-window.onerror = (msg, url, line) => alert(`JS ERROR: ${msg}\n${url}:${line}`);
-window.addEventListener('unhandledrejection', e => alert(`PROMISE ERROR: ${e.reason?.message || e.reason}`));
-</script>
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -213,6 +209,8 @@ window.addEventListener('unhandledrejection', e => alert(`PROMISE ERROR: ${e.rea
       <svg id="calorie-chart" width="100%" height="140" viewBox="0 0 320 140"></svg>
       <p class="numeric" id="calorie-trend-summary" style="margin-top:10px; font-size:0.85rem;"></p>
     </div>
+
+    <div class="card" id="algorithm-panel"></div>
   </div>
 
   <!-- Bottom nav — shown once there's more than one real screen to switch between -->
@@ -297,12 +295,15 @@ window.addEventListener('unhandledrejection', e => alert(`PROMISE ERROR: ${e.rea
     saveWeightEntry, getLatestWeight, getWeightRange,
     getFoodLogForDate, deleteFoodLogEntry,
     getExerciseLogForDate, deleteExerciseLogEntry,
-    saveAlgorithmState, recordAlgorithmHistory,
+    getAlgorithmState, saveAlgorithmState, recordAlgorithmHistory, getAlgorithmHistory,
   } from './js/firebase.js';
-  import { getState, setState, patchState, subscribe, todayLocalDate, daysAgoLocalDate } from './js/state.js';
+  import {
+    getState, setState, patchState, subscribe, todayLocalDate, daysAgoLocalDate, daysBetween,
+  } from './js/state.js';
   import {
     calculateBMR, calculateTDEE, calculateTarget, explainTarget,
     calculateMacroTargets, lbToKg, ftInToCm, kgToLb,
+    updateAdaptiveTDEE, ADAPTIVE_WINDOW_DAYS,
   } from './js/algorithm.js';
   import {
     searchFoods, debounce, logFood, scaleToGrams, getFrequentFoodsSorted, getDailyCalorieTotals,
@@ -497,6 +498,57 @@ window.addEventListener('unhandledrejection', e => alert(`PROMISE ERROR: ${e.rea
 
   // ---- Today ----
 
+  const RECALC_INTERVAL_DAYS = 7; // brief 4.5 point 4: "damp the weekly update"
+
+  /**
+   * Runs the Phase 3 adaptive update if a week has passed since the last
+   * one. Recalculating on every load would make the ±10% cap and 60/40
+   * blend far more aggressive than the brief intends, since those are
+   * sized for a weekly cadence. Cheap otherwise: only algorithm_state
+   * itself is read first, and the heavier range reads only happen when
+   * a recalculation is actually due.
+   */
+  async function recalculateIfDue(uid, profile) {
+    const state = (await getAlgorithmState(uid)) ?? {
+      current_tdee_estimate: null,
+      mode: 'learning',
+      last_recalculated: null,
+    };
+    const daysSinceRecalc = state.last_recalculated
+      ? (Date.now() - new Date(state.last_recalculated).getTime()) / 86400000
+      : Infinity;
+    if (daysSinceRecalc < RECALC_INTERVAL_DAYS) return state;
+
+    const endDate = todayLocalDate();
+    const startDate = daysAgoLocalDate(ADAPTIVE_WINDOW_DAYS - 1);
+
+    const weightMap = await getWeightRange(uid, startDate, endDate);
+    const weightSeries = Object.entries(weightMap)
+      .map(([d, v]) => ({ x: d, y: v.weight_kg }))
+      .sort((a, b) => (a.x < b.x ? -1 : a.x > b.x ? 1 : 0));
+    const intakeSeries = await getDailyCalorieTotals(uid, startDate, endDate);
+
+    const historyDates = Object.keys(await getAlgorithmHistory(uid)).sort();
+    const daysOfData = historyDates.length > 0 ? daysBetween(historyDates[0], endDate) + 1 : 0;
+
+    const result = updateAdaptiveTDEE({
+      weightSeries,
+      intakeSeries,
+      currentEstimate: state.current_tdee_estimate,
+      daysOfData,
+      sex: profile.sex,
+    });
+
+    const newState = {
+      current_tdee_estimate: result.estimate,
+      mode: result.mode,
+      last_recalculated: new Date().toISOString(),
+    };
+    await saveAlgorithmState(uid, newState);
+    await recordAlgorithmHistory(uid, endDate, { tdee_estimate: result.estimate, mode: result.mode });
+    return newState;
+  }
+
   subscribe('today', renderToday);
 
   async function loadAndRenderToday() {
@@ -504,10 +556,16 @@ window.addEventListener('unhandledrejection', e => alert(`PROMISE ERROR: ${e.rea
     const profile = getState('profile');
     const weightKg = await getLatestWeight(user.uid);
 
+    const algoState = await recalculateIfDue(user.uid, profile);
     const bmr = calculateBMR({ sex: profile.sex, weightKg, heightCm: profile.height_cm, age: profile.age });
-    const tdee = calculateTDEE(bmr, profile.activity_level);
+    const staticTdee = calculateTDEE(bmr, profile.activity_level);
+    // Learning Mode: static formula. Personalized Mode: the adaptive
+    // estimate. Either way it still flows through calculateTarget, so
+    // the goal/rate deficit and the safety floor always still apply.
+    const effectiveTdee = algoState.mode === 'personalized' ? algoState.current_tdee_estimate : staticTdee;
+
     const { target } = calculateTarget({
-      tdee, goal: profile.goal, weightKg, sex: profile.sex, ratePercent: profile.rate_percent ?? 0.75,
+      tdee: effectiveTdee, goal: profile.goal, weightKg, sex: profile.sex, ratePercent: profile.rate_percent ?? 0.75,
     });
     const macros = calculateMacroTargets(target, weightKg);
 
@@ -516,7 +574,10 @@ window.addEventListener('unhandledrejection', e => alert(`PROMISE ERROR: ${e.rea
     const exerciseEntries = await getExerciseLogForDate(user.uid, date);
     const exerciseBurned = Object.values(exerciseEntries).reduce((s, e) => s + (e.calories_burned || 0), 0);
 
-    patchState('today', { date, target, macros, foodEntries, exerciseEntries, exerciseBurned, weightKg });
+    patchState('today', {
+      date, target, macros, foodEntries, exerciseEntries, exerciseBurned, weightKg,
+      algoMode: algoState.mode,
+    });
   }
 
   function renderToday() {
@@ -875,6 +936,8 @@ window.addEventListener('unhandledrejection', e => alert(`PROMISE ERROR: ${e.rea
 
     document.getElementById('weight-trend-summary').textContent = summarizeWeightTrend(weightSeries, profile.unit_pref);
     document.getElementById('calorie-trend-summary').textContent = summarizeCalorieTrend(calorieSeries, target);
+
+    await renderAlgorithmPanel(user.uid, profile);
   }
 
   function summarizeWeightTrend(series, unitPref) {
@@ -890,6 +953,68 @@ window.addEventListener('unhandledrejection', e => alert(`PROMISE ERROR: ${e.rea
     const avg = Math.round(loggedDays.reduce((s, p) => s + p.y, 0) / loggedDays.length);
     const diff = avg - target;
     return `Averaging ${avg} kcal/day (${diff > 0 ? '+' : ''}${diff} vs target) over ${loggedDays.length} logged days`;
+  }
+
+  /**
+   * Brief 4.5 point 6 / screen 5's "plain-language panel" — the clearest
+   * proof to the user that the algorithm is doing something with their
+   * data, not decorative. Direction wording is driven off the TDEE
+   * estimate's own change (up = real metabolism running higher than the
+   * standard formula assumed), not the target number directly, since the
+   * correct mapping from that to "faster/slower than expected" flips
+   * depending on the goal (lose vs. gain) — see the note in the summary
+   * I sent with this delivery about the brief's own example being
+   * inverted on this point.
+   */
+  async function renderAlgorithmPanel(uid, profile) {
+    const panel = document.getElementById('algorithm-panel');
+    const algoState = await getAlgorithmState(uid);
+    const historyMap = await getAlgorithmHistory(uid);
+    const historyEntries = Object.entries(historyMap).sort((a, b) => (a[0] < b[0] ? -1 : 1));
+
+    if (!algoState || algoState.mode !== 'personalized' || historyEntries.length < 2) {
+      panel.innerHTML = `
+        <h3 style="margin-bottom:8px;">Personalization</h3>
+        <p style="margin-bottom:0;">Still in <strong>Learning Mode</strong>, using the standard formula. Personalizes automatically once you've logged food most days for about two weeks.</p>
+      `;
+      return;
+    }
+
+    const [startDate, startEntry] = historyEntries[0];
+    const [, latestEntry] = historyEntries[historyEntries.length - 1];
+    const days = daysBetween(startDate, todayLocalDate());
+
+    const weightKg = getState('today').weightKg;
+    const startTarget = calculateTarget({
+      tdee: startEntry.tdee_estimate, goal: profile.goal, weightKg, sex: profile.sex,
+      ratePercent: profile.rate_percent ?? 0.75,
+    }).target;
+    const nowTarget = calculateTarget({
+      tdee: latestEntry.tdee_estimate, goal: profile.goal, weightKg, sex: profile.sex,
+      ratePercent: profile.rate_percent ?? 0.75,
+    }).target;
+
+    const tdeeUp = latestEntry.tdee_estimate > startEntry.tdee_estimate;
+    const tdeeDown = latestEntry.tdee_estimate < startEntry.tdee_estimate;
+    let explanation;
+    if (profile.goal === 'lose') {
+      explanation = tdeeUp ? 'your actual weight loss was faster than expected at that intake'
+        : tdeeDown ? 'your actual weight loss was slower than expected at that intake'
+        : 'your actual weight loss matched what the standard formula predicted';
+    } else if (profile.goal === 'gain') {
+      explanation = tdeeUp ? 'your actual weight gain was slower than expected at that intake'
+        : tdeeDown ? 'your actual weight gain was faster than expected at that intake'
+        : 'your actual weight gain matched what the standard formula predicted';
+    } else {
+      explanation = tdeeUp ? 'your metabolism is running a bit higher than the standard formula assumed'
+        : tdeeDown ? 'your metabolism is running a bit lower than the standard formula assumed'
+        : 'your metabolism matched what the standard formula predicted';
+    }
+
+    panel.innerHTML = `
+      <h3 style="margin-bottom:8px;">Personalization — <span style="color:var(--success);">Personalized Mode</span></h3>
+      <p style="margin-bottom:0;">Started at ${startTarget} kcal. After ${days} days of your data, adjusted to ${nowTarget} kcal — ${explanation}.</p>
+    `;
   }
 
   // ---- Weight check-in ----
