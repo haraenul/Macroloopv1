@@ -43,7 +43,17 @@ function notify(key) {
 
 /** Local YYYY-MM-DD — deliberately not UTC, so "today" matches the user's own day. */
 export function todayLocalDate() {
+  return formatLocalDate(new Date());
+}
+
+/** YYYY-MM-DD for N days before today, local time — for trend-window start dates. */
+export function daysAgoLocalDate(n) {
   const d = new Date();
+  d.setDate(d.getDate() - n);
+  return formatLocalDate(d);
+}
+
+function formatLocalDate(d) {
   const pad = (n) => String(n).padStart(2, '0');
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
