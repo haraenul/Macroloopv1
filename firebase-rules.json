@@ -3,7 +3,14 @@
     "users": {
       "$uid": {
         ".read": "auth !== null && auth.uid === $uid",
-        ".write": "auth !== null && auth.uid === $uid"
+
+        "profile": { ".write": "auth !== null && auth.uid === $uid" },
+        "weight_log": { ".write": "auth !== null && auth.uid === $uid" },
+        "food_log": { ".write": "auth !== null && auth.uid === $uid" },
+        "exercise_log": { ".write": "auth !== null && auth.uid === $uid" },
+        "algorithm_state": { ".write": "auth !== null && auth.uid === $uid" },
+        "frequent_foods": { ".write": "auth !== null && auth.uid === $uid" },
+        "food_corrections": { ".write": "auth !== null && auth.uid === $uid" }
       }
     },
     ".read": false,
