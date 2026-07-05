@@ -117,6 +117,7 @@ exports.handler = async (event) => {
         // Double check this default is still current on OpenRouter before
         // going live; vision-model pricing/availability moves quickly.
         model: process.env.VISION_MODEL || 'google/gemini-2.5-flash',
+        max_tokens: 2000,
         messages: [
           {
             role: 'user',
