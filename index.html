@@ -971,17 +971,18 @@
     const algoState = await getAlgorithmState(uid);
     const historyMap = await getAlgorithmHistory(uid);
     const historyEntries = Object.entries(historyMap).sort((a, b) => (a[0] < b[0] ? -1 : 1));
+  const personalized = historyEntries.filter(([, e]) => e.mode === 'personalized');
 
-    if (!algoState || algoState.mode !== 'personalized' || historyEntries.length < 2) {
-      panel.innerHTML = `
-        <h3 style="margin-bottom:8px;">Personalization</h3>
-        <p style="margin-bottom:0;">Still in <strong>Learning Mode</strong>, using the standard formula. Personalizes automatically once you've logged food most days for about two weeks.</p>
-      `;
-      return;
-    }
+  if (!algoState || algoState.mode !== 'personalized' || personalized.length < 2) {
+    panel.innerHTML = `
+      <h3 style="margin-bottom:8px;">Personalization</h3>
+      <p style="margin-bottom:0;">Still in <strong>Learning Mode</strong>, using the standard formula. Personalizes automatically once you've logged food most days for about two weeks.</p>
+    `;
+    return;
+  }
 
-    const [startDate, startEntry] = historyEntries[0];
-    const [, latestEntry] = historyEntries[historyEntries.length - 1];
+  const [startDate, startEntry] = personalized[0];
+  const [, latestEntry] = personalized[personalized.length - 1];
     const days = daysBetween(startDate, todayLocalDate());
 
     const weightKg = getState('today').weightKg;
