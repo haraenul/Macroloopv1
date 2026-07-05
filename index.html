@@ -147,6 +147,7 @@
         <div class="ring-label">kcal remaining</div>
       </div>
     </div>
+    <p class="numeric" id="exercise-credit-note" style="display:none; text-align:center; font-size:0.8rem; margin-top:-12px;"></p>
 
     <div class="macro-row">
       <div class="macro-item macro-protein">
@@ -170,14 +171,52 @@
 
     <h3>Today's log</h3>
     <div id="food-log-list"></div>
-
-    <!--
-      Phase 2 adds a second real destination (exercise log), which is
-      the natural point to introduce a persistent bottom nav — adding
-      nav chrome now, with only one working tab, would be worse UX than
-      the single-screen-plus-sheet flow this is today.
-    -->
   </div>
+
+  <!-- Exercise -->
+  <div id="screen-exercise" class="screen">
+    <div class="top-bar">
+      <div class="brand">Exercise</div>
+      <button class="btn-icon" id="add-exercise-btn" aria-label="Log exercise">+</button>
+    </div>
+
+    <div class="card" style="text-align:center;">
+      <div class="target-number numeric" id="exercise-total-burned" style="font-size:2.2rem; color:var(--accent-protein);">0</div>
+      <div class="target-unit">kcal burned today</div>
+    </div>
+
+    <h3>Today's exercise</h3>
+    <div id="exercise-log-list"></div>
+  </div>
+
+  <!-- Progress -->
+  <div id="screen-progress" class="screen">
+    <div class="top-bar">
+      <div class="brand">Progress</div>
+    </div>
+
+    <div class="card">
+      <div class="top-bar" style="margin-bottom:12px;">
+        <h3 style="margin:0;">Weight</h3>
+        <button class="btn-icon" id="add-weight-btn" aria-label="Log weight">+</button>
+      </div>
+      <svg id="weight-chart" width="100%" height="140" viewBox="0 0 320 140"></svg>
+      <p class="numeric" id="weight-trend-summary" style="margin-top:10px; font-size:0.85rem;"></p>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom:12px;">Daily calories</h3>
+      <svg id="calorie-chart" width="100%" height="140" viewBox="0 0 320 140"></svg>
+      <p class="numeric" id="calorie-trend-summary" style="margin-top:10px; font-size:0.85rem;"></p>
+    </div>
+  </div>
+
+  <!-- Bottom nav — shown once there's more than one real screen to switch between -->
+  <nav class="bottom-nav" id="bottom-nav">
+    <button class="nav-item active" data-screen="today">Today</button>
+    <button class="nav-item" data-screen="exercise">Exercise</button>
+    <button class="nav-item" data-screen="progress">Progress</button>
+  </nav>
 
   <!-- Log Meal sheet -->
   <div class="sheet-backdrop" id="sheet-backdrop"></div>
@@ -208,32 +247,78 @@
     </div>
   </div>
 
+  <!-- Log Exercise sheet -->
+  <div class="sheet" id="log-exercise-sheet" style="display:none;">
+    <div class="top-bar">
+      <h3 style="margin:0;">Log exercise</h3>
+      <button class="btn-icon" id="exercise-sheet-close" aria-label="Close">&times;</button>
+    </div>
+
+    <div class="field">
+      <label for="exercise-activity-select">Activity</label>
+      <select id="exercise-activity-select"></select>
+    </div>
+    <div class="field">
+      <label for="exercise-duration-input">Duration (minutes)</label>
+      <input type="number" id="exercise-duration-input" value="30" min="1" />
+    </div>
+    <div class="field" id="exercise-custom-calories-field" style="display:none;">
+      <label for="exercise-custom-calories-input">Calories burned</label>
+      <input type="number" id="exercise-custom-calories-input" min="1" placeholder="e.g. 300" />
+    </div>
+    <p style="text-align:center;" class="numeric" id="exercise-preview">0 kcal</p>
+    <button class="btn-primary" id="confirm-exercise-btn">Log it</button>
+  </div>
+
+  <!-- Log Weight sheet -->
+  <div class="sheet" id="log-weight-sheet" style="display:none;">
+    <div class="top-bar">
+      <h3 style="margin:0;">Log weight</h3>
+      <button class="btn-icon" id="weight-sheet-close" aria-label="Close">&times;</button>
+    </div>
+    <div class="field">
+      <label for="weight-log-input" id="weight-log-label">Weight (kg)</label>
+      <input type="number" id="weight-log-input" step="0.1" />
+    </div>
+    <button class="btn-primary" id="confirm-weight-btn">Save</button>
+  </div>
+
   <div class="toast" id="toast" style="display:none;"></div>
 </div>
 
 <script type="module">
-window.onerror = (msg, src, line, col, err) => {
-  alert(msg + "\n" + src + ":" + line);
-};
   import {
     onAuthChange, signUp, signIn, signOutUser,
     getProfile, saveProfile,
-    saveWeightEntry, getLatestWeight,
+    saveWeightEntry, getLatestWeight, getWeightRange,
     getFoodLogForDate, deleteFoodLogEntry,
+    getExerciseLogForDate, deleteExerciseLogEntry,
     saveAlgorithmState, recordAlgorithmHistory,
   } from './js/firebase.js';
-  import { getState, setState, patchState, subscribe, todayLocalDate } from './js/state.js';
+  import { getState, setState, patchState, subscribe, todayLocalDate, daysAgoLocalDate } from './js/state.js';
   import {
     calculateBMR, calculateTDEE, calculateTarget, explainTarget,
-    calculateMacroTargets, lbToKg, ftInToCm,
+    calculateMacroTargets, lbToKg, ftInToCm, kgToLb,
   } from './js/algorithm.js';
-  import { searchFoods, debounce, logFood, scaleToGrams, getFrequentFoodsSorted } from './js/food-log.js';
+  import {
+    searchFoods, debounce, logFood, scaleToGrams, getFrequentFoodsSorted, getDailyCalorieTotals,
+  } from './js/food-log.js';
+  import { ACTIVITIES, calculateCaloriesBurned, logExercise } from './js/exercise-log.js';
+  import { renderLineChart } from './js/charts.js';
 
   // ---- Screen management ----
+
+  const NAV_SCREENS = ['screen-today', 'screen-exercise', 'screen-progress'];
 
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach((el) => el.classList.remove('active'));
     document.getElementById(id).classList.add('active');
+
+    const nav = document.getElementById('bottom-nav');
+    nav.style.display = NAV_SCREENS.includes(id) ? 'flex' : 'none';
+    document.querySelectorAll('.nav-item').forEach((btn) => {
+      btn.classList.toggle('active', `screen-${btn.dataset.screen}` === id);
+    });
   }
 
   let toastTimer;
@@ -424,8 +509,10 @@ window.onerror = (msg, src, line, col, err) => {
 
     const date = todayLocalDate();
     const foodEntries = await getFoodLogForDate(user.uid, date);
+    const exerciseEntries = await getExerciseLogForDate(user.uid, date);
+    const exerciseBurned = Object.values(exerciseEntries).reduce((s, e) => s + (e.calories_burned || 0), 0);
 
-    patchState('today', { date, target, macros, foodEntries });
+    patchState('today', { date, target, macros, foodEntries, exerciseEntries, exerciseBurned, weightKg });
   }
 
   function renderToday() {
@@ -438,10 +525,21 @@ window.onerror = (msg, src, line, col, err) => {
     const carbC = entries.reduce((s, e) => s + (e.carbs_g || 0), 0);
     const fatC = entries.reduce((s, e) => s + (e.fat_g || 0), 0);
 
-    document.getElementById('ring-remaining').textContent = Math.round(today.target - consumed);
+    // Exercise adds back to the day's budget (the standard "eat back what
+    // you burn" pattern) — an assumption, the brief didn't specify this.
+    const budget = today.target + (today.exerciseBurned || 0);
+    document.getElementById('ring-remaining').textContent = Math.round(budget - consumed);
+
+    const creditNote = document.getElementById('exercise-credit-note');
+    if (today.exerciseBurned > 0) {
+      creditNote.textContent = `Budget includes +${today.exerciseBurned} kcal from exercise`;
+      creditNote.style.display = 'block';
+    } else {
+      creditNote.style.display = 'none';
+    }
 
     const circumference = 596.9;
-    const fraction = today.target > 0 ? Math.min(consumed / today.target, 1) : 0;
+    const fraction = budget > 0 ? Math.min(consumed / budget, 1) : 0;
     document.getElementById('ring-progress').style.strokeDashoffset = circumference * (1 - fraction);
 
     updateMacroBar('protein', proteinC, today.macros.proteinG);
@@ -492,13 +590,30 @@ window.onerror = (msg, src, line, col, err) => {
     await signOutUser();
   });
 
+  // ---- Sheets (shared backdrop, one active sheet at a time) ----
+
+  let activeSheetId = null;
+
+  function openActiveSheet(sheetId) {
+    document.getElementById('sheet-backdrop').classList.add('active');
+    document.getElementById(sheetId).style.display = 'block';
+    activeSheetId = sheetId;
+  }
+
+  function closeActiveSheet() {
+    document.getElementById('sheet-backdrop').classList.remove('active');
+    if (activeSheetId) document.getElementById(activeSheetId).style.display = 'none';
+    activeSheetId = null;
+  }
+
+  document.getElementById('sheet-backdrop').addEventListener('click', closeActiveSheet);
+
   // ---- Log Meal sheet ----
 
   let selectedFoodItem = null;
 
   function openSheet(mode) {
-    document.getElementById('sheet-backdrop').classList.add('active');
-    document.getElementById('log-meal-sheet').style.display = 'block';
+    openActiveSheet('log-meal-sheet');
     document.getElementById('sheet-detail-view').style.display = 'none';
     document.getElementById('sheet-search-view').style.display = 'block';
     document.getElementById('search-results').innerHTML = '';
@@ -513,15 +628,9 @@ window.onerror = (msg, src, line, col, err) => {
     }
   }
 
-  function closeSheet() {
-    document.getElementById('sheet-backdrop').classList.remove('active');
-    document.getElementById('log-meal-sheet').style.display = 'none';
-  }
-
   document.getElementById('open-search-btn').addEventListener('click', () => openSheet('search'));
   document.getElementById('open-recent-btn').addEventListener('click', () => openSheet('recent'));
-  document.getElementById('sheet-close').addEventListener('click', closeSheet);
-  document.getElementById('sheet-backdrop').addEventListener('click', closeSheet);
+  document.getElementById('sheet-close').addEventListener('click', closeActiveSheet);
   document.getElementById('back-to-search').addEventListener('click', () => {
     document.getElementById('sheet-detail-view').style.display = 'none';
     document.getElementById('sheet-search-view').style.display = 'block';
@@ -565,6 +674,22 @@ window.onerror = (msg, src, line, col, err) => {
   }, 600);
   document.getElementById('search-input').addEventListener('input', (e) => debouncedSearch(e.target.value));
 
+  /**
+   * USDA in particular has many entries sharing an identical display name
+   * ("CHICKEN BREAST") with very different calories — different source
+   * datasets or prep methods. Brand and dataType are what actually
+   * distinguish them; show whichever are present rather than just the name.
+   */
+  function formatResultMeta(item) {
+    const parts = [];
+    if (item.brandOwner) parts.push(item.brandOwner);
+    if (item.dataType) parts.push(item.dataType);
+    parts.push(item.source.toUpperCase());
+    parts.push(`${Math.round(item.caloriesPer100g)} kcal/100g`);
+    if (item.servingSize) parts.push(`serving ${item.servingSize}`);
+    return parts.join(' · ');
+  }
+
   function renderResults(items) {
     const results = document.getElementById('search-results');
     results.innerHTML = items
@@ -572,7 +697,7 @@ window.onerror = (msg, src, line, col, err) => {
         <div class="search-result" data-index="${i}">
           <div>
             <div>${escapeHtml(item.name)}</div>
-            <div class="result-source">${item.source} · ${Math.round(item.caloriesPer100g)} kcal/100g</div>
+            <div class="result-source">${escapeHtml(formatResultMeta(item))}</div>
           </div>
           <div>&rsaquo;</div>
         </div>
@@ -617,9 +742,189 @@ window.onerror = (msg, src, line, col, err) => {
     const grams = Number(document.getElementById('qty-grams').value);
     if (!selectedFoodItem || !grams || grams <= 0) return;
     await logFood(user.uid, todayLocalDate(), selectedFoodItem, grams);
-    closeSheet();
+    closeActiveSheet();
     showToast(`Logged ${selectedFoodItem.name}`);
     await loadAndRenderToday();
+  });
+
+  // ---- Exercise ----
+
+  document.getElementById('exercise-activity-select').innerHTML = ACTIVITIES.map(
+    (a) => `<option value="${a.id}">${escapeHtml(a.label)}</option>`
+  ).join('');
+
+  function currentActivity() {
+    const id = document.getElementById('exercise-activity-select').value;
+    return ACTIVITIES.find((a) => a.id === id);
+  }
+
+  function computePreviewCalories() {
+    const activity = currentActivity();
+    const duration = Number(document.getElementById('exercise-duration-input').value) || 0;
+    if (activity.id === 'custom') {
+      return Number(document.getElementById('exercise-custom-calories-input').value) || 0;
+    }
+    const weightKg = getState('today').weightKg;
+    return calculateCaloriesBurned(activity.met, weightKg, duration);
+  }
+
+  function updateExercisePreview() {
+    const isCustom = currentActivity().id === 'custom';
+    document.getElementById('exercise-custom-calories-field').style.display = isCustom ? 'block' : 'none';
+    document.getElementById('exercise-preview').textContent = `${computePreviewCalories()} kcal`;
+  }
+
+  ['exercise-activity-select', 'exercise-duration-input', 'exercise-custom-calories-input'].forEach((id) => {
+    document.getElementById(id).addEventListener('input', updateExercisePreview);
+  });
+
+  document.getElementById('add-exercise-btn').addEventListener('click', () => {
+    openActiveSheet('log-exercise-sheet');
+    document.getElementById('exercise-duration-input').value = 30;
+    document.getElementById('exercise-custom-calories-input').value = '';
+    updateExercisePreview();
+  });
+  document.getElementById('exercise-sheet-close').addEventListener('click', closeActiveSheet);
+
+  document.getElementById('confirm-exercise-btn').addEventListener('click', async () => {
+    const user = getState('user');
+    const activity = currentActivity();
+    const duration = Number(document.getElementById('exercise-duration-input').value) || 0;
+    const caloriesBurned = computePreviewCalories();
+    if (!caloriesBurned || caloriesBurned <= 0) {
+      showToast('Enter a duration (or calories, for a custom activity) first.');
+      return;
+    }
+    await logExercise(user.uid, todayLocalDate(), {
+      activityLabel: activity.label,
+      durationMin: duration,
+      caloriesBurned,
+    });
+    closeActiveSheet();
+    showToast(`Logged ${activity.label}`);
+    await loadAndRenderExercise();
+    await loadAndRenderToday();
+  });
+
+  async function loadAndRenderExercise() {
+    const user = getState('user');
+    const entries = await getExerciseLogForDate(user.uid, todayLocalDate());
+    renderExerciseList(entries);
+  }
+
+  function renderExerciseList(entriesMap) {
+    const entries = Object.entries(entriesMap || {});
+    const total = entries.reduce((sum, [, e]) => sum + (e.calories_burned || 0), 0);
+    document.getElementById('exercise-total-burned').textContent = total;
+
+    const container = document.getElementById('exercise-log-list');
+    if (entries.length === 0) {
+      container.innerHTML = '<div class="empty-state">No exercise logged yet today.</div>';
+      return;
+    }
+    container.innerHTML = entries
+      .map(([id, e]) => `
+        <div class="log-entry">
+          <div>
+            <div class="entry-name">${escapeHtml(e.activity)}</div>
+            <div class="entry-meta">${e.duration_min} min</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div class="entry-cal">${e.calories_burned} kcal</div>
+            <button class="entry-delete" data-id="${id}" aria-label="Delete entry">&times;</button>
+          </div>
+        </div>
+      `)
+      .join('');
+
+    container.querySelectorAll('.entry-delete').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const user = getState('user');
+        await deleteExerciseLogEntry(user.uid, todayLocalDate(), btn.dataset.id);
+        await loadAndRenderExercise();
+        await loadAndRenderToday(); // exercise credit changed — refresh the ring too
+      });
+    });
+  }
+
+  // ---- Progress ----
+
+  async function loadAndRenderProgress() {
+    const user = getState('user');
+    const profile = getState('profile');
+    const endDate = todayLocalDate();
+    const startDate = daysAgoLocalDate(29); // 30-day window
+
+    const weightMap = await getWeightRange(user.uid, startDate, endDate);
+    const weightSeries = Object.entries(weightMap)
+      .map(([date, v]) => ({ x: date, y: v.weight_kg }))
+      .sort((a, b) => (a.x < b.x ? -1 : a.x > b.x ? 1 : 0));
+
+    const calorieSeries = await getDailyCalorieTotals(user.uid, startDate, endDate);
+    const target = getState('today').target;
+
+    renderLineChart(document.getElementById('weight-chart'), weightSeries, { color: '#4fb8ae' });
+    renderLineChart(document.getElementById('calorie-chart'), calorieSeries, {
+      color: '#e8a94c',
+      referenceValue: target,
+    });
+
+    document.getElementById('weight-trend-summary').textContent = summarizeWeightTrend(weightSeries, profile.unit_pref);
+    document.getElementById('calorie-trend-summary').textContent = summarizeCalorieTrend(calorieSeries, target);
+  }
+
+  function summarizeWeightTrend(series, unitPref) {
+    if (series.length < 2) return 'Log a few more check-ins to see a trend.';
+    const diffKg = series[series.length - 1].y - series[0].y;
+    const display = unitPref === 'imperial' ? `${kgToLb(diffKg).toFixed(1)} lb` : `${diffKg.toFixed(1)} kg`;
+    return `${diffKg > 0 ? '+' : ''}${display} over ${series.length} check-ins`;
+  }
+
+  function summarizeCalorieTrend(series, target) {
+    const loggedDays = series.filter((p) => p.y > 0);
+    if (loggedDays.length === 0) return 'No logs yet in this window.';
+    const avg = Math.round(loggedDays.reduce((s, p) => s + p.y, 0) / loggedDays.length);
+    const diff = avg - target;
+    return `Averaging ${avg} kcal/day (${diff > 0 ? '+' : ''}${diff} vs target) over ${loggedDays.length} logged days`;
+  }
+
+  // ---- Weight check-in ----
+
+  document.getElementById('add-weight-btn').addEventListener('click', () => {
+    openActiveSheet('log-weight-sheet');
+    const unitPref = getState('profile').unit_pref;
+    document.getElementById('weight-log-label').textContent = unitPref === 'imperial' ? 'Weight (lb)' : 'Weight (kg)';
+    document.getElementById('weight-log-input').value = '';
+  });
+  document.getElementById('weight-sheet-close').addEventListener('click', closeActiveSheet);
+
+  document.getElementById('confirm-weight-btn').addEventListener('click', async () => {
+    const user = getState('user');
+    const raw = Number(document.getElementById('weight-log-input').value);
+    if (!raw || raw <= 0) {
+      showToast('Enter a weight first.');
+      return;
+    }
+    const unitPref = getState('profile').unit_pref;
+    const weightKg = unitPref === 'imperial' ? lbToKg(raw) : raw;
+    await saveWeightEntry(user.uid, todayLocalDate(), weightKg);
+    closeActiveSheet();
+    showToast('Weight logged');
+    // Target depends on current weight, so Today needs to recompute too —
+    // not just the Progress chart.
+    await loadAndRenderToday();
+    await loadAndRenderProgress();
+  });
+
+  // ---- Nav ----
+
+  document.querySelectorAll('.nav-item').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const target = btn.dataset.screen;
+      showScreen(`screen-${target}`);
+      if (target === 'exercise') await loadAndRenderExercise();
+      if (target === 'progress') await loadAndRenderProgress();
+    });
   });
 
   // ---- Boot ----
