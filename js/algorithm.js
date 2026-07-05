@@ -1,10 +1,8 @@
 // algorithm.js
 //
-// Phase 1 scope: static Mifflin-St Jeor target calculation only.
-// The adaptive TDEE update (build brief section 4.5 — EWMA smoothing,
-// back-calculated TDEE, Learning/Personalized mode) is Phase 3 work and
-// will be added to this same file. It reuses SAFETY_FLOOR_KCAL below,
-// so keep that export's shape stable when that lands.
+// Static Mifflin-St Jeor target calculation (Phase 1) plus the adaptive
+// TDEE update (Phase 3, brief 4.5 — EWMA smoothing, back-calculated
+// TDEE, Learning/Personalized mode). Both share SAFETY_FLOOR_KCAL below.
 //
 // Everything here is a pure function: no DOM, no Firebase, no fetch.
 // That's deliberate — see algorithm.test.js.
@@ -85,6 +83,89 @@ export function explainTarget({ bmr, tdee, target, goal }) {
   }
   const direction = goal === 'lose' ? 'below' : 'above';
   return `Your estimated maintenance is ${tdeeR} kcal/day (from a ${bmrR} kcal base rate). Your target of ${target} kcal/day is set ${direction} that to match your goal.`;
+}
+
+// ---- Phase 3: adaptive algorithm (brief 4.5) ----
+//
+// The population-average formula above has no way to see this specific
+// person's real metabolism. This section corrects it using their own
+// logged intake and actual weight trend as ground truth.
+
+const EWMA_ALPHA = 0.2;
+export const ADAPTIVE_WINDOW_DAYS = 14;
+const MIN_LOGGING_CONSISTENCY = 0.7;
+const BLEND_WEIGHT_NEW = 0.6; // 60% new empirical estimate, 40% prior
+const MAX_CHANGE_FRACTION = 0.1; // cap movement to ±10% of the prior estimate per update
+
+/**
+ * Exponentially weighted moving average over a daily series, brief 4.5
+ * point 1 — smooths noisy day-to-day weight into a trend line. The first
+ * point is unsmoothed (nothing to blend with yet); each later point
+ * blends alpha of the raw value with (1-alpha) of the running average.
+ * Does not forward-fill gaps between entries — it smooths whatever
+ * sequence of weigh-ins it's given, treating each as the next step
+ * regardless of the calendar gap between them. Fine for the "reduce
+ * noise between real readings" job this does; would need forward-fill
+ * added if sparse logging ever makes that lag noticeably wrong.
+ * series: [{x, y}], sorted ascending by x. Returns the same shape.
+ */
+export function computeEWMA(series, alpha = EWMA_ALPHA) {
+  if (series.length === 0) return [];
+  let prevSmoothed = series[0].y;
+  return series.map((point, i) => {
+    const smoothed = i === 0 ? point.y : alpha * point.y + (1 - alpha) * prevSmoothed;
+    prevSmoothed = smoothed;
+    return { x: point.x, y: smoothed };
+  });
+}
+
+/**
+ * Brief 4.5 point 2's back-calculation, pulled out as its own pure
+ * function specifically so it can be unit-tested against the brief's
+ * worked example directly (avgIntake=2000, deltaWeightKg=-0.7, days=14
+ * -> 2385), without also having to fight EWMA's smoothing lag to
+ * reverse-engineer an input series that happens to net out to -0.7.
+ * deltaWeightKg is signed: negative for loss, positive for gain.
+ */
+export function backCalculateTDEE(avgIntake, deltaWeightKg, days) {
+  return avgIntake - (deltaWeightKg * KCAL_PER_KG) / days;
+}
+
+/**
+ * The full brief 4.5 pipeline: gate on data sufficiency, smooth the
+ * weight trend, back-calculate, blend with the prior estimate, cap the
+ * per-update movement, and floor it. Mirrors the brief's reference
+ * pseudocode, adapted to this codebase's {x,y} series shape and to a
+ * sex-keyed floor instead of a single constant.
+ *
+ * @param {{weightSeries:{x,y}[], intakeSeries:{x,y}[], currentEstimate:number,
+ *   daysOfData:number, sex:'male'|'female'}} p  weightSeries/intakeSeries are
+ *   already restricted to the assessment window by the caller. intakeSeries
+ *   must have one entry per day in the window (0 for unlogged days) — see
+ *   aggregateDailyCalories — since logging consistency is measured from it.
+ * @returns {{mode:'learning'|'personalized', estimate:number}}
+ */
+export function updateAdaptiveTDEE({ weightSeries, intakeSeries, currentEstimate, daysOfData, sex }) {
+  const loggedDays = intakeSeries.filter((d) => d.y > 0).length;
+  const loggingConsistency = intakeSeries.length > 0 ? loggedDays / intakeSeries.length : 0;
+
+  if (daysOfData < ADAPTIVE_WINDOW_DAYS || loggingConsistency < MIN_LOGGING_CONSISTENCY || weightSeries.length < 2) {
+    return { mode: 'learning', estimate: currentEstimate };
+  }
+
+  const trend = computeEWMA(weightSeries);
+  const deltaWeightKg = trend[trend.length - 1].y - trend[0].y;
+  const avgIntake = intakeSeries.reduce((sum, d) => sum + d.y, 0) / intakeSeries.length;
+  const empiricalTDEE = backCalculateTDEE(avgIntake, deltaWeightKg, intakeSeries.length);
+
+  const blended = BLEND_WEIGHT_NEW * empiricalTDEE + (1 - BLEND_WEIGHT_NEW) * currentEstimate;
+  const capped = Math.min(
+    Math.max(blended, currentEstimate * (1 - MAX_CHANGE_FRACTION)),
+    currentEstimate * (1 + MAX_CHANGE_FRACTION)
+  );
+
+  const floor = SAFETY_FLOOR_KCAL[sex] ?? SAFETY_FLOOR_KCAL.female;
+  return { mode: 'personalized', estimate: Math.round(Math.max(capped, floor)) };
 }
 
 /**
