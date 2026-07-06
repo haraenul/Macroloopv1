@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy – MacroLoop</title>
+<style>
+  :root {
+    --bg: #0b0d12;
+    --text: #ededed;
+    --muted: #93969e;
+    --accent: #e8a33d;
+    --line: rgba(255,255,255,0.08);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 680px; margin: 0 auto; padding: 48px 24px 64px; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover, a:focus-visible { text-decoration: underline; }
+  .back { display: inline-block; color: var(--muted); font-size: 14px; margin-bottom: 32px; }
+  .back:hover { color: var(--accent); }
+  h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 8px; }
+  .updated { color: var(--muted); font-size: 14px; margin: 0 0 24px; }
+  .toc {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 4px 20px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 40px;
+  }
+  .toc a { color: var(--muted); font-size: 14px; padding: 3px 0; }
+  .toc a:hover, .toc a:focus-visible { color: var(--accent); }
+  @media (min-width: 520px) { .toc { grid-template-columns: 1fr 1fr; } }
+  section { padding-top: 28px; margin-top: 28px; border-top: 1px solid var(--line); scroll-margin-top: 20px; }
+  section:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+  h2 { font-size: 17px; font-weight: 600; margin: 0 0 12px; display: flex; gap: 10px; align-items: baseline; }
+  h2 .num { color: var(--accent); font-variant-numeric: tabular-nums; }
+  p, li { color: var(--text); font-size: 15.5px; }
+  p { margin: 0 0 14px; }
+  ul { margin: 0 0 14px; padding-left: 20px; }
+  li { margin-bottom: 6px; }
+  strong { color: var(--text); }
+  .footer-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 40px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+  }
+  .footer-nav .home-link { color: var(--muted); font-size: 14px; }
+  .footer-nav .home-link:hover { color: var(--accent); }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+    padding: 10px 16px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .pill:hover, .pill:focus-visible { background: rgba(255,255,255,0.12); text-decoration: none; }
+  @media print {
+    body { background: #fff; color: #000; }
+    .back, .toc, .footer-nav { display: none; }
+    a { color: #000; text-decoration: underline; }
+    section { border-top-color: #ccc; }
+    h2 .num { color: #000; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← Back to MacroLoop</a>
+  <h1>Privacy Policy</h1>
+  <p class="updated">Last updated: July 6, 2026</p>
+
+  <nav class="toc" aria-label="Table of contents">
+    <a href="#s1">1. What this covers</a>
+    <a href="#s2">2. Information we collect</a>
+    <a href="#s3">3. How we use your information</a>
+    <a href="#s4">4. Third-party services we use</a>
+    <a href="#s5">5. Your rights</a>
+    <a href="#s6">6. Data retention</a>
+    <a href="#s7">7. Children's privacy</a>
+    <a href="#s8">8. International users</a>
+    <a href="#s9">9. Changes to this policy</a>
+    <a href="#s10">10. Contact</a>
+  </nav>
+
+  <section id="s1">
+    <h2><span class="num">1.</span> What this covers</h2>
+    <p>This policy explains what MacroLoop ("the app," "we") collects, why, and what you can do about it. By creating an account, you agree to this policy.</p>
+  </section>
+
+  <section id="s2">
+    <h2><span class="num">2.</span> Information we collect</h2>
+    <p><strong>Account information:</strong> email address and password (handled via Firebase Authentication — we never see or store your raw password ourselves).</p>
+    <p><strong>Profile information:</strong> sex, age, height, weight, activity level, and your stated goal (lose/maintain/gain weight, and at what rate).</p>
+    <p><strong>Logged data:</strong> food entries (including photos you choose to submit for AI analysis), exercise entries, and weight check-ins over time.</p>
+    <p><strong>Photos:</strong> if you use photo-based food logging, the image is sent to a third-party AI vision model for analysis and is not permanently stored by us beyond what's needed to process that single request.</p>
+    <p><strong>Usage data:</strong> basic app usage (e.g., which features are used) may be collected to understand and improve the app.</p>
+    <p>We do not collect more than the app needs to function, and we do not sell your personal data to third parties.</p>
+  </section>
+
+  <section id="s3">
+    <h2><span class="num">3.</span> How we use your information</h2>
+    <ul>
+      <li>To calculate your calorie and macronutrient targets, including the adaptive personalization feature, which uses your logged intake and weight history to refine that target over time.</li>
+      <li>To provide the core features of the app: logging, progress tracking, and (for Premium users) additional analysis.</li>
+      <li>To maintain account security and prevent abuse (for example, rate-limiting how often the photo-analysis feature can be used).</li>
+    </ul>
+  </section>
+
+  <section id="s4">
+    <h2><span class="num">4.</span> Third-party services we use</h2>
+    <ul>
+      <li><strong>Firebase (Google)</strong> — authentication and data storage. Firebase's own privacy practices apply to how they handle data on our behalf.</li>
+      <li><strong>An AI vision model provider (via OpenRouter)</strong> — processes photos you submit for food identification. Photos are sent for the purpose of that single analysis.</li>
+      <li><strong>USDA FoodData Central and Open Food Facts</strong> — public nutrition databases used for manual food search. Your search terms may be sent to these services, but not your personal profile or logged data.</li>
+    </ul>
+  </section>
+
+  <section id="s5">
+    <h2><span class="num">5.</span> Your rights</h2>
+    <p>You can:</p>
+    <ul>
+      <li><strong>Export your data</strong> at any time from within the app.</li>
+      <li><strong>Delete your account and all associated data</strong> at any time from within the app.</li>
+    </ul>
+    <p>We aim to make both of these genuinely functional, not just a formality — if either doesn't work as expected, that's a bug, not intended behavior.</p>
+  </section>
+
+  <section id="s6">
+    <h2><span class="num">6.</span> Data retention</h2>
+    <p>We retain your data for as long as your account is active. If you delete your account, your data is removed from our active systems; backups (if any) are purged on a rolling basis.</p>
+  </section>
+
+  <section id="s7">
+    <h2><span class="num">7.</span> Children's privacy</h2>
+    <p>MacroLoop is not intended for children under 16. We do not knowingly collect data from children under this age. If you believe a child has created an account, contact us and we will remove it.</p>
+  </section>
+
+  <section id="s8">
+    <h2><span class="num">8.</span> International users</h2>
+    <p>MacroLoop is operated from Sudan and available worldwide. Your information may be processed in a country other than your own, including wherever our hosting and service providers operate. By using the app, you consent to this transfer.</p>
+  </section>
+
+  <section id="s9">
+    <h2><span class="num">9.</span> Changes to this policy</h2>
+    <p>We may update this policy as the app changes. Material changes will be reflected here with an updated date.</p>
+  </section>
+
+  <section id="s10">
+    <h2><span class="num">10.</span> Contact</h2>
+    <p>Questions about this policy: <a href="mailto:M.h.ordinary@gmail.com">M.h.ordinary@gmail.com</a></p>
+  </section>
+
+  <div class="footer-nav">
+    <a class="home-link" href="index.html">← Back to MacroLoop</a>
+    <a class="pill" href="terms.html">Terms of Service →</a>
+  </div>
+</div>
+</body>
+</html>
