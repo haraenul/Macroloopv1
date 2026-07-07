@@ -161,10 +161,16 @@ exports.handler = async (event) => {
     return jsonResponse(502, { error: 'empty_response' });
   }
 
+  // Free/smaller models don't always return clean JSON like Gemini did —
+  // strip any ```json fences and pull out the {...} block before parsing.
+  const cleaned = rawContent.replace(/```json\s*/gi, '').replace(/```/g, '').trim();
+  const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+
   let parsed;
   try {
-    parsed = JSON.parse(extractJson(rawContent));
+    parsed = JSON.parse(jsonMatch ? jsonMatch[0] : cleaned);
   } catch {
+    console.error('unparseable_response — raw model output was:', rawContent);
     return jsonResponse(502, { error: 'unparseable_response' });
   }
 
