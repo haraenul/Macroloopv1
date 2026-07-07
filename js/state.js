@@ -41,6 +41,12 @@ function notify(key) {
   listeners.get(key)?.forEach((cb) => cb(state[key]));
 }
 
+/** Local YYYY-MM-DD for any Date — the shared date format used throughout the app. */
+export function formatLocalDate(d) {
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
 /** Local YYYY-MM-DD — deliberately not UTC, so "today" matches the user's own day. */
 export function todayLocalDate() {
   return formatLocalDate(new Date());
@@ -58,9 +64,4 @@ export function daysBetween(startDate, endDate) {
   const start = new Date(`${startDate}T00:00:00`);
   const end = new Date(`${endDate}T00:00:00`);
   return Math.round((end - start) / 86400000);
-}
-
-function formatLocalDate(d) {
-  const pad = (n) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }

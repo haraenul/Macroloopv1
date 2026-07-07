@@ -47,7 +47,9 @@ export function calculateTDEE(bmr, activityLevel) {
  * @param {{tdee:number, goal:'lose'|'maintain'|'gain', weightKg:number,
  *   sex:'male'|'female', ratePercent?:number}} p  ratePercent is % of
  *   bodyweight per week; brief's sustainable default range is ~0.5-1%.
- * @returns {{target:number, warning:string|null}}
+ * @returns {{target:number, warning:'floor_clamped'|'rate_aggressive'|null}}
+ *   warning is a code, not display text — the caller looks up the
+ *   actual message in strings.js (warning_floor_clamped / warning_rate_aggressive).
  */
 export function calculateTarget({ tdee, goal, weightKg, sex, ratePercent = 0.75 }) {
   if (goal === 'maintain') {
@@ -64,25 +66,12 @@ export function calculateTarget({ tdee, goal, weightKg, sex, ratePercent = 0.75 
 
   if (goal === 'lose' && target < floor) {
     target = floor;
-    warning =
-      'Your selected rate would drop below a safe daily minimum, so your target is capped there. Talk to a doctor or dietitian before going lower.';
+    warning = 'floor_clamped';
   } else if (ratePercent > 1) {
-    warning =
-      'That rate is faster than the ~0.5–1% of bodyweight/week most guidance treats as sustainable.';
+    warning = 'rate_aggressive';
   }
 
   return { target, warning };
-}
-
-/** One-line explanation shown at the end of onboarding (brief section 3, screen 1). */
-export function explainTarget({ bmr, tdee, target, goal }) {
-  const bmrR = Math.round(bmr);
-  const tdeeR = Math.round(tdee);
-  if (goal === 'maintain') {
-    return `Based on your stats, your body burns about ${tdeeR} kcal/day at rest and activity combined — that's your starting target.`;
-  }
-  const direction = goal === 'lose' ? 'below' : 'above';
-  return `Your estimated maintenance is ${tdeeR} kcal/day (from a ${bmrR} kcal base rate). Your target of ${target} kcal/day is set ${direction} that to match your goal.`;
 }
 
 // ---- Phase 3: adaptive algorithm (brief 4.5) ----

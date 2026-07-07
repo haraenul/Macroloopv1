@@ -2,7 +2,7 @@
 // Run: node js/photo-log.test.js
 
 import assert from 'node:assert/strict';
-import { computeResizeDimensions, normalizePhotoAnalysis } from './photo-log.js';
+import { computeResizeDimensions, normalizePhotoAnalysis, needsCloserLook } from './photo-log.js';
 
 let passed = 0;
 function test(name, fn) {
@@ -69,6 +69,24 @@ test('a missing name falls back to a placeholder instead of an empty label', () 
   assert.equal(normalizePhotoAnalysis(raw).items[0].name, 'Unknown item');
 });
 
+test('identified:false keeps macros as null instead of coercing to 0 — a silent zero would look like a confident estimate', () => {
+  const raw = { items: [{ identified: false, calories: 200 }] };
+  const item = normalizePhotoAnalysis(raw).items[0];
+  assert.equal(item.identified, false);
+  assert.equal(item.calories, null);
+  assert.equal(item.protein_g, null);
+});
+
+test('an unidentified item with no name falls back to "Unidentified item", not "Unknown item"', () => {
+  const raw = { items: [{ identified: false }] };
+  assert.equal(normalizePhotoAnalysis(raw).items[0].name, 'Unidentified item');
+});
+
+test('identified defaults to true when the field is absent, not just when explicitly true', () => {
+  const raw = { items: [{ name: 'Rice', calories: 200 }] };
+  assert.equal(normalizePhotoAnalysis(raw).items[0].identified, true);
+});
+
 test('a non-array or missing items field produces an empty list, not a crash', () => {
   assert.deepEqual(normalizePhotoAnalysis({}).items, []);
   assert.deepEqual(normalizePhotoAnalysis({ items: 'not an array' }).items, []);
@@ -81,6 +99,38 @@ test('malformed entries inside the items array are dropped, not left to crash re
   const result = normalizePhotoAnalysis(raw);
   assert.equal(result.items.length, 1);
   assert.equal(result.items[0].name, 'Valid');
+});
+
+// --- needsCloserLook ---
+
+test('an unidentified item always needs a closer look, regardless of the rest', () => {
+  const items = [
+    { identified: true, confidence: 'high' },
+    { identified: false, confidence: 'medium' },
+  ];
+  assert.equal(needsCloserLook(items), true);
+});
+
+test('a majority-low-confidence identified result needs a closer look', () => {
+  const items = [
+    { identified: true, confidence: 'low' },
+    { identified: true, confidence: 'low' },
+    { identified: true, confidence: 'high' },
+  ];
+  assert.equal(needsCloserLook(items), true);
+});
+
+test('a mostly-confident result does not need flagging', () => {
+  const items = [
+    { identified: true, confidence: 'high' },
+    { identified: true, confidence: 'high' },
+    { identified: true, confidence: 'low' },
+  ];
+  assert.equal(needsCloserLook(items), false);
+});
+
+test('an empty item list does not need flagging', () => {
+  assert.equal(needsCloserLook([]), false);
 });
 
 console.log(`\n${passed} passed`);

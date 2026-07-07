@@ -8,26 +8,29 @@
 // Physical Activities values alongside those. calculateCaloriesBurned
 // is a pure function on purpose, same reasoning as algorithm.js — see
 // exercise-log.test.js.
+//
+// Display labels live in strings.js, keyed by the same id (activity_<id>)
+// — this file holds ids and MET numbers only, no display text.
 
 export const ACTIVITIES = [
-  { id: 'walking_moderate', label: 'Walking (moderate pace)', met: 3.5 }, // brief 4.4
-  { id: 'walking_brisk', label: 'Walking (brisk pace)', met: 4.3 },
-  { id: 'running_8kmh', label: 'Running (~8 km/h / 5 mph)', met: 8.0 }, // brief 4.4
-  { id: 'running_10min_mi', label: 'Running (10 min/mile)', met: 9.8 },
-  { id: 'running_8min_mi', label: 'Running (8 min/mile)', met: 11.8 },
-  { id: 'cycling_moderate', label: 'Cycling (moderate)', met: 6.8 }, // brief 4.4
-  { id: 'cycling_vigorous', label: 'Cycling (vigorous)', met: 10.0 },
-  { id: 'swimming', label: 'Swimming (moderate)', met: 6.0 }, // brief 4.4
-  { id: 'weightlifting', label: 'Weightlifting (general)', met: 5.0 }, // within brief's 3.5-6.0 range
-  { id: 'yoga', label: 'Yoga', met: 2.5 }, // brief 4.4
-  { id: 'hiit', label: 'HIIT', met: 8.0 }, // brief 4.4
-  { id: 'elliptical', label: 'Elliptical', met: 5.0 },
-  { id: 'basketball', label: 'Basketball', met: 6.5 },
-  { id: 'soccer', label: 'Soccer', met: 7.0 },
-  { id: 'rowing', label: 'Rowing (moderate)', met: 7.0 },
-  { id: 'stairs', label: 'Stair climbing', met: 8.8 },
-  { id: 'dancing', label: 'Dancing', met: 4.8 },
-  { id: 'custom', label: 'Other (enter calories manually)', met: null },
+  { id: 'walking_moderate', met: 3.5 }, // brief 4.4
+  { id: 'walking_brisk', met: 4.3 },
+  { id: 'running_8kmh', met: 8.0 }, // brief 4.4
+  { id: 'running_10min_mi', met: 9.8 },
+  { id: 'running_8min_mi', met: 11.8 },
+  { id: 'cycling_moderate', met: 6.8 }, // brief 4.4
+  { id: 'cycling_vigorous', met: 10.0 },
+  { id: 'swimming', met: 6.0 }, // brief 4.4
+  { id: 'weightlifting', met: 5.0 }, // within brief's 3.5-6.0 range
+  { id: 'yoga', met: 2.5 }, // brief 4.4
+  { id: 'hiit', met: 8.0 }, // brief 4.4
+  { id: 'elliptical', met: 5.0 },
+  { id: 'basketball', met: 6.5 },
+  { id: 'soccer', met: 7.0 },
+  { id: 'rowing', met: 7.0 },
+  { id: 'stairs', met: 8.8 },
+  { id: 'dancing', met: 4.8 },
+  { id: 'custom', met: null },
 ];
 
 /**
