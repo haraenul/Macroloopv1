@@ -19,123 +19,120 @@
 
   <!-- Auth -->
   <div id="screen-auth" class="screen">
-    <h1>MacroLoop</h1>
-    <p>Track what you eat, without the guesswork.</p>
+    <h1 data-i18n="app_name">MacroLoop</h1>
+    <p data-i18n="app_tagline">Track what you eat, without the guesswork.</p>
     <div class="card">
       <div class="field">
-        <label for="auth-email">Email</label>
+        <label for="auth-email" data-i18n="auth_email_label">Email</label>
         <input type="email" id="auth-email" autocomplete="email" />
       </div>
       <div class="field">
-        <label for="auth-password">Password</label>
+        <label for="auth-password" data-i18n="auth_password_label">Password</label>
         <input type="password" id="auth-password" autocomplete="current-password" />
       </div>
       <p class="error-text" id="auth-error" style="display:none;"></p>
-      <button class="btn-primary" id="auth-submit">Sign in</button>
-      <button class="btn-ghost" id="auth-toggle" style="width:100%; margin-top:8px;">Need an account? Create one</button>
-      <p style="font-size:12px; color:#8a8f9c; text-align:center; margin-top:16px;">
-        By continuing, you agree to our <a href="terms.html" style="color:#e8a94c;">Terms</a> and <a href="privacy.html" style="color:#e8a94c;">Privacy Policy</a>.
-      </p>
+      <button class="btn-primary" id="auth-submit" data-i18n="auth_signin_button">Sign in</button>
+      <button class="btn-ghost" id="auth-toggle" data-i18n="auth_toggle_to_signup" style="width:100%; margin-top:8px;">Need an account? Create one</button>
     </div>
   </div>
 
   <!-- Onboarding -->
   <div id="screen-onboarding" class="screen">
-    <h1>Let's set your target</h1>
-    <p>Takes under two minutes.</p>
+    <h1 data-i18n="onboarding_title">Let's set your target</h1>
+    <p data-i18n="onboarding_subtitle">Takes under two minutes.</p>
 
     <div id="onboarding-form">
       <div class="onboarding-step">
-        <div class="step-label">Units</div>
+        <div class="step-label" data-i18n="onboarding_step_units">Units</div>
         <div class="segmented" id="unit-toggle">
-          <button type="button" data-value="metric" class="selected">Metric</button>
-          <button type="button" data-value="imperial">Imperial</button>
+          <button type="button" data-value="metric" class="selected" data-i18n="unit_metric">Metric</button>
+          <button type="button" data-value="imperial" data-i18n="unit_imperial">Imperial</button>
         </div>
       </div>
 
       <div class="onboarding-step">
-        <div class="step-label">About you</div>
+        <div class="step-label" data-i18n="onboarding_step_about_you">About you</div>
         <div class="field">
-          <label>Sex</label>
+          <label data-i18n="label_sex">Sex</label>
           <div class="segmented" id="sex-toggle">
-            <button type="button" data-value="female" class="selected">Female</button>
-            <button type="button" data-value="male">Male</button>
+            <button type="button" data-value="female" class="selected" data-i18n="sex_female">Female</button>
+            <button type="button" data-value="male" data-i18n="sex_male">Male</button>
           </div>
         </div>
         <div class="field">
-          <label for="age-input">Age</label>
+          <label for="age-input" data-i18n="label_age">Age</label>
           <input type="number" id="age-input" min="13" max="100" placeholder="30" />
         </div>
         <div class="field" id="height-metric-field">
-          <label for="height-cm-input">Height (cm)</label>
+          <label for="height-cm-input" data-i18n="label_height_cm">Height (cm)</label>
           <input type="number" id="height-cm-input" placeholder="170" />
         </div>
         <div class="field" id="height-imperial-field" style="display:none;">
-          <label>Height (ft / in)</label>
+          <label data-i18n="label_height_ft_in">Height (ft / in)</label>
           <div style="display:flex; gap:10px;">
             <input type="number" id="height-ft-input" placeholder="5" style="flex:1;" />
             <input type="number" id="height-in-input" placeholder="7" style="flex:1;" />
           </div>
         </div>
         <div class="field" id="weight-metric-field">
-          <label for="weight-kg-input">Weight (kg)</label>
+          <label for="weight-kg-input" data-i18n="label_weight_kg">Weight (kg)</label>
           <input type="number" id="weight-kg-input" placeholder="70" />
         </div>
         <div class="field" id="weight-imperial-field" style="display:none;">
-          <label for="weight-lb-input">Weight (lb)</label>
+          <label for="weight-lb-input" data-i18n="label_weight_lb">Weight (lb)</label>
           <input type="number" id="weight-lb-input" placeholder="154" />
         </div>
       </div>
 
       <div class="onboarding-step">
-        <div class="step-label">Activity</div>
+        <div class="step-label" data-i18n="onboarding_step_activity">Activity</div>
         <div class="field">
-          <label for="activity-select">Typical activity level</label>
+          <label for="activity-select" data-i18n="label_activity_level">Typical activity level</label>
           <select id="activity-select">
-            <option value="sedentary">Sedentary — little to no exercise</option>
-            <option value="light">Light — exercise 1-3 days/week</option>
-            <option value="moderate" selected>Moderate — exercise 3-5 days/week</option>
-            <option value="active">Active — exercise 6-7 days/week</option>
-            <option value="very_active">Very active — physical job or 2x/day training</option>
+            <option value="sedentary" data-i18n="activity_sedentary">Sedentary — little to no exercise</option>
+            <option value="light" data-i18n="activity_light">Light — exercise 1-3 days/week</option>
+            <option value="moderate" selected data-i18n="activity_moderate">Moderate — exercise 3-5 days/week</option>
+            <option value="active" data-i18n="activity_active">Active — exercise 6-7 days/week</option>
+            <option value="very_active" data-i18n="activity_very_active">Very active — physical job or 2x/day training</option>
           </select>
         </div>
       </div>
 
       <div class="onboarding-step">
-        <div class="step-label">Goal</div>
+        <div class="step-label" data-i18n="onboarding_step_goal">Goal</div>
         <div class="field">
           <div class="segmented" id="goal-toggle">
-            <button type="button" data-value="lose">Lose</button>
-            <button type="button" data-value="maintain" class="selected">Maintain</button>
-            <button type="button" data-value="gain">Gain</button>
+            <button type="button" data-value="lose" data-i18n="goal_lose">Lose</button>
+            <button type="button" data-value="maintain" class="selected" data-i18n="goal_maintain">Maintain</button>
+            <button type="button" data-value="gain" data-i18n="goal_gain">Gain</button>
           </div>
         </div>
         <div class="field" id="rate-field" style="display:none;">
-          <label for="rate-input">Target rate (% bodyweight/week)</label>
+          <label for="rate-input" data-i18n="label_rate">Target rate (% bodyweight/week)</label>
           <input type="number" id="rate-input" step="0.1" value="0.75" min="0.1" max="2" />
         </div>
       </div>
 
       <p class="error-text" id="onboarding-error" style="display:none;"></p>
-      <button class="btn-primary" id="onboarding-calculate">Calculate my target</button>
+      <button class="btn-primary" id="onboarding-calculate" data-i18n="onboarding_calculate_button">Calculate my target</button>
     </div>
 
     <div id="onboarding-result" style="display:none;">
       <div class="card result-card">
         <div class="target-number numeric" id="result-target">0</div>
-        <div class="target-unit">kcal/day</div>
+        <div class="target-unit" data-i18n="unit_kcal_per_day">kcal/day</div>
         <p id="result-explanation"></p>
         <p class="error-text" id="result-warning" style="display:none;"></p>
       </div>
-      <button class="btn-primary" id="onboarding-confirm">Get started</button>
+      <button class="btn-primary" id="onboarding-confirm" data-i18n="onboarding_get_started_button">Get started</button>
     </div>
   </div>
 
   <!-- Today -->
   <div id="screen-today" class="screen">
     <div class="top-bar">
-      <div class="brand">MacroLoop</div>
-      <button class="btn-icon" id="sign-out-btn" title="Sign out" aria-label="Sign out">&#9211;</button>
+      <div class="brand" data-i18n="app_name">MacroLoop</div>
+      <button class="btn-icon" id="sign-out-btn" title="Sign out" aria-label="Sign out" data-i18n-aria-label="aria_sign_out" style="font-size:1.3rem;">&#8594;</button>
     </div>
 
     <div class="ring-wrap">
@@ -147,74 +144,70 @@
       </svg>
       <div class="ring-center">
         <div class="ring-number numeric" id="ring-remaining">0</div>
-        <div class="ring-label">kcal remaining</div>
+        <div class="ring-label" data-i18n="ring_label_remaining">kcal remaining</div>
       </div>
     </div>
     <p class="numeric" id="exercise-credit-note" style="display:none; text-align:center; font-size:0.8rem; margin-top:-12px;"></p>
 
     <div class="macro-row">
       <div class="macro-item macro-protein">
-        <div class="macro-label"><span>Protein</span><span class="numeric" id="protein-label">0/0g</span></div>
+        <div class="macro-label"><span data-i18n="macro_protein">Protein</span><span class="numeric" id="protein-label">0/0g</span></div>
         <div class="macro-bar-track"><div class="macro-bar-fill" id="protein-bar" style="width:0%;"></div></div>
       </div>
       <div class="macro-item macro-carb">
-        <div class="macro-label"><span>Carbs</span><span class="numeric" id="carb-label">0/0g</span></div>
+        <div class="macro-label"><span data-i18n="macro_carbs">Carbs</span><span class="numeric" id="carb-label">0/0g</span></div>
         <div class="macro-bar-track"><div class="macro-bar-fill" id="carb-bar" style="width:0%;"></div></div>
       </div>
       <div class="macro-item macro-fat">
-        <div class="macro-label"><span>Fat</span><span class="numeric" id="fat-label">0/0g</span></div>
+        <div class="macro-label"><span data-i18n="macro_fat">Fat</span><span class="numeric" id="fat-label">0/0g</span></div>
         <div class="macro-bar-track"><div class="macro-bar-fill" id="fat-bar" style="width:0%;"></div></div>
       </div>
     </div>
 
     <div class="quick-add-row">
-      <button id="open-search-btn">🔍 Search</button>
-      <button id="open-recent-btn">⭐ Recent</button>
-      <button id="open-photo-btn">📷 Photo</button>
+      <button id="open-search-btn" data-i18n="quick_add_search">🔍 Search</button>
+      <button id="open-recent-btn" data-i18n="quick_add_recent">⭐ Recent</button>
+      <button id="open-photo-btn" data-i18n="quick_add_photo">📷 Photo</button>
     </div>
     <input type="file" id="photo-file-input" accept="image/*" capture="environment" style="display:none;" />
 
-    <h3>Today's log</h3>
+    <h3 data-i18n="todays_log_heading">Today's log</h3>
     <div id="food-log-list"></div>
-
-    <p style="font-size:12px; color:#8a8f9c; text-align:center; margin:24px 0 8px;">
-      <a href="terms.html" style="color:#8a8f9c;">Terms</a> · <a href="privacy.html" style="color:#8a8f9c;">Privacy Policy</a>
-    </p>
   </div>
 
   <!-- Exercise -->
   <div id="screen-exercise" class="screen">
     <div class="top-bar">
-      <div class="brand">Exercise</div>
-      <button class="btn-icon" id="add-exercise-btn" aria-label="Log exercise">+</button>
+      <div class="brand" data-i18n="exercise_screen_title">Exercise</div>
+      <button class="btn-icon" id="add-exercise-btn" aria-label="Log exercise" data-i18n-aria-label="aria_log_exercise">+</button>
     </div>
 
     <div class="card" style="text-align:center;">
       <div class="target-number numeric" id="exercise-total-burned" style="font-size:2.2rem; color:var(--accent-protein);">0</div>
-      <div class="target-unit">kcal burned today</div>
+      <div class="target-unit" data-i18n="exercise_kcal_burned_today">kcal burned today</div>
     </div>
 
-    <h3>Today's exercise</h3>
+    <h3 data-i18n="todays_exercise_heading">Today's exercise</h3>
     <div id="exercise-log-list"></div>
   </div>
 
   <!-- Progress -->
   <div id="screen-progress" class="screen">
     <div class="top-bar">
-      <div class="brand">Progress</div>
+      <div class="brand" data-i18n="progress_screen_title">Progress</div>
     </div>
 
     <div class="card">
       <div class="top-bar" style="margin-bottom:12px;">
-        <h3 style="margin:0;">Weight</h3>
-        <button class="btn-icon" id="add-weight-btn" aria-label="Log weight">+</button>
+        <h3 style="margin:0;" data-i18n="weight_card_title">Weight</h3>
+        <button class="btn-icon" id="add-weight-btn" aria-label="Log weight" data-i18n-aria-label="aria_log_weight">+</button>
       </div>
       <svg id="weight-chart" width="100%" height="140" viewBox="0 0 320 140"></svg>
       <p class="numeric" id="weight-trend-summary" style="margin-top:10px; font-size:0.85rem;"></p>
     </div>
 
     <div class="card">
-      <h3 style="margin-bottom:12px;">Daily calories</h3>
+      <h3 style="margin-bottom:12px;" data-i18n="daily_calories_card_title">Daily calories</h3>
       <svg id="calorie-chart" width="100%" height="140" viewBox="0 0 320 140"></svg>
       <p class="numeric" id="calorie-trend-summary" style="margin-top:10px; font-size:0.85rem;"></p>
     </div>
@@ -224,22 +217,48 @@
 
   <!-- Bottom nav — shown once there's more than one real screen to switch between -->
   <nav class="bottom-nav" id="bottom-nav">
-    <button class="nav-item active" data-screen="today">Today</button>
-    <button class="nav-item" data-screen="exercise">Exercise</button>
-    <button class="nav-item" data-screen="progress">Progress</button>
+    <button class="nav-item active" data-screen="today" data-i18n="nav_today">Today</button>
+    <button class="nav-item" data-screen="exercise" data-i18n="nav_exercise">Exercise</button>
+    <button class="nav-item" data-screen="progress" data-i18n="nav_progress">Progress</button>
+    <button class="nav-item" data-screen="fixer" data-i18n="nav_fixer">Fixer</button>
+    <button class="nav-item" data-screen="flex" data-i18n="nav_flex">Flex</button>
   </nav>
+
+  <!-- Gap Fixer -->
+  <div id="screen-fixer" class="screen">
+    <div class="top-bar">
+      <div class="brand" data-i18n="fixer_screen_title">Gap Fixer</div>
+    </div>
+    <p data-i18n="fixer_subtitle">Realistic options that fit what's left of today's budget.</p>
+    <p class="numeric" id="fixer-remaining-summary" style="margin-bottom:16px;"></p>
+    <div id="fixer-combo-list"></div>
+    <button class="btn-secondary" id="fixer-refresh-btn" data-i18n="fixer_refresh_button" style="margin-top:8px;">Show me other options</button>
+  </div>
+
+  <!-- Weekly Flex Card -->
+  <div id="screen-flex" class="screen">
+    <div class="top-bar">
+      <div class="brand" data-i18n="flex_screen_title">Weekly Flex Card</div>
+      <button class="btn-icon" id="flex-refresh-btn" aria-label="Regenerate" data-i18n-aria-label="aria_regenerate">&#8635;</button>
+    </div>
+    <p data-i18n="flex_subtitle_current">This week's card generates automatically each Monday — or tap refresh anytime.</p>
+    <div class="card" style="padding:0; overflow:hidden;">
+      <canvas id="flex-canvas" width="384" height="440" style="width:100%; display:block;"></canvas>
+    </div>
+    <button class="btn-primary" id="flex-share-btn" data-i18n="flex_share_button" style="margin-top:16px;">Save image</button>
+  </div>
 
   <!-- Log Meal sheet -->
   <div class="sheet-backdrop" id="sheet-backdrop"></div>
   <div class="sheet" id="log-meal-sheet" style="display:none;">
     <div class="top-bar">
-      <h3 id="sheet-title" style="margin:0;">Add food</h3>
-      <button class="btn-icon" id="sheet-close" aria-label="Close">&times;</button>
+      <h3 id="sheet-title" style="margin:0;" data-i18n="sheet_title_add_food">Add food</h3>
+      <button class="btn-icon" id="sheet-close" aria-label="Close" data-i18n-aria-label="aria_close">&times;</button>
     </div>
 
     <div id="sheet-search-view">
       <div class="field">
-        <input type="text" id="search-input" placeholder="Search foods (e.g. chicken breast)" />
+        <input type="text" id="search-input" data-i18n-placeholder="search_placeholder" placeholder="Search foods (e.g. chicken breast)" />
       </div>
       <div id="search-results"></div>
     </div>
@@ -248,72 +267,73 @@
       <h3 id="detail-name"></h3>
       <p class="numeric" id="detail-per-100g"></p>
       <div class="quantity-stepper">
-        <button class="btn-icon" id="qty-minus" aria-label="Decrease">&minus;</button>
+        <button class="btn-icon" id="qty-minus" aria-label="Decrease" data-i18n-aria-label="aria_decrease">&minus;</button>
         <input type="number" id="qty-grams" value="100" />
-        <button class="btn-icon" id="qty-plus" aria-label="Increase">+</button>
+        <button class="btn-icon" id="qty-plus" aria-label="Increase" data-i18n-aria-label="aria_increase">+</button>
       </div>
       <p style="text-align:center;" class="numeric" id="detail-scaled"></p>
-      <button class="btn-primary" id="confirm-log-btn">Log it</button>
-      <button class="btn-ghost" id="back-to-search" style="width:100%;">&larr; Back to search</button>
+      <button class="btn-primary" id="confirm-log-btn" data-i18n="label_log_it">Log it</button>
+      <button class="btn-ghost" id="back-to-search" style="width:100%;" data-i18n="back_to_search">&larr; Back to search</button>
     </div>
   </div>
 
   <!-- Log Exercise sheet -->
   <div class="sheet" id="log-exercise-sheet" style="display:none;">
     <div class="top-bar">
-      <h3 style="margin:0;">Log exercise</h3>
-      <button class="btn-icon" id="exercise-sheet-close" aria-label="Close">&times;</button>
+      <h3 style="margin:0;" data-i18n="log_exercise_title">Log exercise</h3>
+      <button class="btn-icon" id="exercise-sheet-close" aria-label="Close" data-i18n-aria-label="aria_close">&times;</button>
     </div>
 
     <div class="field">
-      <label for="exercise-activity-select">Activity</label>
+      <label for="exercise-activity-select" data-i18n="label_activity">Activity</label>
       <select id="exercise-activity-select"></select>
     </div>
     <div class="field">
-      <label for="exercise-duration-input">Duration (minutes)</label>
+      <label for="exercise-duration-input" data-i18n="label_duration_minutes">Duration (minutes)</label>
       <input type="number" id="exercise-duration-input" value="30" min="1" />
     </div>
     <div class="field" id="exercise-custom-calories-field" style="display:none;">
-      <label for="exercise-custom-calories-input">Calories burned</label>
-      <input type="number" id="exercise-custom-calories-input" min="1" placeholder="e.g. 300" />
+      <label for="exercise-custom-calories-input" data-i18n="label_calories_burned">Calories burned</label>
+      <input type="number" id="exercise-custom-calories-input" min="1" data-i18n-placeholder="placeholder_calories_example" placeholder="e.g. 300" />
     </div>
     <p style="text-align:center;" class="numeric" id="exercise-preview">0 kcal</p>
-    <button class="btn-primary" id="confirm-exercise-btn">Log it</button>
+    <button class="btn-primary" id="confirm-exercise-btn" data-i18n="label_log_it">Log it</button>
   </div>
 
   <!-- Log Weight sheet -->
   <div class="sheet" id="log-weight-sheet" style="display:none;">
     <div class="top-bar">
-      <h3 style="margin:0;">Log weight</h3>
-      <button class="btn-icon" id="weight-sheet-close" aria-label="Close">&times;</button>
+      <h3 style="margin:0;" data-i18n="log_weight_title">Log weight</h3>
+      <button class="btn-icon" id="weight-sheet-close" aria-label="Close" data-i18n-aria-label="aria_close">&times;</button>
     </div>
     <div class="field">
-      <label for="weight-log-input" id="weight-log-label">Weight (kg)</label>
+      <label for="weight-log-input" id="weight-log-label" data-i18n="label_weight_kg">Weight (kg)</label>
       <input type="number" id="weight-log-input" step="0.1" />
     </div>
-    <button class="btn-primary" id="confirm-weight-btn">Save</button>
+    <button class="btn-primary" id="confirm-weight-btn" data-i18n="save_button">Save</button>
   </div>
 
   <!-- Photo review sheet — an editable draft, brief 4.3: never auto-commit a photo estimate -->
   <div class="sheet" id="photo-review-sheet" style="display:none;">
     <div class="top-bar">
-      <h3 style="margin:0;">Review your meal</h3>
-      <button class="btn-icon" id="photo-sheet-close" aria-label="Close">&times;</button>
+      <h3 style="margin:0;" data-i18n="photo_review_title">Review your meal</h3>
+      <button class="btn-icon" id="photo-sheet-close" aria-label="Close" data-i18n-aria-label="aria_close">&times;</button>
     </div>
-    <p style="font-size:0.8rem; margin-bottom:16px;">Estimated from your photo — check the numbers, especially anything flagged low confidence, before logging.</p>
+    <p style="font-size:0.8rem; margin-bottom:12px;" data-i18n="photo_review_subtitle">Estimated from your photo — check the numbers, especially anything flagged low confidence, before logging.</p>
+    <p id="photo-attention-banner" class="error-text" style="display:none; margin-bottom:12px;"></p>
     <div id="photo-review-items"></div>
     <div class="card" style="text-align:center;">
       <div class="numeric" id="photo-review-total" style="font-size:1.6rem; font-weight:600; color:var(--accent-energy);">0 kcal</div>
       <div class="target-unit" id="photo-review-total-macros">0p / 0c / 0f</div>
     </div>
-    <button class="btn-primary" id="confirm-photo-log-btn">Log this meal</button>
+    <button class="btn-primary" id="confirm-photo-log-btn" data-i18n="photo_log_meal_button">Log this meal</button>
   </div>
 
   <!-- Photo analyzing overlay -->
   <div class="sheet-backdrop" id="photo-loading-backdrop" style="display:none;">
     <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center;">
       <div class="spinner" style="width:32px; height:32px; margin-bottom:12px;"></div>
-      <p style="color:var(--text-primary);">Analyzing your photo&hellip;</p>
+      <p style="color:var(--text-primary);" data-i18n="photo_analyzing">Analyzing your photo&hellip;</p>
     </div>
   </div>
 
@@ -325,15 +345,15 @@
     onAuthChange, signUp, signIn, signOutUser,
     getProfile, saveProfile,
     saveWeightEntry, getLatestWeight, getWeightRange,
-    getFoodLogForDate, deleteFoodLogEntry,
+    getFoodLogForDate, getFoodLogRange, deleteFoodLogEntry,
     getExerciseLogForDate, deleteExerciseLogEntry,
     getAlgorithmState, saveAlgorithmState, recordAlgorithmHistory, getAlgorithmHistory,
   } from './js/firebase.js';
   import {
-    getState, setState, patchState, subscribe, todayLocalDate, daysAgoLocalDate, daysBetween,
+    getState, setState, patchState, subscribe, todayLocalDate, daysAgoLocalDate, daysBetween, formatLocalDate,
   } from './js/state.js';
   import {
-    calculateBMR, calculateTDEE, calculateTarget, explainTarget,
+    calculateBMR, calculateTDEE, calculateTarget,
     calculateMacroTargets, lbToKg, ftInToCm, kgToLb,
     updateAdaptiveTDEE, ADAPTIVE_WINDOW_DAYS,
   } from './js/algorithm.js';
@@ -342,11 +362,21 @@
   } from './js/food-log.js';
   import { ACTIVITIES, calculateCaloriesBurned, logExercise } from './js/exercise-log.js';
   import { renderLineChart } from './js/charts.js';
-  import { compressImageToBase64, analyzeMealPhoto, logPhotoItems, PhotoLimitError } from './js/photo-log.js';
+  import {
+    compressImageToBase64, analyzeMealPhoto, logPhotoItems, needsCloserLook,
+    PhotoLimitError, PhotoNetworkError, PhotoValidationError,
+  } from './js/photo-log.js';
+  import { pickGapFixerCombos } from './js/gap-fixer.js';
+  import {
+    getMostRecentCompletedWeekStart, computeFlexCardStats, computeStreak, drawFlexCard, exportCanvasAsPng,
+  } from './js/flex-card.js';
+  import { t, applyStrings } from './js/strings.js';
+
+  applyStrings();
 
   // ---- Screen management ----
 
-  const NAV_SCREENS = ['screen-today', 'screen-exercise', 'screen-progress'];
+  const NAV_SCREENS = ['screen-today', 'screen-exercise', 'screen-progress', 'screen-fixer', 'screen-flex'];
 
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach((el) => el.classList.remove('active'));
@@ -379,18 +409,18 @@
   let authMode = 'signin';
   document.getElementById('auth-toggle').addEventListener('click', () => {
     authMode = authMode === 'signin' ? 'signup' : 'signin';
-    document.getElementById('auth-submit').textContent = authMode === 'signin' ? 'Sign in' : 'Create account';
+    document.getElementById('auth-submit').textContent = t(authMode === 'signin' ? 'auth_signin_button' : 'auth_signup_button');
     document.getElementById('auth-toggle').textContent =
-      authMode === 'signin' ? 'Need an account? Create one' : 'Already have an account? Sign in';
+      t(authMode === 'signin' ? 'auth_toggle_to_signup' : 'auth_toggle_to_signin');
   });
 
-  function friendlyAuthError(err) {
+  function friendlyAuthErrorKey(err) {
     const code = err.code || '';
-    if (code.includes('wrong-password') || code.includes('invalid-credential')) return 'Incorrect email or password.';
-    if (code.includes('email-already-in-use')) return 'That email already has an account — try signing in instead.';
-    if (code.includes('weak-password')) return 'Password should be at least 6 characters.';
-    if (code.includes('invalid-email')) return 'That email address looks invalid.';
-    return 'Something went wrong. Please try again.';
+    if (code.includes('wrong-password') || code.includes('invalid-credential')) return 'auth_error_wrong_password';
+    if (code.includes('email-already-in-use')) return 'auth_error_email_in_use';
+    if (code.includes('weak-password')) return 'auth_error_weak_password';
+    if (code.includes('invalid-email')) return 'auth_error_invalid_email';
+    return 'auth_error_generic';
   }
 
   async function submitAuth() {
@@ -402,7 +432,7 @@
       if (authMode === 'signin') await signIn(email, password);
       else await signUp(email, password);
     } catch (err) {
-      errorEl.textContent = friendlyAuthError(err);
+      errorEl.textContent = t(friendlyAuthErrorKey(err));
       errorEl.style.display = 'block';
     }
   }
@@ -469,7 +499,7 @@
     const input = readOnboardingInputs();
 
     if (!input.age || input.age < 13 || input.age > 100 || !input.heightCm || !input.weightKg) {
-      errorEl.textContent = 'Please fill in your age, height, and weight.';
+      errorEl.textContent = t('onboarding_error_missing_fields');
       errorEl.style.display = 'block';
       return;
     }
@@ -479,7 +509,12 @@
     const { target, warning } = calculateTarget({
       tdee, goal: input.goal, weightKg: input.weightKg, sex: input.sex, ratePercent: input.ratePercent,
     });
-    const explanation = explainTarget({ bmr, tdee, target, goal: input.goal });
+    const explanation = input.goal === 'maintain'
+      ? t('explain_target_maintain', { tdee: Math.round(tdee) })
+      : t('explain_target_goal', {
+          tdee: Math.round(tdee), bmr: Math.round(bmr), target,
+          direction: t(input.goal === 'lose' ? 'direction_below' : 'direction_above'),
+        });
 
     lastComputed = { input, bmr, tdee, target, warning };
 
@@ -487,7 +522,7 @@
     document.getElementById('result-explanation').textContent = explanation;
     const warningEl = document.getElementById('result-warning');
     if (warning) {
-      warningEl.textContent = warning;
+      warningEl.textContent = t(warning === 'floor_clamped' ? 'warning_floor_clamped' : 'warning_rate_aggressive');
       warningEl.style.display = 'block';
     } else {
       warningEl.style.display = 'none';
@@ -630,7 +665,7 @@
 
     const creditNote = document.getElementById('exercise-credit-note');
     if (today.exerciseBurned > 0) {
-      creditNote.textContent = `Budget includes +${today.exerciseBurned} kcal from exercise`;
+      creditNote.textContent = t('exercise_credit_note', { amount: today.exerciseBurned });
       creditNote.style.display = 'block';
     } else {
       creditNote.style.display = 'none';
@@ -657,7 +692,7 @@
     const container = document.getElementById('food-log-list');
     const entries = Object.entries(entriesMap || {});
     if (entries.length === 0) {
-      container.innerHTML = '<div class="empty-state">Nothing logged yet today. Tap Search to add your first meal.</div>';
+      container.innerHTML = `<div class="empty-state">${t('empty_food_log')}</div>`;
       return;
     }
     container.innerHTML = entries
@@ -665,11 +700,11 @@
         <div class="log-entry">
           <div>
             <div class="entry-name">${escapeHtml(e.name)}</div>
-            <div class="entry-meta">${e.source === 'photo' ? (e.estimated_portion || 'From photo') : `${e.grams}g`}</div>
+            <div class="entry-meta">${e.grams}g</div>
           </div>
           <div style="display:flex; align-items:center; gap:8px;">
             <div class="entry-cal">${e.calories} kcal</div>
-            <button class="entry-delete" data-id="${id}" aria-label="Delete entry">&times;</button>
+            <button class="entry-delete" data-id="${id}" aria-label="${t('aria_delete_entry')}">&times;</button>
           </div>
         </div>
       `)
@@ -718,10 +753,10 @@
     document.getElementById('search-input').value = '';
 
     if (mode === 'recent') {
-      document.getElementById('sheet-title').textContent = 'Recent foods';
+      document.getElementById('sheet-title').textContent = t('sheet_title_recent_foods');
       loadRecent();
     } else {
-      document.getElementById('sheet-title').textContent = 'Search foods';
+      document.getElementById('sheet-title').textContent = t('sheet_title_search_foods');
       document.getElementById('search-input').focus();
     }
   }
@@ -740,7 +775,7 @@
     results.innerHTML = '<div class="spinner"></div>';
     const frequent = await getFrequentFoodsSorted(user.uid);
     if (frequent.length === 0) {
-      results.innerHTML = '<div class="empty-state">No frequent foods yet — search once and it will show up here.</div>';
+      results.innerHTML = `<div class="empty-state">${t('empty_frequent_foods')}</div>`;
       return;
     }
     renderResults(frequent.slice(0, 20).map((f) => ({
@@ -762,12 +797,12 @@
     try {
       const items = await searchFoods(text.trim());
       if (items.length === 0) {
-        results.innerHTML = '<div class="empty-state">No matches. Try a simpler search term.</div>';
+        results.innerHTML = `<div class="empty-state">${t('empty_search_results')}</div>`;
       } else {
         renderResults(items);
       }
     } catch (err) {
-      results.innerHTML = '<div class="empty-state">Search failed — check your connection and try again.</div>';
+      results.innerHTML = `<div class="empty-state">${t('search_failed')}</div>`;
     }
   }, 600);
   document.getElementById('search-input').addEventListener('input', (e) => debouncedSearch(e.target.value));
@@ -811,8 +846,9 @@
     document.getElementById('sheet-search-view').style.display = 'none';
     document.getElementById('sheet-detail-view').style.display = 'block';
     document.getElementById('detail-name').textContent = item.name;
-    document.getElementById('detail-per-100g').textContent =
-      `${Math.round(item.caloriesPer100g)} kcal · ${item.proteinPer100g}p / ${item.carbsPer100g}c / ${item.fatPer100g}f per 100g`;
+    document.getElementById('detail-per-100g').textContent = t('per_100g_summary', {
+      calories: Math.round(item.caloriesPer100g), protein: item.proteinPer100g, carbs: item.carbsPer100g, fat: item.fatPer100g,
+    });
     document.getElementById('qty-grams').value = item.defaultGrams || 100;
     updateScaledPreview();
   }
@@ -820,8 +856,9 @@
   function updateScaledPreview() {
     const grams = Number(document.getElementById('qty-grams').value) || 0;
     const scaled = scaleToGrams(selectedFoodItem, grams);
-    document.getElementById('detail-scaled').textContent =
-      `${scaled.calories} kcal · ${scaled.protein_g}p / ${scaled.carbs_g}c / ${scaled.fat_g}f`;
+    document.getElementById('detail-scaled').textContent = t('scaled_summary', {
+      calories: scaled.calories, protein: scaled.protein_g, carbs: scaled.carbs_g, fat: scaled.fat_g,
+    });
   }
   document.getElementById('qty-grams').addEventListener('input', updateScaledPreview);
   document.getElementById('qty-minus').addEventListener('click', () => {
@@ -846,9 +883,9 @@
    * cases (a big meal out, a long endurance session) do exist and
    * shouldn't be refused outright.
    */
-  function confirmLargeEntry(calories, description) {
+  function confirmLargeEntry(calories, descriptionKey) {
     if (calories <= LARGE_ENTRY_KCAL_THRESHOLD) return true;
-    return window.confirm(`That's ${Math.round(calories)} kcal ${description} — unusually high for one entry. Log it anyway?`);
+    return window.confirm(t('confirm_large_entry', { calories: Math.round(calories), description: t(descriptionKey) }));
   }
 
   document.getElementById('confirm-log-btn').addEventListener('click', async () => {
@@ -856,17 +893,17 @@
     const grams = Number(document.getElementById('qty-grams').value);
     if (!selectedFoodItem || !grams || grams <= 0) return;
     const scaled = scaleToGrams(selectedFoodItem, grams);
-    if (!confirmLargeEntry(scaled.calories, 'in this entry')) return;
+    if (!confirmLargeEntry(scaled.calories, 'large_entry_in_this_entry')) return;
     await logFood(user.uid, todayLocalDate(), selectedFoodItem, grams);
     closeActiveSheet();
-    showToast(`Logged ${selectedFoodItem.name}`);
+    showToast(t('toast_logged_item', { name: selectedFoodItem.name }));
     await loadAndRenderToday();
   });
 
   // ---- Exercise ----
 
   document.getElementById('exercise-activity-select').innerHTML = ACTIVITIES.map(
-    (a) => `<option value="${a.id}">${escapeHtml(a.label)}</option>`
+    (a) => `<option value="${a.id}">${escapeHtml(t(`activity_${a.id}`))}</option>`
   ).join('');
 
   function currentActivity() {
@@ -905,20 +942,21 @@
   document.getElementById('confirm-exercise-btn').addEventListener('click', async () => {
     const user = getState('user');
     const activity = currentActivity();
+    const activityLabel = t(`activity_${activity.id}`);
     const duration = Number(document.getElementById('exercise-duration-input').value) || 0;
     const caloriesBurned = computePreviewCalories();
     if (!caloriesBurned || caloriesBurned <= 0) {
-      showToast('Enter a duration (or calories, for a custom activity) first.');
+      showToast(t('toast_exercise_missing_input'));
       return;
     }
-    if (!confirmLargeEntry(caloriesBurned, 'burned')) return;
+    if (!confirmLargeEntry(caloriesBurned, 'large_entry_burned')) return;
     await logExercise(user.uid, todayLocalDate(), {
-      activityLabel: activity.label,
+      activityLabel,
       durationMin: duration,
       caloriesBurned,
     });
     closeActiveSheet();
-    showToast(`Logged ${activity.label}`);
+    showToast(t('toast_logged_exercise', { activity: activityLabel }));
     await loadAndRenderExercise();
     await loadAndRenderToday();
   });
@@ -936,7 +974,7 @@
 
     const container = document.getElementById('exercise-log-list');
     if (entries.length === 0) {
-      container.innerHTML = '<div class="empty-state">No exercise logged yet today.</div>';
+      container.innerHTML = `<div class="empty-state">${t('empty_exercise_log')}</div>`;
       return;
     }
     container.innerHTML = entries
@@ -948,7 +986,7 @@
           </div>
           <div style="display:flex; align-items:center; gap:8px;">
             <div class="entry-cal">${e.calories_burned} kcal</div>
-            <button class="entry-delete" data-id="${id}" aria-label="Delete entry">&times;</button>
+            <button class="entry-delete" data-id="${id}" aria-label="${t('aria_delete_entry')}">&times;</button>
           </div>
         </div>
       `)
@@ -993,18 +1031,18 @@
   }
 
   function summarizeWeightTrend(series, unitPref) {
-    if (series.length < 2) return 'Log a few more check-ins to see a trend.';
+    if (series.length < 2) return t('weight_trend_needs_more_data');
     const diffKg = series[series.length - 1].y - series[0].y;
-    const display = unitPref === 'imperial' ? `${kgToLb(diffKg).toFixed(1)} lb` : `${diffKg.toFixed(1)} kg`;
-    return `${diffKg > 0 ? '+' : ''}${display} over ${series.length} check-ins`;
+    const value = unitPref === 'imperial' ? `${kgToLb(diffKg).toFixed(1)} lb` : `${diffKg.toFixed(1)} kg`;
+    return t('weight_trend_summary', { sign: diffKg > 0 ? '+' : '', value, count: series.length });
   }
 
   function summarizeCalorieTrend(series, target) {
     const loggedDays = series.filter((p) => p.y > 0);
-    if (loggedDays.length === 0) return 'No logs yet in this window.';
+    if (loggedDays.length === 0) return t('calorie_trend_no_logs');
     const avg = Math.round(loggedDays.reduce((s, p) => s + p.y, 0) / loggedDays.length);
     const diff = avg - target;
-    return `Averaging ${avg} kcal/day (${diff > 0 ? '+' : ''}${diff} vs target) over ${loggedDays.length} logged days`;
+    return t('calorie_trend_summary', { avg, sign: diff > 0 ? '+' : '', diff, count: loggedDays.length });
   }
 
   /**
@@ -1026,8 +1064,8 @@
 
     if (!algoState || algoState.mode !== 'personalized' || historyEntries.length < 2) {
       panel.innerHTML = `
-        <h3 style="margin-bottom:8px;">Personalization</h3>
-        <p style="margin-bottom:0;">Still in <strong>Learning Mode</strong>, using the standard formula. Personalizes automatically once you've logged food most days for about two weeks.</p>
+        <h3 style="margin-bottom:8px;">${t('algorithm_panel_title_learning')}</h3>
+        <p style="margin-bottom:0;">${t('algorithm_panel_learning_body')}</p>
       `;
       return;
     }
@@ -1048,24 +1086,18 @@
 
     const tdeeUp = latestEntry.tdee_estimate > startEntry.tdee_estimate;
     const tdeeDown = latestEntry.tdee_estimate < startEntry.tdee_estimate;
-    let explanation;
-    if (profile.goal === 'lose') {
-      explanation = tdeeUp ? 'your actual weight loss was faster than expected at that intake'
-        : tdeeDown ? 'your actual weight loss was slower than expected at that intake'
-        : 'your actual weight loss matched what the standard formula predicted';
-    } else if (profile.goal === 'gain') {
-      explanation = tdeeUp ? 'your actual weight gain was slower than expected at that intake'
-        : tdeeDown ? 'your actual weight gain was faster than expected at that intake'
-        : 'your actual weight gain matched what the standard formula predicted';
-    } else {
-      explanation = tdeeUp ? 'your metabolism is running a bit higher than the standard formula assumed'
-        : tdeeDown ? 'your metabolism is running a bit lower than the standard formula assumed'
-        : 'your metabolism matched what the standard formula predicted';
-    }
+    const directionSuffix = tdeeUp ? 'faster' : tdeeDown ? 'slower' : 'same';
+    const explanationKey = `algo_explain_${profile.goal}_${
+      profile.goal === 'lose' ? directionSuffix
+      : profile.goal === 'gain' ? directionSuffix
+      : (tdeeUp ? 'higher' : tdeeDown ? 'lower' : 'same')
+    }`;
 
     panel.innerHTML = `
-      <h3 style="margin-bottom:8px;">Personalization — <span style="color:var(--success);">Personalized Mode</span></h3>
-      <p style="margin-bottom:0;">Started at ${startTarget} kcal. After ${days} days of your data, adjusted to ${nowTarget} kcal — ${explanation}.</p>
+      <h3 style="margin-bottom:8px;">${t('algorithm_panel_title_personalized')}</h3>
+      <p style="margin-bottom:0;">${t('algorithm_panel_personalized_body', {
+        startTarget, days, nowTarget, explanation: t(explanationKey),
+      })}</p>
     `;
   }
 
@@ -1074,7 +1106,7 @@
   document.getElementById('add-weight-btn').addEventListener('click', () => {
     openActiveSheet('log-weight-sheet');
     const unitPref = getState('profile').unit_pref;
-    document.getElementById('weight-log-label').textContent = unitPref === 'imperial' ? 'Weight (lb)' : 'Weight (kg)';
+    document.getElementById('weight-log-label').textContent = t(unitPref === 'imperial' ? 'label_weight_lb' : 'label_weight_kg');
     document.getElementById('weight-log-input').value = '';
   });
   document.getElementById('weight-sheet-close').addEventListener('click', closeActiveSheet);
@@ -1083,14 +1115,14 @@
     const user = getState('user');
     const raw = Number(document.getElementById('weight-log-input').value);
     if (!raw || raw <= 0) {
-      showToast('Enter a weight first.');
+      showToast(t('toast_weight_missing'));
       return;
     }
     const unitPref = getState('profile').unit_pref;
     const weightKg = unitPref === 'imperial' ? lbToKg(raw) : raw;
     await saveWeightEntry(user.uid, todayLocalDate(), weightKg);
     closeActiveSheet();
-    showToast('Weight logged');
+    showToast(t('toast_weight_logged'));
     // Target depends on current weight, so Today needs to recompute too —
     // not just the Progress chart.
     await loadAndRenderToday();
@@ -1117,21 +1149,27 @@
       const [imageBase64, idToken] = await Promise.all([compressImageToBase64(file), user.getIdToken()]);
       const result = await analyzeMealPhoto(imageBase64, idToken);
 
-      if (result.items.length === 0) {
-        showToast('Could not identify any food in that photo — try a clearer shot, or search manually.');
-        return;
-      }
       photoReviewItems = result.items;
       renderPhotoReview();
       openActiveSheet('photo-review-sheet');
     } catch (err) {
+      // Three distinct, deliberately different messages — a network
+      // failure, a validation failure, and a quota limit each point the
+      // user at a different next step, and "check your connection" is
+      // actively wrong advice for the last two.
       if (err instanceof PhotoLimitError) {
-  showToast(`You've used your ${err.limit} free photo scans this month. Manual search still works anytime.`);
-} else if (err.message === 'too_frequent') {
-  showToast('Give it a few seconds between scans.');
-} else {
+        showToast(t('toast_photo_limit_reached', { limit: err.limit }));
+      } else if (err instanceof PhotoValidationError) {
+        showToast(
+          err.reason === 'no_items_recognized'
+            ? t('toast_photo_no_items_recognized')
+            : t('toast_photo_validation_failed')
+        );
+      } else if (err instanceof PhotoNetworkError) {
+        showToast(t('toast_photo_network_failed'));
+      } else {
         console.error(err);
-        showToast('Photo analysis failed — check your connection and try again.');
+        showToast(t('toast_photo_unknown_failed'));
       }
     } finally {
       backdrop.style.display = 'none';
@@ -1140,9 +1178,17 @@
 
   function renderPhotoReview() {
     const container = document.getElementById('photo-review-items');
+    const banner = document.getElementById('photo-attention-banner');
+
+    if (needsCloserLook(photoReviewItems)) {
+      banner.textContent = t('photo_needs_attention_banner');
+      banner.style.display = 'block';
+    } else {
+      banner.style.display = 'none';
+    }
 
     if (photoReviewItems.length === 0) {
-      container.innerHTML = '<div class="empty-state">All items removed. Close and retake the photo, or log manually instead.</div>';
+      container.innerHTML = `<div class="empty-state">${t('photo_all_removed')}</div>`;
       updatePhotoReviewTotal();
       return;
     }
@@ -1150,20 +1196,24 @@
     container.innerHTML = photoReviewItems
       .map(
         (item, i) => `
-        <div class="card photo-item">
+        <div class="card photo-item ${item.identified ? '' : 'photo-item-unidentified'}">
           <div class="photo-item-header">
             <input type="text" class="photo-item-name" data-index="${i}" value="${escapeHtml(item.name)}" />
-            <button class="btn-ghost photo-item-remove" data-index="${i}">Remove</button>
+            <button class="btn-ghost photo-item-remove" data-index="${i}">${t('photo_remove_item')}</button>
           </div>
-          <div class="photo-item-meta-row">
-            <span class="entry-meta">${escapeHtml(item.estimated_portion || '')}</span>
-            <span class="confidence-badge confidence-${item.confidence}">${item.confidence} confidence</span>
-          </div>
+          ${
+            item.identified
+              ? `<div class="photo-item-meta-row">
+                  <span class="entry-meta">${escapeHtml(item.estimated_portion || '')}</span>
+                  <span class="confidence-badge confidence-${item.confidence}">${t(`confidence_${item.confidence}`)}</span>
+                </div>`
+              : `<p class="photo-item-unidentified-note">${t('photo_unidentified_note')}</p>`
+          }
           <div class="photo-item-macro-grid">
-            <label>kcal<input type="number" class="photo-item-field" data-index="${i}" data-field="calories" value="${item.calories}" /></label>
-            <label>protein<input type="number" class="photo-item-field" data-index="${i}" data-field="protein_g" value="${item.protein_g}" /></label>
-            <label>carbs<input type="number" class="photo-item-field" data-index="${i}" data-field="carbs_g" value="${item.carbs_g}" /></label>
-            <label>fat<input type="number" class="photo-item-field" data-index="${i}" data-field="fat_g" value="${item.fat_g}" /></label>
+            <label>${t('photo_field_calories')}<input type="number" class="photo-item-field" data-index="${i}" data-field="calories" value="${item.calories ?? ''}" placeholder="?" /></label>
+            <label>${t('photo_field_protein')}<input type="number" class="photo-item-field" data-index="${i}" data-field="protein_g" value="${item.protein_g ?? ''}" placeholder="?" /></label>
+            <label>${t('photo_field_carbs')}<input type="number" class="photo-item-field" data-index="${i}" data-field="carbs_g" value="${item.carbs_g ?? ''}" placeholder="?" /></label>
+            <label>${t('photo_field_fat')}<input type="number" class="photo-item-field" data-index="${i}" data-field="fat_g" value="${item.fat_g ?? ''}" placeholder="?" /></label>
           </div>
         </div>
       `
@@ -1177,7 +1227,14 @@
     });
     container.querySelectorAll('.photo-item-field').forEach((input) => {
       input.addEventListener('input', (e) => {
-        photoReviewItems[Number(e.target.dataset.index)][e.target.dataset.field] = Number(e.target.value) || 0;
+        const i = Number(e.target.dataset.index);
+        const val = e.target.value === '' ? null : Number(e.target.value) || 0;
+        photoReviewItems[i][e.target.dataset.field] = val;
+        // Filling in every field for a previously-unidentified item makes
+        // it a normal one — it should count toward the total from then on.
+        if (val !== null && ['calories', 'protein_g', 'carbs_g', 'fat_g'].every((f) => photoReviewItems[i][f] !== null)) {
+          photoReviewItems[i].identified = true;
+        }
         updatePhotoReviewTotal();
       });
     });
@@ -1194,10 +1251,10 @@
   function updatePhotoReviewTotal() {
     const totals = photoReviewItems.reduce(
       (acc, item) => ({
-        calories: acc.calories + item.calories,
-        protein_g: acc.protein_g + item.protein_g,
-        carbs_g: acc.carbs_g + item.carbs_g,
-        fat_g: acc.fat_g + item.fat_g,
+        calories: acc.calories + (item.calories || 0),
+        protein_g: acc.protein_g + (item.protein_g || 0),
+        carbs_g: acc.carbs_g + (item.carbs_g || 0),
+        fat_g: acc.fat_g + (item.fat_g || 0),
       }),
       { calories: 0, protein_g: 0, carbs_g: 0, fat_g: 0 }
     );
@@ -1210,17 +1267,142 @@
 
   document.getElementById('confirm-photo-log-btn').addEventListener('click', async () => {
     if (photoReviewItems.length === 0) {
-      showToast('Nothing to log — remove all items or retake the photo.');
+      showToast(t('photo_nothing_to_log'));
       return;
     }
-    const totalCalories = photoReviewItems.reduce((s, item) => s + item.calories, 0);
-    if (!confirmLargeEntry(totalCalories, 'in this meal')) return;
+    const loggable = photoReviewItems.filter((item) => item.identified);
+    if (loggable.length === 0) {
+      showToast(t('photo_nothing_to_log'));
+      return;
+    }
+    const totalCalories = loggable.reduce((s, item) => s + (item.calories || 0), 0);
+    if (!confirmLargeEntry(totalCalories, 'large_entry_in_this_meal')) return;
 
     const user = getState('user');
-    await logPhotoItems(user.uid, todayLocalDate(), photoReviewItems);
+    await logPhotoItems(user.uid, todayLocalDate(), loggable);
     closeActiveSheet();
-    showToast(`Logged ${photoReviewItems.length} item${photoReviewItems.length > 1 ? 's' : ''}`);
+    showToast(t('toast_logged_photo_items', { count: loggable.length, plural: loggable.length > 1 ? 's' : '' }));
     await loadAndRenderToday();
+  });
+
+  // ---- Gap Fixer (brief 4.6) ----
+
+  async function loadAndRenderFixer() {
+    const today = getState('today');
+    const entries = Object.values(today.foodEntries || {});
+    const consumed = entries.reduce((s, e) => s + (e.calories || 0), 0);
+    const proteinC = entries.reduce((s, e) => s + (e.protein_g || 0), 0);
+    const carbC = entries.reduce((s, e) => s + (e.carbs_g || 0), 0);
+    const fatC = entries.reduce((s, e) => s + (e.fat_g || 0), 0);
+
+    const remainingCalories = today.target + (today.exerciseBurned || 0) - consumed;
+    const summaryEl = document.getElementById('fixer-remaining-summary');
+    const listEl = document.getElementById('fixer-combo-list');
+
+    if (remainingCalories <= 0) {
+      summaryEl.textContent = t('fixer_no_budget_left');
+      listEl.innerHTML = '';
+      return;
+    }
+
+    const { combos, priorityMacro } = pickGapFixerCombos({
+      remainingCalories,
+      remainingProtein: today.macros.proteinG - proteinC,
+      remainingCarbs: today.macros.carbG - carbC,
+      remainingFat: today.macros.fatG - fatC,
+      targetProtein: today.macros.proteinG,
+      targetCarbs: today.macros.carbG,
+      targetFat: today.macros.fatG,
+    });
+
+    const macroLabels = { protein_g: t('macro_protein'), carbs_g: t('macro_carbs'), fat_g: t('macro_fat') };
+    summaryEl.textContent = t('fixer_remaining_summary', {
+      calories: Math.round(remainingCalories), macro: macroLabels[priorityMacro],
+    });
+
+    if (combos.length === 0) {
+      listEl.innerHTML = `<div class="empty-state">${t('fixer_no_combos_fit')}</div>`;
+      return;
+    }
+
+    listEl.innerHTML = combos
+      .map(
+        (c, i) => `
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+            <div>
+              <div class="entry-name">${escapeHtml(t(`combo_${c.id}`))}</div>
+              <div class="entry-meta">${c.calories} kcal · ${c.protein_g}p / ${c.carbs_g}c / ${c.fat_g}f</div>
+            </div>
+            <button class="btn-secondary fixer-log-btn" data-index="${i}" style="width:auto; padding:10px 16px; flex-shrink:0;">${t('fixer_log_this_button')}</button>
+          </div>
+        </div>
+      `
+      )
+      .join('');
+
+    listEl.querySelectorAll('.fixer-log-btn').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const combo = combos[Number(btn.dataset.index)];
+        const user = getState('user');
+        const name = t(`combo_${combo.id}`);
+        // Reuses logFood by treating the combo as a "food" whose per-100g
+        // values equal its own totals, logged at exactly 100g — avoids a
+        // second, parallel logging path just for combos.
+        await logFood(
+          user.uid,
+          todayLocalDate(),
+          {
+            id: `combo:${combo.id}`, name, source: 'gap_fixer',
+            caloriesPer100g: combo.calories, proteinPer100g: combo.protein_g,
+            carbsPer100g: combo.carbs_g, fatPer100g: combo.fat_g,
+          },
+          100
+        );
+        showToast(t('toast_logged_fixer_combo', { name }));
+        await loadAndRenderToday();
+        await loadAndRenderFixer();
+      });
+    });
+  }
+
+  document.getElementById('fixer-refresh-btn').addEventListener('click', loadAndRenderFixer);
+
+  // ---- Weekly Flex Card (brief 4.7) ----
+
+  async function loadAndRenderFlex() {
+    const user = getState('user');
+    const target = getState('today').target;
+
+    const weekStartDate = getMostRecentCompletedWeekStart();
+    const weekStartStr = formatLocalDate(weekStartDate);
+
+    // Streak can run longer than the target week, and "today" can be
+    // well after the week ended — fetch one range wide enough for both.
+    const lookbackStart = daysAgoLocalDate(59);
+    const foodLogRange = await getFoodLogRange(user.uid, lookbackStart, todayLocalDate());
+
+    const stats = computeFlexCardStats({ weekStart: weekStartDate, foodLogRange, target });
+    const streak = computeStreak(foodLogRange, todayLocalDate());
+    const canvas = document.getElementById('flex-canvas');
+
+    if (stats.daysLogged === 0) {
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#12141a';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#9b9691';
+      ctx.font = '400 16px "IBM Plex Sans", sans-serif';
+      ctx.fillText(t('flex_no_data'), 32, canvas.height / 2);
+      return;
+    }
+
+    drawFlexCard(canvas, { weekLabel: t('flex_week_label', { startDate: weekStartStr }), stats, streak, target });
+  }
+
+  document.getElementById('flex-refresh-btn').addEventListener('click', loadAndRenderFlex);
+  document.getElementById('flex-share-btn').addEventListener('click', () => {
+    exportCanvasAsPng(document.getElementById('flex-canvas'));
+    showToast(t('toast_flex_saved'));
   });
 
   // ---- Nav ----
@@ -1231,6 +1413,8 @@
       showScreen(`screen-${target}`);
       if (target === 'exercise') await loadAndRenderExercise();
       if (target === 'progress') await loadAndRenderProgress();
+      if (target === 'fixer') await loadAndRenderFixer();
+      if (target === 'flex') await loadAndRenderFlex();
     });
   });
 
@@ -1253,7 +1437,7 @@
       showScreen('screen-today');
     } catch (err) {
       console.error(err);
-      showToast('Could not load your data — check your connection.');
+      showToast(t('generic_load_error'));
     }
   });
 </script>
