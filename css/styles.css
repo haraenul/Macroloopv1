@@ -585,3 +585,13 @@ input:focus-visible {
   background: rgba(217, 112, 96, 0.15);
   color: var(--warning);
 }
+
+.photo-item-unidentified {
+  border: 1px dashed rgba(217, 112, 96, 0.4);
+  background: rgba(217, 112, 96, 0.04);
+}
+.photo-item-unidentified-note {
+  font-size: 0.8rem;
+  color: var(--warning);
+  margin-bottom: 12px;
+}
