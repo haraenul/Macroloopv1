@@ -24,21 +24,26 @@ if (!admin.apps.length) {
   });
 }
 
-const FREE_MONTHLY_LIMIT = 50; // TEMP: raised for testing, revert to 3 before launch
+const FREE_MONTHLY_LIMIT = 3; // brief section 5's pricing table
 const MIN_SECONDS_BETWEEN_SCANS = 10; // cheap guard against accidental double-submits or scripted spam
 
-// Close to the brief's own prompt verbatim — it's specific and well-reasoned,
-// no strong reason to rewrite it.
+// Adapted from the brief's prompt: added explicit handling for (1) items
+// that can't be identified at all — set identified:false and null
+// macros rather than fabricating numbers that look just as confident as
+// a real estimate — and (2) physically mixed/composite dishes (curries,
+// stews, casseroles) that can't be visually decomposed into components,
+// which should be treated as one item with a combined estimate rather
+// than forcing a decomposition the model can't actually see.
 const FOOD_ANALYSIS_PROMPT = `You are a nutrition estimation engine for a food-logging app. From the photo:
-1. Identify each visually distinct food item.
+1. Identify each visually distinct food item. If multiple foods are physically mixed together such that they cannot be visually separated into distinct items (e.g. a casserole, curry, stew, or fried rice with mixed-in ingredients), treat the mixture as a single item and name it descriptively (e.g. "chicken curry with rice, mixed") rather than forcing an artificial decomposition you can't actually see.
 2. Estimate portion size using visible reference cues (plate size, utensils, hand scale).
 3. Estimate calories and macros (protein/carbs/fat in grams) per item and in total.
-4. Assign a confidence level (high/medium/low) per item — lower it whenever there's visible sauce, oil, or hidden/mixed ingredients.
-If an item is ambiguous, give your best guess and flag low confidence rather than refusing.
+4. Assign a confidence level (high/medium/low) per item — lower it whenever there's visible sauce, oil, hidden/mixed ingredients, or the item is a composite dish from step 1.
+5. If an item is ambiguous but plausibly identifiable, give your best guess and flag low confidence rather than refusing. If an item genuinely cannot be identified at all (fully obscured, or not recognizable as any specific food), set identified to false, set name to a brief visual description instead of a food name (e.g. "unidentified item, left side of plate"), and set calories/protein_g/carbs_g/fat_g to null rather than fabricating numbers that would look just as confident as a real estimate.
 Respond with ONLY valid JSON in this schema, no other text:
 {
   "items": [
-    { "name": "string", "estimated_portion": "string", "calories": number, "protein_g": number, "carbs_g": number, "fat_g": number, "confidence": "high" | "medium" | "low" }
+    { "name": "string", "identified": boolean, "estimated_portion": "string", "calories": number|null, "protein_g": number|null, "carbs_g": number|null, "fat_g": number|null, "confidence": "high" | "medium" | "low" }
   ],
   "total_calories": number,
   "total_protein_g": number,
@@ -46,6 +51,12 @@ Respond with ONLY valid JSON in this schema, no other text:
   "total_fat_g": number,
   "estimation_notes": "string"
 }`;
+
+/** Some models wrap JSON in markdown fences despite being told not to add other text — strip that before parsing instead of failing the whole request over formatting. */
+function extractJson(rawContent) {
+  const fenced = rawContent.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  return (fenced ? fenced[1] : rawContent).trim();
+}
 
 function jsonResponse(statusCode, body) {
   return { statusCode, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) };
@@ -113,11 +124,15 @@ exports.handler = async (event) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        // Provider-agnostic per the brief — swap via env var, no redeploy.
-        // Double check this default is still current on OpenRouter before
-        // going live; vision-model pricing/availability moves quickly.
-        model: process.env.VISION_MODEL || 'google/gemini-2.5-flash',
-        max_tokens: 2000,
+        // Confirmed real and vision-capable on OpenRouter, genuinely free
+        // (no card, no credits needed). The tradeoff: fully-free accounts
+        // share a hard 50 requests/day ceiling across the WHOLE app (it's
+        // a per-account limit, and this function uses one shared account
+        // key) — fine while usage is low, but a real wall once traffic
+        // grows. A one-time $10 OpenRouter credit purchase raises that to
+        // 1000/day and never expires; that's the natural fix if this
+        // becomes the bottleneck rather than the per-user monthly cap.
+        model: process.env.VISION_MODEL || 'meta-llama/llama-4-maverick:free',
         messages: [
           {
             role: 'user',
@@ -148,7 +163,7 @@ exports.handler = async (event) => {
 
   let parsed;
   try {
-    parsed = JSON.parse(rawContent);
+    parsed = JSON.parse(extractJson(rawContent));
   } catch {
     return jsonResponse(502, { error: 'unparseable_response' });
   }
