@@ -132,7 +132,7 @@ exports.handler = async (event) => {
         // grows. A one-time $10 OpenRouter credit purchase raises that to
         // 1000/day and never expires; that's the natural fix if this
         // becomes the bottleneck rather than the per-user monthly cap.
-        model: process.env.VISION_MODEL || 'openrouter/free',
+        model: process.env.VISION_MODEL || 'google/gemini-2.5-flash',
         messages: [
           {
             role: 'user',
