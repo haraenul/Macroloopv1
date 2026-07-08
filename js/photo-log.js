@@ -8,7 +8,8 @@
 // same-origin Netlify Functions (e.g. GitHub Pages can't run functions
 // at all — see the delivery notes for why this is a real decision, not
 // a formality).
-const PHOTO_FUNCTION_URL = '/.netlify/functions/analyze-meal-photo';
+// Full site URL confirmed directly by the user — this is correct.
+const PHOTO_FUNCTION_URL = 'https://gleaming-sunflower-30499e.netlify.app/.netlify/functions/analyze-meal-photo';
 
 const MAX_DIMENSION = 1024; // plenty for food recognition; keeps the payload (and API cost) small
 const JPEG_QUALITY = 0.8;
