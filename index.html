@@ -137,8 +137,14 @@
 
     <div class="ring-wrap">
       <svg width="220" height="220" viewBox="0 0 220 220">
+        <defs>
+          <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#e8a94c" />
+            <stop offset="100%" stop-color="#c9822f" />
+          </linearGradient>
+        </defs>
         <circle cx="110" cy="110" r="95" fill="none" stroke="#242833" stroke-width="14" />
-        <circle id="ring-progress" cx="110" cy="110" r="95" fill="none" stroke="#e8a94c" stroke-width="14"
+        <circle id="ring-progress" class="ring-glow" cx="110" cy="110" r="95" fill="none" stroke="url(#ringGradient)" stroke-width="14"
           stroke-linecap="round" transform="rotate(-90 110 110)"
           stroke-dasharray="596.9" stroke-dashoffset="596.9" style="transition: stroke-dashoffset 0.5s ease;" />
       </svg>
@@ -165,9 +171,9 @@
     </div>
 
     <div class="quick-add-row">
-      <button id="open-search-btn" data-i18n="quick_add_search">🔍 Search</button>
-      <button id="open-recent-btn" data-i18n="quick_add_recent">⭐ Recent</button>
-      <button id="open-photo-btn" data-i18n="quick_add_photo">📷 Photo</button>
+      <button id="open-search-btn" data-i18n="quick_add_search"><span class="icon icon-search" aria-hidden="true"></span> Search</button>
+      <button id="open-recent-btn" data-i18n="quick_add_recent"><span class="icon icon-recent" aria-hidden="true"></span> Recent</button>
+      <button id="open-photo-btn" data-i18n="quick_add_photo"><span class="icon icon-photo" aria-hidden="true"></span> Photo</button>
     </div>
     <input type="file" id="photo-file-input" accept="image/*" capture="environment" style="display:none;" />
 
@@ -197,7 +203,7 @@
       <div class="brand" data-i18n="progress_screen_title">Progress</div>
     </div>
 
-    <div class="card">
+    <div class="card card--data">
       <div class="top-bar" style="margin-bottom:12px;">
         <h3 style="margin:0;" data-i18n="weight_card_title">Weight</h3>
         <button class="btn-icon" id="add-weight-btn" aria-label="Log weight" data-i18n-aria-label="aria_log_weight">+</button>
@@ -206,7 +212,7 @@
       <p class="numeric" id="weight-trend-summary" style="margin-top:10px; font-size:0.85rem;"></p>
     </div>
 
-    <div class="card">
+    <div class="card card--data">
       <h3 style="margin-bottom:12px;" data-i18n="daily_calories_card_title">Daily calories</h3>
       <svg id="calorie-chart" width="100%" height="140" viewBox="0 0 320 140"></svg>
       <p class="numeric" id="calorie-trend-summary" style="margin-top:10px; font-size:0.85rem;"></p>
@@ -1287,7 +1293,11 @@
 
   // ---- Gap Fixer (brief 4.6) ----
 
-  async function loadAndRenderFixer() {
+  let fixerShownIds = [];
+
+  async function loadAndRenderFixer(isRefresh = false) {
+    if (!isRefresh) fixerShownIds = []; // a fresh view (or state changed by logging) starts clean
+
     const today = getState('today');
     const entries = Object.values(today.foodEntries || {});
     const consumed = entries.reduce((s, e) => s + (e.calories || 0), 0);
@@ -1313,7 +1323,9 @@
       targetProtein: today.macros.proteinG,
       targetCarbs: today.macros.carbG,
       targetFat: today.macros.fatG,
+      excludeIds: fixerShownIds,
     });
+    fixerShownIds = [...fixerShownIds, ...combos.map((c) => c.id)];
 
     const macroLabels = { protein_g: t('macro_protein'), carbs_g: t('macro_carbs'), fat_g: t('macro_fat') };
     summaryEl.textContent = t('fixer_remaining_summary', {
@@ -1328,7 +1340,7 @@
     listEl.innerHTML = combos
       .map(
         (c, i) => `
-        <div class="card">
+        <div class="card card--action">
           <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
             <div>
               <div class="entry-name">${escapeHtml(t(`combo_${c.id}`))}</div>
@@ -1361,12 +1373,12 @@
         );
         showToast(t('toast_logged_fixer_combo', { name }));
         await loadAndRenderToday();
-        await loadAndRenderFixer();
+        await loadAndRenderFixer(); // budget changed — start the exclusion tracking fresh
       });
     });
   }
 
-  document.getElementById('fixer-refresh-btn').addEventListener('click', loadAndRenderFixer);
+  document.getElementById('fixer-refresh-btn').addEventListener('click', () => loadAndRenderFixer(true));
 
   // ---- Weekly Flex Card (brief 4.7) ----
 
@@ -1396,7 +1408,11 @@
       return;
     }
 
-    drawFlexCard(canvas, { weekLabel: t('flex_week_label', { startDate: weekStartStr }), stats, streak, target });
+    drawFlexCard(canvas, {
+      weekLabel: t('flex_week_label', { startDate: weekStartStr }),
+      stats, streak, target,
+      goal: getState('profile').goal,
+    });
   }
 
   document.getElementById('flex-refresh-btn').addEventListener('click', loadAndRenderFlex);
