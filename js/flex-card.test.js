@@ -2,7 +2,9 @@
 // Run: node js/flex-card.test.js
 
 import assert from 'node:assert/strict';
-import { getMostRecentCompletedWeekStart, computeFlexCardStats, computeStreak } from './flex-card.js';
+import {
+  getMostRecentCompletedWeekStart, computeFlexCardStats, computeStreak, isAdherenceGoalAligned,
+} from './flex-card.js';
 
 let passed = 0;
 function test(name, fn) {
@@ -106,6 +108,29 @@ test("today not being logged yet doesn't zero out an otherwise-intact streak", (
 
 test('no logged days at all gives a streak of 0, not an error', () => {
   assert.equal(computeStreak({}, '2026-07-06'), 0);
+});
+
+// --- isAdherenceGoalAligned ---
+
+test('close to target reads as aligned regardless of goal', () => {
+  assert.equal(isAdherenceGoalAligned(102, 'lose'), true);
+  assert.equal(isAdherenceGoalAligned(97, 'gain'), true);
+  assert.equal(isAdherenceGoalAligned(104, 'maintain'), true);
+});
+
+test('for a cut, under target is aligned and over target is not', () => {
+  assert.equal(isAdherenceGoalAligned(85, 'lose'), true);
+  assert.equal(isAdherenceGoalAligned(115, 'lose'), false);
+});
+
+test('for a bulk, over target is aligned and under target is not — the opposite of a cut', () => {
+  assert.equal(isAdherenceGoalAligned(115, 'gain'), true);
+  assert.equal(isAdherenceGoalAligned(85, 'gain'), false);
+});
+
+test('for maintain, either direction away from target reads as not aligned', () => {
+  assert.equal(isAdherenceGoalAligned(115, 'maintain'), false);
+  assert.equal(isAdherenceGoalAligned(85, 'maintain'), false);
 });
 
 console.log(`\n${passed} passed`);

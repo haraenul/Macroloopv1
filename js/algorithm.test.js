@@ -17,6 +17,9 @@ import {
   calculateMacroTargets,
   SAFETY_FLOOR_KCAL,
   ACTIVITY_MULTIPLIERS,
+  computeEWMA,
+  backCalculateTDEE,
+  updateAdaptiveTDEE,
 } from './algorithm.js';
 
 let passed = 0;
@@ -131,6 +134,131 @@ test('macro grams reconstruct back to close to the calorie target', () => {
   const { proteinG, fatG, carbG } = calculateMacroTargets(2000, 75);
   const reconstructed = proteinG * 4 + fatG * 9 + carbG * 4;
   assert.ok(Math.abs(reconstructed - 2000) <= 5, `reconstructed ${reconstructed}, too far from 2000`);
+});
+
+// --- Phase 3: computeEWMA ---
+
+test('computeEWMA matches hand-calculated values for a 3-point series', () => {
+  // seed=80; then 0.2*79+0.8*80=79.8; then 0.2*79.5+0.8*79.8=79.74
+  const series = [{ x: 'd1', y: 80 }, { x: 'd2', y: 79 }, { x: 'd3', y: 79.5 }];
+  const smoothed = computeEWMA(series, 0.2);
+  assert.equal(smoothed[0].y, 80);
+  assert.equal(smoothed[1].y, 79.8);
+  assert.ok(Math.abs(smoothed[2].y - 79.74) < 1e-9);
+});
+
+test('computeEWMA on an empty series returns an empty series', () => {
+  assert.deepEqual(computeEWMA([]), []);
+});
+
+test('computeEWMA on a single point returns it unchanged (nothing to smooth against yet)', () => {
+  const smoothed = computeEWMA([{ x: 'd1', y: 72.4 }]);
+  assert.equal(smoothed.length, 1);
+  assert.equal(smoothed[0].y, 72.4);
+});
+
+// --- Phase 3: backCalculateTDEE ---
+
+test("matches the brief's own worked example exactly: 2000 kcal/day, -0.7kg over 14 days -> 2385", () => {
+  assert.equal(backCalculateTDEE(2000, -0.7, 14), 2385);
+});
+
+test('checks out in both directions, per the brief\u2019s own note: TDEE -> implied weight change -> back to the same TDEE', () => {
+  const assumedTDEE = 2385;
+  const avgIntake = 2000;
+  const days = 14;
+  // Forward: a 385 kcal/day deficit at that intake implies a 0.7kg loss.
+  const impliedDeltaKg = -((avgIntake - assumedTDEE) * days) / 7700;
+  assert.ok(Math.abs(impliedDeltaKg - 0.7) < 1e-9);
+  // Backward: feeding that implied loss back in recovers the same TDEE.
+  const recovered = backCalculateTDEE(avgIntake, -impliedDeltaKg, days);
+  assert.ok(Math.abs(recovered - assumedTDEE) < 1e-9);
+});
+
+test('a weight-gain scenario produces a TDEE estimate below intake, not above', () => {
+  // Eating a surplus and gaining weight means real TDEE is lower than intake.
+  const tdee = backCalculateTDEE(2800, 0.5, 14); // +0.5kg gained
+  assert.ok(tdee < 2800);
+});
+
+// --- Phase 3: updateAdaptiveTDEE (full pipeline) ---
+
+function flatIntake(days, kcal) {
+  return Array.from({ length: days }, (_, i) => ({ x: `d${i + 1}`, y: kcal }));
+}
+
+test('fewer than 14 days of data stays in learning mode, estimate untouched', () => {
+  const result = updateAdaptiveTDEE({
+    weightSeries: [{ x: 'd1', y: 80 }, { x: 'd10', y: 79 }],
+    intakeSeries: flatIntake(10, 2000),
+    currentEstimate: 2200,
+    daysOfData: 10,
+    sex: 'male',
+  });
+  assert.equal(result.mode, 'learning');
+  assert.equal(result.estimate, 2200);
+});
+
+test('enough days but inconsistent logging stays in learning mode', () => {
+  const intake = flatIntake(14, 2000);
+  // Zero out more than 30% of days -> consistency drops below the 0.7 gate.
+  for (let i = 0; i < 6; i++) intake[i].y = 0;
+  const result = updateAdaptiveTDEE({
+    weightSeries: [{ x: 'd1', y: 80 }, { x: 'd14', y: 79 }],
+    intakeSeries: intake,
+    currentEstimate: 2200,
+    daysOfData: 20,
+    sex: 'male',
+  });
+  assert.equal(result.mode, 'learning');
+  assert.equal(result.estimate, 2200);
+});
+
+test('sufficient data switches to personalized mode with a blended estimate, matching the pipeline built from already-tested pieces', () => {
+  const weightSeries = [{ x: 'd1', y: 80 }, { x: 'd14', y: 79 }];
+  const intakeSeries = flatIntake(14, 2000);
+  const currentEstimate = 2200;
+
+  const result = updateAdaptiveTDEE({ weightSeries, intakeSeries, currentEstimate, daysOfData: 14, sex: 'male' });
+
+  // Expected value derived by composing the same already-tested building
+  // blocks by hand, not re-guessing the pipeline's own arithmetic.
+  const trend = computeEWMA(weightSeries);
+  const deltaWeightKg = trend[trend.length - 1].y - trend[0].y;
+  const empirical = backCalculateTDEE(2000, deltaWeightKg, 14);
+  const blended = 0.6 * empirical + 0.4 * currentEstimate;
+  const expected = Math.round(Math.min(Math.max(blended, currentEstimate * 0.9), currentEstimate * 1.1));
+
+  assert.equal(result.mode, 'personalized');
+  assert.equal(result.estimate, expected);
+});
+
+test('a large empirical swing is capped to within 10% of the prior estimate, not applied raw', () => {
+  // Heavy loss at a high intake implies a much higher real TDEE than
+  // 2200 — engineered to blow well past the +10% cap (2420).
+  const result = updateAdaptiveTDEE({
+    weightSeries: [{ x: 'd1', y: 90 }, { x: 'd14', y: 85 }],
+    intakeSeries: flatIntake(14, 3000),
+    currentEstimate: 2200,
+    daysOfData: 14,
+    sex: 'male',
+  });
+  assert.equal(result.mode, 'personalized');
+  assert.equal(result.estimate, Math.round(2200 * 1.1));
+});
+
+test('the personalized estimate never drops below the sex-specific safety floor', () => {
+  // Very low prior estimate near the female floor, plus data implying an
+  // even lower TDEE — the floor must win over both the blend and the cap.
+  const result = updateAdaptiveTDEE({
+    weightSeries: [{ x: 'd1', y: 55 }, { x: 'd14', y: 56 }], // gained while "cutting" hard
+    intakeSeries: flatIntake(14, 1100),
+    currentEstimate: 1250,
+    daysOfData: 14,
+    sex: 'female',
+  });
+  assert.equal(result.mode, 'personalized');
+  assert.equal(result.estimate, SAFETY_FLOOR_KCAL.female);
 });
 
 console.log(`\n${passed} passed`);

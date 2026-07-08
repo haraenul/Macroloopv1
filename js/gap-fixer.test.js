@@ -92,6 +92,47 @@ test('every combo in the library has a positive calorie value and all four macro
   });
 });
 
+// --- excludeIds rotation (the confirmed "refresh does nothing" bug) ---
+
+test('the exact bug report: calling twice with no exclusion returns identical combos', () => {
+  const args = {
+    remainingCalories: 500,
+    remainingProtein: 30, targetProtein: 100,
+    remainingCarbs: 40, targetCarbs: 200,
+    remainingFat: 10, targetFat: 60,
+  };
+  const first = pickGapFixerCombos(args);
+  const second = pickGapFixerCombos(args);
+  assert.deepEqual(second.combos.map((c) => c.id), first.combos.map((c) => c.id));
+});
+
+test('passing the first call\u2019s ids as excludeIds surfaces different combos on the second call', () => {
+  const args = {
+    remainingCalories: 500,
+    remainingProtein: 30, targetProtein: 100,
+    remainingCarbs: 40, targetCarbs: 200,
+    remainingFat: 10, targetFat: 60,
+  };
+  const first = pickGapFixerCombos(args);
+  const second = pickGapFixerCombos({ ...args, excludeIds: first.combos.map((c) => c.id) });
+  const overlap = second.combos.filter((c) => first.combos.some((f) => f.id === c.id));
+  assert.deepEqual(overlap, []);
+});
+
+test('once exclusions exhaust everything that fits, the list resets instead of dead-ending empty', () => {
+  const args = {
+    remainingCalories: 200, // only a few combos fit this budget at all
+    remainingProtein: 30, targetProtein: 100,
+    remainingCarbs: 40, targetCarbs: 200,
+    remainingFat: 10, targetFat: 60,
+    count: 10,
+  };
+  const allFitting = pickGapFixerCombos(args).combos;
+  // Exclude every single one that fits — nothing should be left to show.
+  const second = pickGapFixerCombos({ ...args, excludeIds: allFitting.map((c) => c.id) });
+  assert.ok(second.combos.length > 0, 'expected a reset, not an empty list, once everything fitting was excluded');
+});
+
 console.log(`\n${passed} passed`);
 if (process.exitCode) {
   console.log('some tests FAILED — see above');

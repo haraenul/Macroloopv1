@@ -38,6 +38,15 @@ export const COMBO_LIBRARY = [
  * protein/carb/fat targets sit on very different scales and a raw-gram
  * comparison would just always favor carbs.
  *
+ * excludeIds skips combos already shown in this session — without it,
+ * repeated calls on an unchanged budget are deterministic and always
+ * return the identical top-3, making a "show other options" button
+ * indistinguishable from doing nothing (a real bug this fixes). If
+ * excluding leaves nothing that still fits, it resets and shows the
+ * fitting list from the top again rather than dead-ending on empty —
+ * cycling back is better than a refresh button that stops working once
+ * you've seen everything.
+ *
  * Returns { combos, priorityMacro } — priorityMacro is 'protein_g' |
  * 'carbs_g' | 'fat_g', useful for the "leaning toward X" caption.
  */
@@ -50,6 +59,7 @@ export function pickGapFixerCombos({
   targetCarbs,
   targetFat,
   count = 3,
+  excludeIds = [],
 }) {
   if (remainingCalories <= 0) return { combos: [], priorityMacro: null };
 
@@ -60,8 +70,14 @@ export function pickGapFixerCombos({
   };
   const priorityMacro = Object.entries(gapRatios).sort((a, b) => b[1] - a[1])[0][0];
 
-  const fitting = COMBO_LIBRARY.filter((combo) => combo.calories <= remainingCalories);
-  const ranked = [...fitting].sort((a, b) => b[priorityMacro] - a[priorityMacro]);
+  const fitsBudget = (combo) => combo.calories <= remainingCalories;
+  const excludeSet = new Set(excludeIds);
 
+  let fitting = COMBO_LIBRARY.filter((combo) => fitsBudget(combo) && !excludeSet.has(combo.id));
+  if (fitting.length === 0) {
+    fitting = COMBO_LIBRARY.filter(fitsBudget);
+  }
+
+  const ranked = [...fitting].sort((a, b) => b[priorityMacro] - a[priorityMacro]);
   return { combos: ranked.slice(0, count), priorityMacro };
 }

@@ -89,8 +89,24 @@ export function computeStreak(foodLogRange, todayLocalDateStr, maxLookbackDays =
   return streak;
 }
 
+/**
+ * Whether the week's average-vs-target reading is goal-aligned. 103% of
+ * target isn't inherently good or bad news — it means opposite things
+ * for a cut (over target, working against the deficit) vs. a bulk (over
+ * target, exactly the point). Returns a boolean the canvas drawing uses
+ * to pick a color; the percentage itself stays exactly as neutral a
+ * number as before, this only changes how it's presented.
+ */
+export function isAdherenceGoalAligned(adherencePct, goal) {
+  const diff = adherencePct - 100;
+  if (Math.abs(diff) <= 5) return true; // close to target reads as on-track regardless of goal
+  if (goal === 'lose') return diff < 0; // under target is the intended direction for a cut
+  if (goal === 'gain') return diff > 0; // over target is the intended direction for a bulk
+  return false; // maintain: only "close to target" (handled above) counts as aligned
+}
+
 /** Draws the card into an existing <canvas>. Not unit-tested — needs a real 2D rendering context. */
-export function drawFlexCard(canvas, { weekLabel, stats, streak, target }) {
+export function drawFlexCard(canvas, { weekLabel, stats, streak, target, goal }) {
   const ctx = canvas.getContext('2d');
   const W = canvas.width;
   const H = canvas.height;
@@ -118,6 +134,7 @@ export function drawFlexCard(canvas, { weekLabel, stats, streak, target }) {
   ctx.fillStyle = '#f0ede6';
   ctx.font = '600 21px "Space Grotesk", sans-serif';
   ctx.fillText(`\u{1F525} ${streak} day streak`, 32, 245);
+  ctx.fillStyle = isAdherenceGoalAligned(stats.adherencePct, goal) ? '#7fa88c' : '#f0ede6';
   ctx.fillText(`${stats.adherencePct}% of target`, 32, 278);
 
   const barX = 32;
