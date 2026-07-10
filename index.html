@@ -20,7 +20,7 @@
   <!-- Auth -->
   <div id="screen-auth" class="screen">
     <h1 data-i18n="app_name">MacroLoop</h1>
-    <p data-i18n="app_tagline">Track what you eat, without the guesswork.</p>
+    <p class="app-tagline" data-i18n="app_tagline">Track what you eat, without the guesswork.</p>
     <div class="card">
       <div class="field">
         <label for="auth-email" data-i18n="auth_email_label">Email</label>
@@ -124,6 +124,11 @@
         <p id="result-explanation"></p>
         <p class="error-text" id="result-warning" style="display:none;"></p>
       </div>
+      <div class="card">
+        <label for="target-weight-input" data-i18n="label_target_weight">Target weight (optional)</label>
+        <p id="healthy-range-hint" style="font-size:0.85rem; margin-top:-8px;"></p>
+        <input type="number" id="target-weight-input" step="0.1" placeholder="—" />
+      </div>
       <button class="btn-primary" id="onboarding-confirm" data-i18n="onboarding_get_started_button">Get started</button>
     </div>
   </div>
@@ -157,15 +162,15 @@
 
     <div class="macro-row">
       <div class="macro-item macro-protein">
-        <div class="macro-label"><span data-i18n="macro_protein">Protein</span><span class="numeric" id="protein-label">0/0g</span></div>
+        <div class="macro-label"><span data-i18n="macro_protein">Protein</span><span class="numeric"><span id="protein-consumed">0</span>/<span id="protein-target">0</span>g</span></div>
         <div class="macro-bar-track"><div class="macro-bar-fill" id="protein-bar" style="width:0%;"></div></div>
       </div>
       <div class="macro-item macro-carb">
-        <div class="macro-label"><span data-i18n="macro_carbs">Carbs</span><span class="numeric" id="carb-label">0/0g</span></div>
+        <div class="macro-label"><span data-i18n="macro_carbs">Carbs</span><span class="numeric"><span id="carb-consumed">0</span>/<span id="carb-target">0</span>g</span></div>
         <div class="macro-bar-track"><div class="macro-bar-fill" id="carb-bar" style="width:0%;"></div></div>
       </div>
       <div class="macro-item macro-fat">
-        <div class="macro-label"><span data-i18n="macro_fat">Fat</span><span class="numeric" id="fat-label">0/0g</span></div>
+        <div class="macro-label"><span data-i18n="macro_fat">Fat</span><span class="numeric"><span id="fat-consumed">0</span>/<span id="fat-target">0</span>g</span></div>
         <div class="macro-bar-track"><div class="macro-bar-fill" id="fat-bar" style="width:0%;"></div></div>
       </div>
     </div>
@@ -210,6 +215,7 @@
       </div>
       <svg id="weight-chart" width="100%" height="140" viewBox="0 0 320 140"></svg>
       <p class="numeric" id="weight-trend-summary" style="margin-top:10px; font-size:0.85rem;"></p>
+      <p id="target-weight-timeline" style="display:none; font-size:0.85rem; color:var(--text-secondary);"></p>
     </div>
 
     <div class="card card--data">
@@ -362,12 +368,14 @@
     calculateBMR, calculateTDEE, calculateTarget,
     calculateMacroTargets, lbToKg, ftInToCm, kgToLb,
     updateAdaptiveTDEE, ADAPTIVE_WINDOW_DAYS,
+    calculateHealthyWeightRange, estimateDaysToTarget,
   } from './js/algorithm.js';
   import {
     searchFoods, debounce, logFood, scaleToGrams, getFrequentFoodsSorted, getDailyCalorieTotals,
   } from './js/food-log.js';
   import { ACTIVITIES, calculateCaloriesBurned, logExercise } from './js/exercise-log.js';
   import { renderLineChart } from './js/charts.js';
+  import { animateNumber, springTo, openSheetFromElement, closeSheetToElement } from './js/motion.js';
   import {
     compressImageToBase64, analyzeMealPhoto, logPhotoItems, needsCloserLook,
     PhotoLimitError, PhotoNetworkError, PhotoValidationError,
@@ -524,7 +532,8 @@
 
     lastComputed = { input, bmr, tdee, target, warning };
 
-    document.getElementById('result-target').textContent = target;
+    document.getElementById('result-target').textContent = '0';
+    animateNumber(document.getElementById('result-target'), target);
     document.getElementById('result-explanation').textContent = explanation;
     const warningEl = document.getElementById('result-warning');
     if (warning) {
@@ -536,6 +545,10 @@
 
     document.getElementById('onboarding-form').style.display = 'none';
     document.getElementById('onboarding-result').style.display = 'block';
+
+    const { minKg, maxKg } = calculateHealthyWeightRange(input.heightCm);
+    document.getElementById('healthy-range-hint').textContent =
+      t('healthy_range_hint', { min: minKg, max: maxKg });
   });
 
   document.getElementById('onboarding-confirm').addEventListener('click', async () => {
@@ -545,6 +558,7 @@
     const macros = calculateMacroTargets(target, input.weightKg);
     const date = todayLocalDate();
 
+    const targetWeightRaw = document.getElementById('target-weight-input').value;
     const profile = {
       sex: input.sex,
       age: input.age,
@@ -554,6 +568,7 @@
       rate_percent: input.ratePercent,
       unit_pref: input.unit_pref,
       premium_status: false,
+      target_weight_kg: targetWeightRaw ? Number(targetWeightRaw) : null,
     };
 
     await saveProfile(user.uid, profile);
@@ -667,7 +682,7 @@
     // Exercise adds back to the day's budget (the standard "eat back what
     // you burn" pattern) — an assumption, the brief didn't specify this.
     const budget = today.target + (today.exerciseBurned || 0);
-    document.getElementById('ring-remaining').textContent = Math.round(budget - consumed);
+    animateNumber(document.getElementById('ring-remaining'), Math.round(budget - consumed));
 
     const creditNote = document.getElementById('exercise-credit-note');
     if (today.exerciseBurned > 0) {
@@ -679,7 +694,11 @@
 
     const circumference = 596.9;
     const fraction = budget > 0 ? Math.min(consumed / budget, 1) : 0;
-    document.getElementById('ring-progress').style.strokeDashoffset = circumference * (1 - fraction);
+    const ringEl = document.getElementById('ring-progress');
+    const currentOffset = parseFloat(ringEl.style.strokeDashoffset) || circumference;
+    springTo('ring-offset', currentOffset, circumference * (1 - fraction), (v) => {
+      ringEl.style.strokeDashoffset = v;
+    });
 
     updateMacroBar('protein', proteinC, today.macros.proteinG);
     updateMacroBar('carb', carbC, today.macros.carbG);
@@ -689,9 +708,15 @@
   }
 
   function updateMacroBar(key, consumed, target) {
-    document.getElementById(`${key}-label`).textContent = `${Math.round(consumed)}/${target}g`;
+    animateNumber(document.getElementById(`${key}-consumed`), Math.round(consumed));
+    document.getElementById(`${key}-target`).textContent = target;
+
     const pct = target > 0 ? Math.min((consumed / target) * 100, 100) : 0;
-    document.getElementById(`${key}-bar`).style.width = `${pct}%`;
+    const barEl = document.getElementById(`${key}-bar`);
+    const currentPct = parseFloat(barEl.style.width) || 0;
+    springTo(`${key}-bar`, currentPct, pct, (v) => {
+      barEl.style.width = `${v}%`;
+    });
   }
 
   function renderFoodLogList(entriesMap) {
@@ -732,17 +757,22 @@
   // ---- Sheets (shared backdrop, one active sheet at a time) ----
 
   let activeSheetId = null;
+  let activeSheetTrigger = null;
 
-  function openActiveSheet(sheetId) {
+  function openActiveSheet(sheetId, triggerEl) {
     document.getElementById('sheet-backdrop').classList.add('active');
-    document.getElementById(sheetId).style.display = 'block';
+    openSheetFromElement(document.getElementById(sheetId), triggerEl);
     activeSheetId = sheetId;
+    activeSheetTrigger = triggerEl ?? null;
   }
 
   function closeActiveSheet() {
     document.getElementById('sheet-backdrop').classList.remove('active');
-    if (activeSheetId) document.getElementById(activeSheetId).style.display = 'none';
+    if (activeSheetId) {
+      closeSheetToElement(document.getElementById(activeSheetId), activeSheetTrigger);
+    }
     activeSheetId = null;
+    activeSheetTrigger = null;
   }
 
   document.getElementById('sheet-backdrop').addEventListener('click', closeActiveSheet);
@@ -751,8 +781,8 @@
 
   let selectedFoodItem = null;
 
-  function openSheet(mode) {
-    openActiveSheet('log-meal-sheet');
+  function openSheet(mode, triggerEl) {
+    openActiveSheet('log-meal-sheet', triggerEl);
     document.getElementById('sheet-detail-view').style.display = 'none';
     document.getElementById('sheet-search-view').style.display = 'block';
     document.getElementById('search-results').innerHTML = '';
@@ -767,8 +797,8 @@
     }
   }
 
-  document.getElementById('open-search-btn').addEventListener('click', () => openSheet('search'));
-  document.getElementById('open-recent-btn').addEventListener('click', () => openSheet('recent'));
+  document.getElementById('open-search-btn').addEventListener('click', (e) => openSheet('search', e.currentTarget));
+  document.getElementById('open-recent-btn').addEventListener('click', (e) => openSheet('recent', e.currentTarget));
   document.getElementById('sheet-close').addEventListener('click', closeActiveSheet);
   document.getElementById('back-to-search').addEventListener('click', () => {
     document.getElementById('sheet-detail-view').style.display = 'none';
@@ -937,8 +967,8 @@
     document.getElementById(id).addEventListener('input', updateExercisePreview);
   });
 
-  document.getElementById('add-exercise-btn').addEventListener('click', () => {
-    openActiveSheet('log-exercise-sheet');
+  document.getElementById('add-exercise-btn').addEventListener('click', (e) => {
+    openActiveSheet('log-exercise-sheet', e.currentTarget);
     document.getElementById('exercise-duration-input').value = 30;
     document.getElementById('exercise-custom-calories-input').value = '';
     updateExercisePreview();
@@ -1032,8 +1062,33 @@
 
     document.getElementById('weight-trend-summary').textContent = summarizeWeightTrend(weightSeries, profile.unit_pref);
     document.getElementById('calorie-trend-summary').textContent = summarizeCalorieTrend(calorieSeries, target);
+    renderTargetWeightTimeline(profile, weightSeries);
 
     await renderAlgorithmPanel(user.uid, profile);
+  }
+
+  /**
+   * Reconstructs the *intended* daily calorie balance from goal + rate,
+   * same formula calculateTarget() uses internally. Simplification worth
+   * knowing: if the target is currently floor-clamped, the true balance
+   * is smaller than this (floor vs. tdee, not the raw rate-derived
+   * number) — so a floor-clamped estimate here reads slightly optimistic.
+   * Good enough for a rough timeline, not precise to the day either way.
+   */
+  function renderTargetWeightTimeline(profile, weightSeries) {
+    const el = document.getElementById('target-weight-timeline');
+    if (!profile.target_weight_kg || weightSeries.length === 0) {
+      el.style.display = 'none';
+      return;
+    }
+    const currentWeightKg = weightSeries[weightSeries.length - 1].y;
+    const weeklyChangeKcal = ((profile.rate_percent ?? 0.75) / 100) * currentWeightKg * 7700;
+    const dailyBalance = profile.goal === 'lose' ? -(weeklyChangeKcal / 7)
+      : profile.goal === 'gain' ? weeklyChangeKcal / 7
+      : 0;
+    const days = estimateDaysToTarget(currentWeightKg, profile.target_weight_kg, dailyBalance);
+    el.style.display = 'block';
+    el.textContent = days === null ? t('timeline_wrong_direction') : t('timeline_estimate', { days });
   }
 
   function summarizeWeightTrend(series, unitPref) {
@@ -1109,8 +1164,8 @@
 
   // ---- Weight check-in ----
 
-  document.getElementById('add-weight-btn').addEventListener('click', () => {
-    openActiveSheet('log-weight-sheet');
+  document.getElementById('add-weight-btn').addEventListener('click', (e) => {
+    openActiveSheet('log-weight-sheet', e.currentTarget);
     const unitPref = getState('profile').unit_pref;
     document.getElementById('weight-log-label').textContent = t(unitPref === 'imperial' ? 'label_weight_lb' : 'label_weight_kg');
     document.getElementById('weight-log-input').value = '';
