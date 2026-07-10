@@ -33,13 +33,13 @@ import {
 // This object is not a secret — access control is enforced by the
 // security rules in firebase-rules.json, not by hiding this config.
 const firebaseConfig = {
-  apiKey: "AIzaSyAj72iSSmvmiKawwD6NPskV957c_Mwyz8Y",
-  authDomain: "macroloop-b2dd5.firebaseapp.com",
-  databaseURL: "https://macroloop-b2dd5-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "macroloop-b2dd5",
-  storageBucket: "macroloop-b2dd5.firebasestorage.app",
-  messagingSenderId: "530415918048",
-  appId: "1:530415918048:web:3f5dd58d8e59b752a2e985",
+  apiKey: 'AIzaSyAj72iSSmvmiKawwD6NPskV957c_Mwyz8Y',
+  authDomain: 'macroloop-b2dd5.firebaseapp.com',
+  databaseURL: 'https://macroloop-b2dd5-default-rtdb.europe-west1.firebasedatabase.app',
+  projectId: 'macroloop-b2dd5',
+  storageBucket: 'macroloop-b2dd5.firebasestorage.app',
+  messagingSenderId: '530415918048',
+  appId: '1:530415918048:web:3f5dd58d8e59b752a2e985',
 };
 
 const app = initializeApp(firebaseConfig);

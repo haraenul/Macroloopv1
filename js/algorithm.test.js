@@ -20,6 +20,8 @@ import {
   computeEWMA,
   backCalculateTDEE,
   updateAdaptiveTDEE,
+  calculateHealthyWeightRange,
+  estimateDaysToTarget,
 } from './algorithm.js';
 
 let passed = 0;
@@ -259,6 +261,32 @@ test('the personalized estimate never drops below the sex-specific safety floor'
   });
   assert.equal(result.mode, 'personalized');
   assert.equal(result.estimate, SAFETY_FLOOR_KCAL.female);
+});
+
+test('calculateHealthyWeightRange gives a sensible BMI-based range for 170cm', () => {
+  const { minKg, maxKg } = calculateHealthyWeightRange(170);
+  assert.equal(minKg, 53.5);
+  assert.equal(maxKg, 72.0);
+});
+
+test('estimateDaysToTarget: losing weight with a matching deficit', () => {
+  assert.equal(estimateDaysToTarget(80, 75, -500), 77);
+});
+
+test('estimateDaysToTarget: gaining weight with a matching surplus', () => {
+  assert.equal(estimateDaysToTarget(60, 65, 300), 128);
+});
+
+test('estimateDaysToTarget: direction mismatch returns null, not a nonsense number', () => {
+  assert.equal(estimateDaysToTarget(80, 75, 200), null);
+});
+
+test('estimateDaysToTarget: already at target returns 0', () => {
+  assert.equal(estimateDaysToTarget(70, 70.05, -400), 0);
+});
+
+test('estimateDaysToTarget: zero balance can never reach a different target', () => {
+  assert.equal(estimateDaysToTarget(70, 75, 0), null);
 });
 
 console.log(`\n${passed} passed`);

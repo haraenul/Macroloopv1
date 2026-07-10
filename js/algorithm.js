@@ -197,3 +197,34 @@ export function cmToFtIn(cm) {
   const inches = Math.round(totalIn - feet * 12);
   return { feet, inches };
 }
+
+// ---- Target weight & timeline ----
+// Suggests a range, never a single mandated number — a formula-derived
+// "ideal weight" can read as presumptuous about someone's body. The person
+// picks their own target; this is a starting reference point only.
+
+const BMI_HEALTHY_MIN = 18.5;
+const BMI_HEALTHY_MAX = 24.9;
+
+export function calculateHealthyWeightRange(heightCm) {
+  const heightM = heightCm / 100;
+  const minKg = Math.round(BMI_HEALTHY_MIN * heightM * heightM * 10) / 10;
+  const maxKg = Math.round(BMI_HEALTHY_MAX * heightM * heightM * 10) / 10;
+  return { minKg, maxKg };
+}
+
+/**
+ * Estimated days to reach targetWeightKg from currentWeightKg, given a
+ * daily calorie balance (positive = surplus, negative = deficit).
+ * Returns null if the balance's direction doesn't actually move toward
+ * the target (e.g. a deficit while trying to gain) — better to say
+ * nothing than show a nonsense number.
+ */
+export function estimateDaysToTarget(currentWeightKg, targetWeightKg, dailyCalorieBalance) {
+  const weightDeltaKg = targetWeightKg - currentWeightKg;
+  if (Math.abs(weightDeltaKg) < 0.1) return 0;
+  if (dailyCalorieBalance === 0) return null;
+  if (Math.sign(weightDeltaKg) !== Math.sign(dailyCalorieBalance)) return null;
+  const totalKcalNeeded = Math.abs(weightDeltaKg) * KCAL_PER_KG;
+  return Math.round(totalKcalNeeded / Math.abs(dailyCalorieBalance));
+}
