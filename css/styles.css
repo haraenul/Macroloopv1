@@ -1,16 +1,20 @@
 /* ==========================================================================
-   MacroLoop — visual system v2
+   MacroLoop — visual system v3
    Direction: "the loop, made visible." MacroLoop's actual differentiator is
-   a feedback loop — log, learn, adjust, repeat — and nothing in the UI
-   referenced that until now. The ring is no longer a generic progress
-   circle; it's the one signature element, everything else stays quiet
-   and disciplined around it. Same palette as before (it was already
-   deliberately not cream+terracotta or near-black+acid-green), refined
-   for real depth and hierarchy instead of one flat card style repeated
-   everywhere. Dark by default.
+   a feedback loop — log, learn, adjust, repeat — and the gradient ring is
+   the one signature element carrying that; everything else stays quiet
+   and disciplined around it, not a competing idea. This pass adds three
+   things on top of v2's foundation: real elevation (multi-layer shadows,
+   not flat cards with a border), motion that responds like something
+   physical (spring easing, numbers that count rather than snap, sheets
+   that emerge from the control that opened them), and a display face
+   that actually earns a second look — Bricolage Grotesque in place of
+   Space Grotesk, which has become the default "modern app" choice over
+   the last couple of years. Same palette as before, still no purple/blue
+   gradient or glow-orb decoration anywhere. Dark by default.
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
 
 :root {
   --bg: #12141a;
@@ -33,11 +37,18 @@
   --success: #7fa88c;
   --warning: #d97060; /* reserved for safety-floor warnings only — never "you went over" */
 
-  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  /* Bricolage Grotesque: display only — genuinely eccentric letterforms
+     (ink traps, organic curve treatment) that read as considered rather
+     than templated, but type-design commentary is consistent that it's
+     "too distracting for a lot of body text" — exactly why it stays out
+     of anything but headlines, the wordmark, and the few hero numbers. */
+  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
   --font-body: 'IBM Plex Sans', system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 
-  /* Real type scale — deliberate jumps, not five sizes all near 1rem */
+  /* Real type scale — deliberate jumps, and now real range at both ends
+     (a genuine whisper and a genuine shout) instead of clustering. */
+  --text-2xs: 0.68rem;
   --text-xs: 0.72rem;
   --text-sm: 0.85rem;
   --text-base: 0.98rem;
@@ -45,6 +56,31 @@
   --text-xl: 1.5rem;
   --text-2xl: 2.1rem;
   --text-3xl: 3rem;
+  --text-4xl: 4.5rem; /* the onboarding reveal earns a genuine hero size */
+
+  --weight-light: 300; /* Bricolage's variable axis goes to 200; used deliberately, not everywhere */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-black: 800;
+
+  /* Elevation: two shadows per level (a tight, dark contact shadow close
+     to the surface + a softer, wider ambient shadow) rather than one flat
+     shadow — this is what makes stacking read as physical depth instead
+     of "rectangle with a shadow filter applied." */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.28), 0 2px 6px rgba(0, 0, 0, 0.18);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.3), 0 8px 20px rgba(0, 0, 0, 0.24);
+  --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.32), 0 16px 40px rgba(0, 0, 0, 0.32);
+  --shadow-sheet: 0 -4px 8px rgba(0, 0, 0, 0.26), 0 -16px 48px rgba(0, 0, 0, 0.4);
+  --shadow-inset-hairline: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+
+  /* Spring-ish easing for anything entering/settling — real overshoot,
+     not linear/ease. Exits stay quicker and don't overshoot; a
+     departing element settling into a bounce reads as indecisive. */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-spring-soft: cubic-bezier(0.22, 1.12, 0.4, 1); /* gentler overshoot, for larger/full-screen moments */
+  --ease-exit: cubic-bezier(0.4, 0, 0.7, 0.4);
 
   --radius: 18px;
   --radius-sm: 10px;
@@ -91,6 +127,15 @@ h3 {
 h1 { font-size: var(--text-xl); }
 h2 { font-size: var(--text-lg); }
 
+.app-tagline {
+  font-family: var(--font-display);
+  font-weight: var(--weight-light);
+  font-size: var(--text-lg);
+  font-optical-sizing: auto;
+  letter-spacing: -0.005em;
+  color: var(--text-secondary);
+}
+
 p {
   margin: 0 0 12px;
   color: var(--text-secondary);
@@ -106,7 +151,7 @@ p {
 
 .screen {
   display: none;
-  animation: fade-in 0.3s ease;
+  animation: fade-in 0.42s var(--ease-spring-soft);
 }
 .screen.active {
   display: block;
@@ -115,7 +160,7 @@ p {
 @keyframes fade-in {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(10px) scale(0.99);
   }
   to {
     opacity: 1;
@@ -130,26 +175,31 @@ p {
   }
 }
 
-/* Base card — informational content, empty states, banners. Quiet. */
+/* Base card — informational content, empty states, banners. Quiet, but
+   genuinely lifted off the page (contact + ambient shadow) rather than
+   a flat rectangle defined only by its border. */
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 20px;
   margin-bottom: 16px;
+  box-shadow: var(--shadow-sm), var(--shadow-inset-hairline);
 }
 
-/* Action cards — things you tap (Gap Fixer suggestions, etc.): a slight
-   lift instead of the same flat treatment as a chart or an empty state. */
+/* Action cards — things you tap (Gap Fixer suggestions, etc.): a
+   noticeably stronger lift than a passive card, so the hierarchy of
+   "this is interactive" reads before you even see the button on it. */
 .card.card--action {
   background: var(--surface-raised);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
+  box-shadow: var(--shadow-md), var(--shadow-inset-hairline);
 }
 
-/* Data cards — charts and the ring's own container: very slightly
-   recessed rather than flat-floating, so numbers read as measured. */
+/* Data cards — charts and the ring's own container: recessed rather
+   than raised, so numbers read as measured/set-into-the-surface instead
+   of floating like a tappable card would. */
 .card.card--data {
-  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.2), inset 0 0 0 1px var(--border);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.28), inset 0 0 0 1px var(--border);
   border-color: transparent;
 }
 
@@ -191,10 +241,10 @@ button {
   border-radius: var(--radius-sm);
   cursor: pointer;
   min-height: 44px; /* brief 8: large touch targets */
-  transition: transform 0.1s ease, opacity 0.15s ease, background 0.15s ease;
+  transition: transform 0.22s var(--ease-spring), opacity 0.15s ease, background 0.15s ease, box-shadow 0.2s ease;
 }
 button:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
 }
 button:focus-visible {
   outline: 2px solid var(--accent-energy);
@@ -207,10 +257,15 @@ button:focus-visible {
   color: #1a1408;
   font-weight: 600;
   padding: 13px 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 6px 16px rgba(232, 169, 76, 0.22);
+}
+.btn-primary:active {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 2px 6px rgba(232, 169, 76, 0.18);
 }
 .btn-primary:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 .btn-secondary {
@@ -355,8 +410,9 @@ input:focus-visible {
 }
 .result-card .target-number {
   font-family: var(--font-display);
-  font-size: var(--text-3xl);
-  font-weight: 700;
+  font-size: var(--text-4xl);
+  font-weight: var(--weight-black);
+  letter-spacing: -0.02em;
   color: var(--accent-energy);
   line-height: 1;
 }
@@ -437,7 +493,9 @@ input:focus-visible {
 .macro-bar-fill {
   height: 100%;
   border-radius: 3px;
-  transition: width 0.4s ease;
+  /* width is driven frame-by-frame by the spring in js/motion.js now —
+     no CSS transition here, or it would fight the JS-set values instead
+     of the two moving in sync. */
 }
 .macro-protein .macro-bar-fill {
   background: var(--accent-protein);
@@ -518,16 +576,27 @@ input:focus-visible {
   inset: 0;
   background: rgba(0, 0, 0, 0.5);
   z-index: 10;
+  opacity: 0;
+  transition: opacity 0.28s ease, backdrop-filter 0.28s ease;
 }
 .sheet-backdrop.active {
   display: block;
+  opacity: 1;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
+/* Centered via left/right + auto margins rather than transform:
+   translateX(-50%) — frees up `transform` entirely for the JS-driven
+   open/close animation in js/motion.js, which needs it for the
+   "emerges from the button that opened it" effect. */
 .sheet {
   position: fixed;
-  left: 50%;
+  left: 0;
+  right: 0;
   bottom: 0;
-  transform: translateX(-50%);
+  margin-left: auto;
+  margin-right: auto;
   width: 100%;
   max-width: var(--max-width);
   max-height: 85vh;
@@ -536,6 +605,7 @@ input:focus-visible {
   padding: 20px;
   overflow-y: auto;
   z-index: 11;
+  box-shadow: var(--shadow-sheet);
 }
 
 .search-result {
@@ -586,6 +656,19 @@ input:focus-visible {
   z-index: 20;
   max-width: calc(100% - 40px);
   text-align: center;
+  box-shadow: var(--shadow-md);
+  animation: toast-in 0.5s var(--ease-spring);
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(12px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
 }
 
 .spinner {
