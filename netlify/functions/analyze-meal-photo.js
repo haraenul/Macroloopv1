@@ -14,6 +14,8 @@
 //   FIREBASE_SERVICE_ACCOUNT  - the full service account JSON, as a string
 //   FIREBASE_DATABASE_URL     - same RTDB URL as in js/firebase.js
 //   VISION_MODEL              - optional, defaults below
+//   VISION_MODEL_BACKUP       - optional, defaults below — tried once if
+//                               VISION_MODEL 404s (see callVisionModel)
 
 const admin = require('firebase-admin');
 
@@ -24,8 +26,18 @@ if (!admin.apps.length) {
   });
 }
 
-const FREE_MONTHLY_LIMIT = 50; // brief section 5's pricing table
+const FREE_MONTHLY_LIMIT = 3; // brief section 5's pricing table
 const MIN_SECONDS_BETWEEN_SCANS = 10; // cheap guard against accidental double-submits or scripted spam
+
+// Both confirmed real, free (no card/credits needed), and vision-capable
+// on OpenRouter as of this writing. meta-llama/llama-4-maverick:free
+// (the previous default) was pulled from OpenRouter's free tier and now
+// 404s — free-model availability on OpenRouter is a genuinely moving
+// target (models get added, removed, or rate-limited without much
+// notice), which is why there's a retry-on-404 fallback below rather
+// than just swapping the hardcoded string again and calling it done.
+const PRIMARY_MODEL = process.env.VISION_MODEL || 'google/gemma-4-31b-it:free';
+const BACKUP_MODEL = process.env.VISION_MODEL_BACKUP || 'google/gemma-4-26b-a4b-it:free';
 
 // Adapted from the brief's prompt: added explicit handling for (1) items
 // that can't be identified at all — set identified:false and null
@@ -52,14 +64,53 @@ Respond with ONLY valid JSON in this schema, no other text:
   "estimation_notes": "string"
 }`;
 
-/** Some models wrap JSON in markdown fences despite being told not to add other text — strip that before parsing instead of failing the whole request over formatting. */
+/**
+ * Some models wrap JSON in markdown fences, or add prose before/after it,
+ * despite being told not to add other text. Strip fences first; if there
+ * weren't any, fall back to the substring between the first { and the
+ * last } rather than failing outright on a model that added a sentence
+ * of preamble.
+ */
 function extractJson(rawContent) {
   const fenced = rawContent.match(/```(?:json)?\s*([\s\S]*?)```/i);
-  return (fenced ? fenced[1] : rawContent).trim();
+  if (fenced) return fenced[1].trim();
+  const start = rawContent.indexOf('{');
+  const end = rawContent.lastIndexOf('}');
+  return start !== -1 && end > start ? rawContent.slice(start, end + 1).trim() : rawContent.trim();
 }
 
 function jsonResponse(statusCode, body) {
   return { statusCode, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) };
+}
+
+/**
+ * Calls one model on OpenRouter. Returns { ok, status, data } rather than
+ * throwing on a non-200, so the caller can decide whether a 404 warrants
+ * a retry with the backup model without needing exceptions for control
+ * flow.
+ */
+async function callVisionModel(model, imageBase64) {
+  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            { type: 'text', text: FOOD_ANALYSIS_PROMPT },
+            { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${imageBase64}` } },
+          ],
+        },
+      ],
+      response_format: { type: 'json_object' },
+    }),
+  });
+  return { ok: response.ok, status: response.status, response };
 }
 
 exports.handler = async (event) => {
@@ -114,43 +165,27 @@ exports.handler = async (event) => {
     return jsonResponse(400, { error: 'missing_image' });
   }
 
-  // --- Call the vision model ---
+  // --- Call the vision model, retrying once with the backup model
+  // specifically on a 404 (the model itself is gone/renamed) — other
+  // failure modes (5xx, timeout, rate limit) aren't helped by switching
+  // models, so they fail through normally instead of masking a real
+  // outage behind a slower, equally-doomed second attempt. ---
   let data;
   try {
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        // Confirmed real and vision-capable on OpenRouter, genuinely free
-        // (no card, no credits needed). The tradeoff: fully-free accounts
-        // share a hard 50 requests/day ceiling across the WHOLE app (it's
-        // a per-account limit, and this function uses one shared account
-        // key) — fine while usage is low, but a real wall once traffic
-        // grows. A one-time $10 OpenRouter credit purchase raises that to
-        // 1000/day and never expires; that's the natural fix if this
-        // becomes the bottleneck rather than the per-user monthly cap.
-        model: process.env.VISION_MODEL || 'google/gemini-2.5-flash',
-        messages: [
-          {
-            role: 'user',
-            content: [
-              { type: 'text', text: FOOD_ANALYSIS_PROMPT },
-              { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${imageBase64}` } },
-            ],
-          },
-        ],
-        response_format: { type: 'json_object' },
-      }),
-    });
+    let result = await callVisionModel(PRIMARY_MODEL, imageBase64);
+    let modelUsed = PRIMARY_MODEL;
 
-    if (!response.ok) {
-      console.error('OpenRouter error', response.status, await response.text());
+    if (result.status === 404) {
+      console.warn(`Primary model ${PRIMARY_MODEL} returned 404 (likely pulled from OpenRouter) — retrying with backup ${BACKUP_MODEL}`);
+      result = await callVisionModel(BACKUP_MODEL, imageBase64);
+      modelUsed = BACKUP_MODEL;
+    }
+
+    if (!result.ok) {
+      console.error('OpenRouter error', modelUsed, result.status, await result.response.text());
       return jsonResponse(502, { error: 'vision_provider_error' });
     }
-    data = await response.json();
+    data = await result.response.json();
   } catch (err) {
     console.error('analyze-meal-photo network error', err);
     return jsonResponse(502, { error: 'vision_provider_unreachable' });
@@ -158,19 +193,15 @@ exports.handler = async (event) => {
 
   const rawContent = data.choices?.[0]?.message?.content;
   if (!rawContent) {
+    console.error('analyze-meal-photo: empty response body', JSON.stringify(data).slice(0, 500));
     return jsonResponse(502, { error: 'empty_response' });
   }
 
-  // Free/smaller models don't always return clean JSON like Gemini did —
-  // strip any ```json fences and pull out the {...} block before parsing.
-  const cleaned = rawContent.replace(/```json\s*/gi, '').replace(/```/g, '').trim();
-  const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
-
   let parsed;
   try {
-    parsed = JSON.parse(jsonMatch ? jsonMatch[0] : cleaned);
-  } catch {
-    console.error('unparseable_response — raw model output was:', rawContent);
+    parsed = JSON.parse(extractJson(rawContent));
+  } catch (err) {
+    console.error('analyze-meal-photo: unparseable response', rawContent.slice(0, 500));
     return jsonResponse(502, { error: 'unparseable_response' });
   }
 
