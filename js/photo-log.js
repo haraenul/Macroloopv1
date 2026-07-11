@@ -15,7 +15,7 @@
 // a relative path resolves against whatever origin loaded the page, and
 // silently 404s from GitHub Pages specifically. If you're editing this
 // file for an unrelated reason, leave this line untouched.
-const PHOTO_FUNCTION_URL = 'https://gleaming-sunflower-30499e.netlify.app/.netlify/functions/analyze-meal-photo';
+const PHOTO_FUNCTION_URL = 'soft-liger-d65c1e.netlify.app';
 
 const MAX_DIMENSION = 1024; // plenty for food recognition; keeps the payload (and API cost) small
 const JPEG_QUALITY = 0.8;
