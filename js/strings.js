@@ -213,6 +213,7 @@ export const STRINGS = {
   fixer_remaining_summary: '{calories} kcal left · leaning toward {macro}',
   fixer_refresh_button: 'Show me other options',
   fixer_log_this_button: 'Log this',
+  fixer_best_match_label: 'Best match',
   toast_logged_fixer_combo: 'Logged {name}',
   combo_greek_yogurt_berries: 'Greek yogurt with berries',
   combo_chicken_rice_bowl: 'Grilled chicken with rice',
