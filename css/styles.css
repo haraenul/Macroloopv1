@@ -97,10 +97,7 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background:
-    radial-gradient(ellipse 800px 500px at 20% -10%, rgba(232, 169, 76, 0.05), transparent),
-    radial-gradient(ellipse 600px 400px at 100% 30%, rgba(79, 184, 174, 0.04), transparent),
-    var(--bg);
+  background: var(--bg);
   color: var(--text-primary);
   font-family: var(--font-body);
   font-size: var(--text-base);
@@ -111,20 +108,6 @@ body {
   min-height: 100vh;
   display: flex;
   justify-content: center;
-  position: relative;
-}
-
-/* A whisper of grain so flat dark surfaces don't look like a solid CSS
-   fill — cheap, real technique, not visible as "a texture," just reads
-   as material rather than flat. */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.025;
-  z-index: 1;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 #app {
@@ -217,9 +200,8 @@ p {
 /* Top pick — the one Gap Fixer suggestion that actually earns emphasis,
    instead of three identical boxes in a row pretending to be equal. */
 .card.card--top-pick {
-  background: linear-gradient(160deg, color-mix(in srgb, var(--accent-energy) 10%, var(--surface-raised)), var(--surface-raised));
-  border: 1px solid color-mix(in srgb, var(--accent-energy) 35%, transparent);
-  box-shadow: var(--shadow-md), 0 0 0 1px color-mix(in srgb, var(--accent-energy) 12%, transparent);
+  background: var(--surface-raised);
+  border: 1px solid var(--accent-energy);
   padding-top: 14px;
 }
 .top-pick-label {
@@ -465,10 +447,10 @@ input:focus-visible {
    composition rather than a ring, then separately, some bars. */
 
 .today-hero {
-  background: radial-gradient(ellipse at 50% 0%, rgba(232, 169, 76, 0.06), transparent 65%), var(--surface);
-  border-radius: calc(var(--radius) + 6px);
+  background: var(--surface);
+  border-radius: var(--radius);
   padding: 28px 22px 24px;
-  box-shadow: var(--shadow-md), var(--shadow-inset-hairline);
+  box-shadow: var(--shadow-md);
   margin: 8px 0 16px;
 }
 
@@ -517,17 +499,22 @@ input:focus-visible {
 .macro-row {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
 }
 .macro-item {
   flex: 1;
 }
 .macro-item .macro-label {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 2px;
   font-size: var(--text-sm);
   color: var(--text-secondary);
   margin-bottom: 8px;
+}
+.macro-item .macro-label .numeric {
+  font-size: var(--text-base);
+  color: var(--text-primary);
 }
 .macro-bar-track {
   height: 10px;
@@ -618,10 +605,9 @@ input:focus-visible {
    stay secondary and slightly smaller. */
 .quick-add-row #open-photo-btn {
   flex: 1.4;
-  background: linear-gradient(155deg, var(--accent-energy), var(--accent-energy-deep));
+  background: var(--accent-energy);
   color: #1a1408;
   font-weight: 600;
-  box-shadow: var(--shadow-md);
 }
 .quick-add-row #open-search-btn,
 .quick-add-row #open-recent-btn {
