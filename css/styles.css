@@ -83,8 +83,6 @@
   --ease-exit: cubic-bezier(0.4, 0, 0.7, 0.4);
 
   --radius: 18px;
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.28);
-  --shadow-inset-hairline: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   --radius-sm: 10px;
   --max-width: 480px;
 }
@@ -195,22 +193,6 @@ p {
 .card.card--action {
   background: var(--surface-raised);
   box-shadow: var(--shadow-md), var(--shadow-inset-hairline);
-}
-
-/* Top pick — the one Gap Fixer suggestion that actually earns emphasis,
-   instead of three identical boxes in a row pretending to be equal. */
-.card.card--top-pick {
-  background: var(--surface-raised);
-  border: 1px solid var(--accent-energy);
-  padding-top: 14px;
-}
-.top-pick-label {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  color: var(--accent-energy);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 8px;
 }
 
 /* Data cards — charts and the ring's own container: recessed rather
@@ -439,35 +421,50 @@ input:focus-visible {
   margin-bottom: 16px;
 }
 
-/* ---- Today screen: the hero — ring + macros as one bound unit ----
-   These used to be two separate elements floating loose on the page with
-   a big dead gap between them and nothing tying them together visually.
-   Now they share one container, one background plane, and a tightened
-   internal rhythm — reads as a single considered "today's status"
-   composition rather than a ring, then separately, some bars. */
-
-.today-hero {
-  background: var(--surface);
-  border-radius: var(--radius);
-  padding: 28px 22px 24px;
-  box-shadow: var(--shadow-md);
-  margin: 8px 0 16px;
-}
+/* ---- Today screen: the ring — the signature element ----
+   Gradient stroke (defined in index.html's <defs>) + a slow, ambient
+   breathing glow. This is the one place the app spends its boldness —
+   everything else stays quiet and disciplined around it. */
 
 .ring-wrap {
   position: relative;
   display: flex;
   justify-content: center;
-  margin: 4px 0 20px;
+  align-items: center;
+  margin: 16px 0 28px;
+}
+
+/* A soft glow radiating from the ring itself — not an independent
+   decorative element, just the signature ring's own light spilling
+   outward. Stays in the amber family; no purple/blue, no separate orb. */
+.ring-bloom {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 520px;
+  height: 520px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(232, 169, 76, 0.26) 0%,
+    rgba(232, 169, 76, 0.12) 38%,
+    rgba(232, 169, 76, 0.03) 62%,
+    transparent 82%
+  );
+  pointer-events: none;
+  z-index: 0;
 }
 
 .ring-wrap svg {
-  filter: drop-shadow(0 0 20px rgba(232, 169, 76, 0.14));
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 0 24px rgba(232, 169, 76, 0.16));
 }
 
 .ring-glow {
   animation: ring-breathe 5s ease-in-out infinite;
-  transform-origin: 110px 110px;
+  transform-origin: 150px 150px;
 }
 @keyframes ring-breathe {
   0%, 100% { opacity: 0.55; }
@@ -480,12 +477,16 @@ input:focus-visible {
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
-  font-family: var(--font-display);
+  z-index: 1;
 }
 .ring-center .ring-number {
-  font-size: var(--text-2xl);
-  font-weight: 700;
-  font-family: var(--font-mono);
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-size: 4rem;
+  font-weight: var(--weight-black);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 .ring-center .ring-label {
   font-family: var(--font-body);
@@ -494,50 +495,45 @@ input:focus-visible {
   font-weight: 400;
 }
 
-/* ---- Macro bars — given real presence instead of 6px hairlines ---- */
+/* ---- Macro bars ---- */
 
 .macro-row {
   display: flex;
   justify-content: space-between;
   gap: 12px;
+  margin-bottom: 14px;
 }
 .macro-item {
   flex: 1;
 }
 .macro-item .macro-label {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  justify-content: space-between;
   font-size: var(--text-sm);
   color: var(--text-secondary);
-  margin-bottom: 8px;
-}
-.macro-item .macro-label .numeric {
-  font-size: var(--text-base);
-  color: var(--text-primary);
+  margin-bottom: 6px;
 }
 .macro-bar-track {
-  height: 10px;
-  border-radius: 5px;
+  height: 6px;
+  border-radius: 3px;
   background: var(--surface-2);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
   overflow: hidden;
 }
 .macro-bar-fill {
   height: 100%;
-  border-radius: 5px;
+  border-radius: 3px;
   /* width is driven frame-by-frame by the spring in js/motion.js now —
      no CSS transition here, or it would fight the JS-set values instead
      of the two moving in sync. */
 }
 .macro-protein .macro-bar-fill {
-  background: linear-gradient(90deg, var(--accent-protein), color-mix(in srgb, var(--accent-protein) 70%, white));
+  background: var(--accent-protein);
 }
 .macro-carb .macro-bar-fill {
-  background: linear-gradient(90deg, var(--accent-carb), color-mix(in srgb, var(--accent-carb) 70%, white));
+  background: var(--accent-carb);
 }
 .macro-fat .macro-bar-fill {
-  background: linear-gradient(90deg, var(--accent-fat), color-mix(in srgb, var(--accent-fat) 70%, white));
+  background: var(--accent-fat);
 }
 
 /* ---- Food log list ---- */
@@ -600,28 +596,17 @@ input:focus-visible {
 .quick-add-row button:active {
   box-shadow: none;
 }
-/* Photo is the flagship, differentiating feature — it gets real
-   presence instead of sitting as a third equal button. Search/Recent
-   stay secondary and slightly smaller. */
-.quick-add-row #open-photo-btn {
-  flex: 1.4;
-  background: var(--accent-energy);
-  color: #1a1408;
-  font-weight: 600;
+
+.quick-add-row button .icon-search { color: var(--accent-energy); }
+.quick-add-row button .icon-recent { color: var(--accent-fat); }
+.quick-add-row button .icon-photo { color: var(--accent-protein); }
+
+.fixer-combo-card {
+  border-left: 3px solid transparent;
 }
-.quick-add-row #open-search-btn,
-.quick-add-row #open-recent-btn {
-  flex: 0.8;
-  font-size: var(--text-xs);
-  flex-direction: column;
-  gap: 4px;
-  padding: 10px 6px;
-}
-.quick-add-row #open-search-btn .icon,
-.quick-add-row #open-recent-btn .icon {
-  width: 1.3em;
-  height: 1.3em;
-}
+.fixer-combo-card.accent-protein { border-left-color: var(--accent-protein); }
+.fixer-combo-card.accent-carb { border-left-color: var(--accent-carb); }
+.fixer-combo-card.accent-fat { border-left-color: var(--accent-fat); }
 
 /* ---- Log Meal sheet (modal) ---- */
 
