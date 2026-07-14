@@ -232,6 +232,43 @@ p {
   -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
 }
 
+.auth-hero {
+  text-align: center;
+  padding: 15vh 12px 40px;
+}
+.auth-mark {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 20px;
+  background: conic-gradient(from -90deg, var(--accent-energy), var(--accent-energy-deep) 70%, transparent 70%);
+  border-radius: 50%;
+  mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 8px));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 8px));
+}
+.auth-name {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.auth-hero .app-tagline {
+  font-weight: var(--weight-light, 300);
+  font-size: var(--text-lg);
+  margin: 0;
+}
+
+.exercise-burned-label {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+.exercise-burned-number {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-black, 800);
+  color: var(--accent-protein);
+  line-height: 1;
+}
+
 /* ---- Buttons ---- */
 
 button {
@@ -431,29 +468,7 @@ input:focus-visible {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 16px 0 28px;
-}
-
-/* A soft glow radiating from the ring itself — not an independent
-   decorative element, just the signature ring's own light spilling
-   outward. Stays in the amber family; no purple/blue, no separate orb. */
-.ring-bloom {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 520px;
-  height: 520px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(232, 169, 76, 0.26) 0%,
-    rgba(232, 169, 76, 0.12) 38%,
-    rgba(232, 169, 76, 0.03) 62%,
-    transparent 82%
-  );
-  pointer-events: none;
-  z-index: 0;
+  margin: 4px 0 20px;
 }
 
 .ring-wrap svg {
@@ -497,26 +512,39 @@ input:focus-visible {
 
 /* ---- Macro bars ---- */
 
+.today-hero {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 28px 22px 24px;
+  box-shadow: var(--shadow-md);
+  margin: 8px 0 16px;
+}
+
 .macro-row {
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 14px;
 }
 .macro-item {
   flex: 1;
 }
 .macro-item .macro-label {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 2px;
   font-size: var(--text-sm);
   color: var(--text-secondary);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+}
+.macro-item .macro-label .numeric {
+  font-size: var(--text-base);
+  color: var(--text-primary);
 }
 .macro-bar-track {
-  height: 6px;
-  border-radius: 3px;
+  height: 10px;
+  border-radius: 5px;
   background: var(--surface-2);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
   overflow: hidden;
 }
 .macro-bar-fill {
@@ -599,7 +627,32 @@ input:focus-visible {
 
 .quick-add-row button .icon-search { color: var(--accent-energy); }
 .quick-add-row button .icon-recent { color: var(--accent-fat); }
-.quick-add-row button .icon-photo { color: var(--accent-protein); }
+
+/* Photo is the flagship, differentiating feature — real presence
+   instead of sitting as a third equal button. Solid fill, not a
+   gradient — that specific effect already read as "cheap game app"
+   once and was corrected; not repeating it. */
+.quick-add-row #open-photo-btn {
+  flex: 1.4;
+  background: var(--accent-energy);
+  color: #1a1408;
+  font-weight: 600;
+}
+.quick-add-row #open-photo-btn .icon-photo {
+  color: #1a1408;
+}
+.quick-add-row #open-search-btn,
+.quick-add-row #open-recent-btn {
+  flex: 0.85;
+  flex-direction: column;
+  gap: 4px;
+  font-size: var(--text-xs);
+}
+.quick-add-row #open-search-btn .icon,
+.quick-add-row #open-recent-btn .icon {
+  width: 1.3em;
+  height: 1.3em;
+}
 
 .fixer-combo-card {
   border-left: 3px solid transparent;
@@ -607,6 +660,20 @@ input:focus-visible {
 .fixer-combo-card.accent-protein { border-left-color: var(--accent-protein); }
 .fixer-combo-card.accent-carb { border-left-color: var(--accent-carb); }
 .fixer-combo-card.accent-fat { border-left-color: var(--accent-fat); }
+
+.card.card--top-pick {
+  background: var(--surface-raised);
+  border: 1px solid var(--accent-energy);
+  padding-top: 14px;
+}
+.top-pick-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--accent-energy);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
 
 /* ---- Log Meal sheet (modal) ---- */
 
