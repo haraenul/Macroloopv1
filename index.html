@@ -19,8 +19,11 @@
 
   <!-- Auth -->
   <div id="screen-auth" class="screen">
-    <h1 data-i18n="app_name">MacroLoop</h1>
-    <p class="app-tagline" data-i18n="app_tagline">Track what you eat, without the guesswork.</p>
+    <div class="auth-hero">
+      <div class="auth-mark" aria-hidden="true"></div>
+      <h1 class="auth-name" data-i18n="app_name">MacroLoop</h1>
+      <p class="app-tagline" data-i18n="app_tagline">Track what you eat, without the guesswork.</p>
+    </div>
     <div class="card">
       <div class="field">
         <label for="auth-email" data-i18n="auth_email_label">Email</label>
@@ -124,6 +127,11 @@
         <p id="result-explanation"></p>
         <p class="error-text" id="result-warning" style="display:none;"></p>
       </div>
+      <div class="card">
+        <label for="target-weight-input" data-i18n="label_target_weight">Target weight (optional)</label>
+        <p id="healthy-range-hint" style="font-size:0.85rem; margin-top:-8px;"></p>
+        <input type="number" id="target-weight-input" step="0.1" placeholder="—" />
+      </div>
       <button class="btn-primary" id="onboarding-confirm" data-i18n="onboarding_get_started_button">Get started</button>
     </div>
   </div>
@@ -135,39 +143,40 @@
       <button class="btn-icon" id="sign-out-btn" title="Sign out" aria-label="Sign out" data-i18n-aria-label="aria_sign_out" style="font-size:1.3rem;">&#8594;</button>
     </div>
 
-    <div class="ring-wrap">
-      <div class="ring-bloom" aria-hidden="true"></div>
-      <svg width="300" height="300" viewBox="0 0 300 300">
-        <defs>
-          <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#e8a94c" />
-            <stop offset="100%" stop-color="#c9822f" />
-          </linearGradient>
-        </defs>
-        <circle cx="150" cy="150" r="125" fill="none" stroke="#242833" stroke-width="16" />
-        <circle id="ring-progress" class="ring-glow" cx="150" cy="150" r="125" fill="none" stroke="url(#ringGradient)" stroke-width="16"
-          stroke-linecap="round" transform="rotate(-90 150 150)"
-          stroke-dasharray="785.4" stroke-dashoffset="785.4" />
-      </svg>
-      <div class="ring-center">
-        <div class="ring-number" id="ring-remaining">0</div>
-        <div class="ring-label" data-i18n="ring_label_remaining">kcal remaining</div>
+    <div class="today-hero">
+      <div class="ring-wrap">
+        <svg width="300" height="300" viewBox="0 0 300 300">
+          <defs>
+            <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#e8a94c" />
+              <stop offset="100%" stop-color="#c9822f" />
+            </linearGradient>
+          </defs>
+          <circle cx="150" cy="150" r="125" fill="none" stroke="#242833" stroke-width="16" />
+          <circle id="ring-progress" class="ring-glow" cx="150" cy="150" r="125" fill="none" stroke="url(#ringGradient)" stroke-width="16"
+            stroke-linecap="round" transform="rotate(-90 150 150)"
+            stroke-dasharray="785.4" stroke-dashoffset="785.4" />
+        </svg>
+        <div class="ring-center">
+          <div class="ring-number" id="ring-remaining">0</div>
+          <div class="ring-label" data-i18n="ring_label_remaining">kcal remaining</div>
+        </div>
       </div>
-    </div>
-    <p class="numeric" id="exercise-credit-note" style="display:none; text-align:center; font-size:0.8rem; margin-top:-12px;"></p>
+      <p class="numeric" id="exercise-credit-note" style="display:none; text-align:center; font-size:0.8rem; margin-top:-12px;"></p>
 
-    <div class="macro-row">
-      <div class="macro-item macro-protein">
-        <div class="macro-label"><span data-i18n="macro_protein">Protein</span><span class="numeric"><span id="protein-consumed">0</span>/<span id="protein-target">0</span>g</span></div>
-        <div class="macro-bar-track"><div class="macro-bar-fill" id="protein-bar" style="width:0%;"></div></div>
-      </div>
-      <div class="macro-item macro-carb">
-        <div class="macro-label"><span data-i18n="macro_carbs">Carbs</span><span class="numeric"><span id="carb-consumed">0</span>/<span id="carb-target">0</span>g</span></div>
-        <div class="macro-bar-track"><div class="macro-bar-fill" id="carb-bar" style="width:0%;"></div></div>
-      </div>
-      <div class="macro-item macro-fat">
-        <div class="macro-label"><span data-i18n="macro_fat">Fat</span><span class="numeric"><span id="fat-consumed">0</span>/<span id="fat-target">0</span>g</span></div>
-        <div class="macro-bar-track"><div class="macro-bar-fill" id="fat-bar" style="width:0%;"></div></div>
+      <div class="macro-row">
+        <div class="macro-item macro-protein">
+          <div class="macro-label"><span data-i18n="macro_protein">Protein</span><span class="numeric"><span id="protein-consumed">0</span>/<span id="protein-target">0</span>g</span></div>
+          <div class="macro-bar-track"><div class="macro-bar-fill" id="protein-bar" style="width:0%;"></div></div>
+        </div>
+        <div class="macro-item macro-carb">
+          <div class="macro-label"><span data-i18n="macro_carbs">Carbs</span><span class="numeric"><span id="carb-consumed">0</span>/<span id="carb-target">0</span>g</span></div>
+          <div class="macro-bar-track"><div class="macro-bar-fill" id="carb-bar" style="width:0%;"></div></div>
+        </div>
+        <div class="macro-item macro-fat">
+          <div class="macro-label"><span data-i18n="macro_fat">Fat</span><span class="numeric"><span id="fat-consumed">0</span>/<span id="fat-target">0</span>g</span></div>
+          <div class="macro-bar-track"><div class="macro-bar-fill" id="fat-bar" style="width:0%;"></div></div>
+        </div>
       </div>
     </div>
 
@@ -189,9 +198,9 @@
       <button class="btn-icon" id="add-exercise-btn" aria-label="Log exercise" data-i18n-aria-label="aria_log_exercise">+</button>
     </div>
 
-    <div class="card" style="text-align:center;">
-      <div class="target-number numeric" id="exercise-total-burned" style="font-size:2.2rem; color:var(--accent-protein);">0</div>
-      <div class="target-unit" data-i18n="exercise_kcal_burned_today">kcal burned today</div>
+    <div class="today-hero" style="text-align:center;">
+      <div class="exercise-burned-label" data-i18n="exercise_kcal_burned_today">kcal burned today</div>
+      <div class="exercise-burned-number numeric" id="exercise-total-burned">0</div>
     </div>
 
     <h3 data-i18n="todays_exercise_heading">Today's exercise</h3>
@@ -211,6 +220,7 @@
       </div>
       <svg id="weight-chart" width="100%" height="140" viewBox="0 0 320 140"></svg>
       <p class="numeric" id="weight-trend-summary" style="margin-top:10px; font-size:0.85rem;"></p>
+      <p id="target-weight-timeline" style="display:none; font-size:0.85rem; color:var(--text-secondary);"></p>
     </div>
 
     <div class="card card--data">
@@ -363,6 +373,7 @@
     calculateBMR, calculateTDEE, calculateTarget,
     calculateMacroTargets, lbToKg, ftInToCm, kgToLb,
     updateAdaptiveTDEE, ADAPTIVE_WINDOW_DAYS,
+    calculateHealthyWeightRange, estimateDaysToTarget,
   } from './js/algorithm.js';
   import {
     searchFoods, debounce, logFood, scaleToGrams, getFrequentFoodsSorted, getDailyCalorieTotals,
@@ -539,6 +550,10 @@
 
     document.getElementById('onboarding-form').style.display = 'none';
     document.getElementById('onboarding-result').style.display = 'block';
+
+    const { minKg, maxKg } = calculateHealthyWeightRange(input.heightCm);
+    document.getElementById('healthy-range-hint').textContent =
+      t('healthy_range_hint', { min: minKg, max: maxKg });
   });
 
   document.getElementById('onboarding-confirm').addEventListener('click', async () => {
@@ -548,6 +563,7 @@
     const macros = calculateMacroTargets(target, input.weightKg);
     const date = todayLocalDate();
 
+    const targetWeightRaw = document.getElementById('target-weight-input').value;
     const profile = {
       sex: input.sex,
       age: input.age,
@@ -557,6 +573,7 @@
       rate_percent: input.ratePercent,
       unit_pref: input.unit_pref,
       premium_status: false,
+      target_weight_kg: targetWeightRaw ? Number(targetWeightRaw) : null,
     };
 
     await saveProfile(user.uid, profile);
@@ -1050,8 +1067,25 @@
 
     document.getElementById('weight-trend-summary').textContent = summarizeWeightTrend(weightSeries, profile.unit_pref);
     document.getElementById('calorie-trend-summary').textContent = summarizeCalorieTrend(calorieSeries, target);
+    renderTargetWeightTimeline(profile, weightSeries);
 
     await renderAlgorithmPanel(user.uid, profile);
+  }
+
+  function renderTargetWeightTimeline(profile, weightSeries) {
+    const el = document.getElementById('target-weight-timeline');
+    if (!profile.target_weight_kg || weightSeries.length === 0) {
+      el.style.display = 'none';
+      return;
+    }
+    const currentWeightKg = weightSeries[weightSeries.length - 1].y;
+    const weeklyChangeKcal = ((profile.rate_percent ?? 0.75) / 100) * currentWeightKg * 7700;
+    const dailyBalance = profile.goal === 'lose' ? -(weeklyChangeKcal / 7)
+      : profile.goal === 'gain' ? weeklyChangeKcal / 7
+      : 0;
+    const days = estimateDaysToTarget(currentWeightKg, profile.target_weight_kg, dailyBalance);
+    el.style.display = 'block';
+    el.textContent = days === null ? t('timeline_wrong_direction') : t('timeline_estimate', { days });
   }
 
   function summarizeWeightTrend(series, unitPref) {
@@ -1358,19 +1392,21 @@
     const macroAccentClass = { protein_g: 'accent-protein', carbs_g: 'accent-carb', fat_g: 'accent-fat' }[priorityMacro];
 
     listEl.innerHTML = combos
-      .map(
-        (c, i) => `
-        <div class="card card--action fixer-combo-card ${macroAccentClass}">
+      .map((c, i) => {
+        const isTop = i === 0;
+        return `
+        <div class="card ${isTop ? 'card--top-pick' : 'card--action'} fixer-combo-card ${macroAccentClass}">
+          ${isTop ? `<div class="top-pick-label">${t('fixer_best_match_label')}</div>` : ''}
           <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
             <div>
-              <div class="entry-name">${escapeHtml(t(`combo_${c.id}`))}</div>
+              <div class="entry-name" style="${isTop ? 'font-size:1.05rem;' : ''}">${escapeHtml(t(`combo_${c.id}`))}</div>
               <div class="entry-meta">${c.calories} kcal · ${c.protein_g}p / ${c.carbs_g}c / ${c.fat_g}f</div>
             </div>
-            <button class="btn-secondary fixer-log-btn" data-index="${i}" style="width:auto; padding:10px 16px; flex-shrink:0;">${t('fixer_log_this_button')}</button>
+            <button class="${isTop ? 'btn-primary' : 'btn-secondary'} fixer-log-btn" data-index="${i}" style="width:auto; padding:10px 16px; flex-shrink:0;">${t('fixer_log_this_button')}</button>
           </div>
         </div>
-      `
-      )
+      `;
+      })
       .join('');
 
     listEl.querySelectorAll('.fixer-log-btn').forEach((btn) => {
