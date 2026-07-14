@@ -105,11 +105,26 @@ export function isAdherenceGoalAligned(adherencePct, goal) {
   return false; // maintain: only "close to target" (handled above) counts as aligned
 }
 
+/**
+ * Draws a small rounded rect — canvas has no border-radius primitive,
+ * this is the manual equivalent used for the bar chart below.
+ */
+function roundedRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
 /** Draws the card into an existing <canvas>. Not unit-tested — needs a real 2D rendering context. */
 export function drawFlexCard(canvas, { weekLabel, stats, streak, target, goal }) {
   const ctx = canvas.getContext('2d');
   const W = canvas.width;
   const H = canvas.height;
+  const M = 32; // outer margin, consistent on all sides
 
   const bg = ctx.createLinearGradient(0, 0, 0, H);
   bg.addColorStop(0, '#12141a');
@@ -117,45 +132,88 @@ export function drawFlexCard(canvas, { weekLabel, stats, streak, target, goal })
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, W, H);
 
-  ctx.fillStyle = '#f0ede6';
-  ctx.font = '600 28px "Space Grotesk", sans-serif';
-  ctx.fillText('MacroLoop', 32, 56);
-  ctx.fillStyle = '#9b9691';
-  ctx.font = '400 16px "IBM Plex Sans", sans-serif';
-  ctx.fillText(weekLabel, 32, 82);
+  // ---- Wordmark: the loop glyph drawn for real, not a CSS mask this
+  // time — same signature element as the ring, so this card actually
+  // reads as MacroLoop's own rather than a generic stats screenshot.
+  const markR = 9;
+  const markX = M + markR;
+  const markY = 44;
+  ctx.beginPath();
+  ctx.arc(markX, markY, markR, -Math.PI / 2, Math.PI * 1.1);
+  ctx.strokeStyle = '#e8a94c';
+  ctx.lineWidth = 3.5;
+  ctx.lineCap = 'round';
+  ctx.stroke();
 
+  ctx.fillStyle = '#f0ede6';
+  ctx.font = '700 24px "Bricolage Grotesque", sans-serif';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('MacroLoop', markX + markR + 10, markY + 1);
+  ctx.textBaseline = 'alphabetic';
+
+  ctx.fillStyle = '#6b6862';
+  ctx.font = '500 14px "IBM Plex Mono", monospace';
+  ctx.fillText(weekLabel, M, 80);
+
+  // ---- Hero number ----
   ctx.fillStyle = '#e8a94c';
-  ctx.font = '700 72px "Space Grotesk", sans-serif';
-  ctx.fillText(`${stats.daysLogged}/7`, 32, 176);
+  ctx.font = '800 76px "Bricolage Grotesque", sans-serif';
+  ctx.fillText(`${stats.daysLogged}/7`, M, 190);
   ctx.fillStyle = '#9b9691';
   ctx.font = '400 15px "IBM Plex Sans", sans-serif';
-  ctx.fillText('days logged', 32, 200);
+  ctx.fillText('days logged', M, 214);
 
+  // ---- Streak + adherence, side by side instead of stacked lines ----
+  const statY = 258;
   ctx.fillStyle = '#f0ede6';
-  ctx.font = '600 21px "Space Grotesk", sans-serif';
-  ctx.fillText(`\u{1F525} ${streak} day streak`, 32, 245);
-  ctx.fillStyle = isAdherenceGoalAligned(stats.adherencePct, goal) ? '#7fa88c' : '#f0ede6';
-  ctx.fillText(`${stats.adherencePct}% of target`, 32, 278);
+  ctx.font = '700 22px "Bricolage Grotesque", sans-serif';
+  ctx.fillText(`${streak}`, M, statY);
+  const streakNumWidth = ctx.measureText(`${streak}`).width;
+  ctx.fillStyle = '#9b9691';
+  ctx.font = '400 14px "IBM Plex Sans", sans-serif';
+  ctx.fillText(streak === 1 ? 'day streak' : 'day streak', M + streakNumWidth + 8, statY);
 
-  const barX = 32;
+  const aligned = isAdherenceGoalAligned(stats.adherencePct, goal);
+  ctx.fillStyle = aligned ? '#7fa88c' : '#9b9691';
+  ctx.font = '600 15px "IBM Plex Mono", monospace';
+  ctx.fillText(`${stats.adherencePct}% of target`, M, statY + 28);
+
+  // ---- Bar chart — full width, rounded tops, evenly filling the card ----
   const barsTop = 320;
-  const barsHeight = 90;
-  const barWidth = 28;
-  const gap = 16;
+  const barsHeight = 92;
+  const chartWidth = W - M * 2;
+  const barWidth = 26;
+  const gap = (chartWidth - barWidth * 7) / 6;
 
   stats.dailyTotals.forEach((day, i) => {
     const ratio = target > 0 ? day.calories / target : 0;
-    const h = day.calories > 0 ? Math.max(6, barsHeight * Math.min(ratio, 1)) : 3;
-    const x = barX + i * (barWidth + gap);
-    ctx.fillStyle = day.calories > 0 ? '#4fb8ae' : 'rgba(240,237,230,0.12)';
-    ctx.fillRect(x, barsTop + barsHeight - h, barWidth, h);
+    const h = day.calories > 0 ? Math.max(8, barsHeight * Math.min(ratio, 1)) : 4;
+    const x = M + i * (barWidth + gap);
+    const y = barsTop + barsHeight - h;
+    ctx.fillStyle = day.calories > 0 ? '#4fb8ae' : 'rgba(240,237,230,0.10)';
+    roundedRect(ctx, x, y, barWidth, h, Math.min(6, h / 2));
+    ctx.fill();
   });
 
   ctx.fillStyle = '#6b6862';
-  ctx.font = '400 12px "IBM Plex Sans", sans-serif';
+  ctx.font = '500 12px "IBM Plex Mono", monospace';
+  ctx.textAlign = 'center';
   ['M', 'T', 'W', 'T', 'F', 'S', 'S'].forEach((label, i) => {
-    ctx.fillText(label, barX + i * (barWidth + gap) + barWidth / 3, barsTop + barsHeight + 22);
+    ctx.fillText(label, M + i * (barWidth + gap) + barWidth / 2, barsTop + barsHeight + 22);
   });
+  ctx.textAlign = 'left';
+
+  // ---- Bottom hairline + subtle brand tag, so a cropped share still
+  // reads as MacroLoop even if the header gets cut off ----
+  ctx.strokeStyle = 'rgba(240,237,230,0.09)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(M, H - 34);
+  ctx.lineTo(W - M, H - 34);
+  ctx.stroke();
+  ctx.fillStyle = '#6b6862';
+  ctx.font = '500 11px "IBM Plex Mono", monospace';
+  ctx.fillText('macroloop', M, H - 16);
 }
 
 /** Triggers a browser download of the canvas as a PNG. */
