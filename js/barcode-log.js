@@ -132,6 +132,7 @@ export async function lookupBarcode(barcode) {
     throw new Error(`Barcode lookup failed (${res.status})`);
   }
   return normalizeOFFProduct(trimmed, await res.json());
+}
 
 /**
  * Decodes a single captured photo (same file-input-with-capture
