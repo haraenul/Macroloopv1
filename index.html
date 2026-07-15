@@ -139,8 +139,9 @@
   <!-- Today -->
   <div id="screen-today" class="screen">
     <div class="top-bar">
-      <div class="brand" data-i18n="app_name">MacroLoop</div>
-      <button class="btn-icon" id="sign-out-btn" title="Sign out" aria-label="Sign out" data-i18n-aria-label="aria_sign_out" style="font-size:1.3rem;">&#8594;</button>
+<div class="brand" data-i18n="app_name">MacroLoop</div>
+<button class="btn-icon" id="edit-goals-btn" title="Edit goals" aria-label="Edit goals" style="font-size:1.2rem;">&#9881;</button>
+<button class="btn-icon" id="sign-out-btn" title="Sign out" aria-label="Sign out" data-i18n-aria-label="aria_sign_out" style="font-size:1.3rem;">&#8594;</button>
     </div>
 
     <div class="today-hero">
@@ -593,10 +594,8 @@
     await recordAlgorithmHistory(user.uid, date, { tdee_estimate: Math.round(tdee), mode: 'learning' });
 
     setState('profile', profile);
-    patchState('today', { date, target, macros, foodEntries: {} });
-    showScreen('screen-today');
-  });
-
+await loadAndRenderToday();
+showScreen('screen-today');
   // ---- Today ----
 
   const RECALC_INTERVAL_DAYS = 7; // brief 4.5 point 4: "damp the weekly update"
@@ -763,8 +762,40 @@
   }
 
   document.getElementById('sign-out-btn').addEventListener('click', async () => {
-    await signOutUser();
-  });
+if (!window.confirm('Sign out?')) return;
+await signOutUser();
+});
+
+document.getElementById('edit-goals-btn').addEventListener('click', () => {
+const profile = getState('profile');
+const weightKg = getState('today').weightKg;
+if (!profile) return;
+
+onboardingUnit = 'metric';
+onboardingSex = profile.sex;
+onboardingGoal = profile.goal;
+
+document.querySelectorAll('#unit-toggle button').forEach((b) => b.classList.toggle('selected', b.dataset.value === 'metric'));
+document.querySelectorAll('#sex-toggle button').forEach((b) => b.classList.toggle('selected', b.dataset.value === profile.sex));
+document.querySelectorAll('#goal-toggle button').forEach((b) => b.classList.toggle('selected', b.dataset.value === profile.goal));
+
+document.getElementById('height-metric-field').style.display = 'block';
+document.getElementById('height-imperial-field').style.display = 'none';
+document.getElementById('weight-metric-field').style.display = 'block';
+document.getElementById('weight-imperial-field').style.display = 'none';
+document.getElementById('rate-field').style.display = profile.goal === 'maintain' ? 'none' : 'block';
+
+document.getElementById('age-input').value = profile.age;
+document.getElementById('height-cm-input').value = profile.height_cm;
+document.getElementById('weight-kg-input').value = weightKg;
+document.getElementById('activity-select').value = profile.activity_level;
+document.getElementById('rate-input').value = profile.rate_percent ?? 0.75;
+document.getElementById('target-weight-input').value = profile.target_weight_kg ?? '';
+
+document.getElementById('onboarding-result').style.display = 'none';
+document.getElementById('onboarding-form').style.display = 'block';
+showScreen('screen-onboarding');
+});
 
   // ---- Sheets (shared backdrop, one active sheet at a time) ----
 
