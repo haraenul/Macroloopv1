@@ -275,8 +275,11 @@
 
     <div id="sheet-search-view">
       <div class="field">
+        <div class="field search-with-scan">
         <input type="text" id="search-input" data-i18n-placeholder="search_placeholder" placeholder="Search foods (e.g. chicken breast)" />
+        <button type="button" id="open-barcode-btn" data-i18n-aria-label="aria_scan_barcode" aria-label="Scan barcode"><span class="icon icon-barcode" aria-hidden="true"></span></button>
       </div>
+      <input type="file" id="barcode-file-input" accept="image/*" capture="environment" style="display:none;" />
       <div id="search-results"></div>
     </div>
 
@@ -385,6 +388,10 @@
     compressImageToBase64, analyzeMealPhoto, logPhotoItems, needsCloserLook,
     PhotoLimitError, PhotoNetworkError, PhotoValidationError,
   } from './js/photo-log.js';
+  import {
+    lookupBarcode, detectBarcodeFromImage, isBarcodeDetectionSupported,
+    BarcodeNotFoundError, IncompleteProductError,
+  } from './js/barcode-log.js';
   import { pickGapFixerCombos } from './js/gap-fixer.js';
   import {
     getMostRecentCompletedWeekStart, computeFlexCardStats, computeStreak, drawFlexCard, exportCanvasAsPng,
@@ -810,6 +817,52 @@
     document.getElementById('sheet-search-view').style.display = 'block';
   });
 
+  document.getElementById('open-barcode-btn').addEventListener('click', () => {
+    if (isBarcodeDetectionSupported()) {
+      document.getElementById('barcode-file-input').click();
+    } else {
+      promptManualBarcode();
+    }
+  });
+
+  document.getElementById('barcode-file-input').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    showToast(t('toast_scanning_barcode'));
+    let barcode = null;
+    try {
+      barcode = await detectBarcodeFromImage(file);
+    } catch (err) {
+      console.error(err);
+    }
+    if (barcode) {
+      handleScannedBarcode(barcode);
+    } else {
+      promptManualBarcode();
+    }
+  });
+
+  function promptManualBarcode() {
+    const code = window.prompt(t('prompt_manual_barcode'));
+    if (code) handleScannedBarcode(code);
+  }
+
+  async function handleScannedBarcode(barcode) {
+    try {
+      const item = await lookupBarcode(barcode);
+      selectFood(item);
+    } catch (err) {
+      console.error(err);
+      if (err instanceof BarcodeNotFoundError) {
+        showToast(t('toast_barcode_not_found'));
+      } else if (err instanceof IncompleteProductError) {
+        showToast(t('toast_barcode_incomplete'));
+      } else {
+        showToast(err.message);
+      }
+    }
+  }
   async function loadRecent() {
     const user = getState('user');
     const results = document.getElementById('search-results');
