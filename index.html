@@ -140,8 +140,8 @@
   <div id="screen-today" class="screen">
     <div class="top-bar">
 <div class="brand" data-i18n="app_name">MacroLoop</div>
-<button class="btn-icon" id="edit-goals-btn" title="Edit goals" aria-label="Edit goals" style="font-size:1.2rem;">&#9881;</button>
-<button class="btn-icon" id="sign-out-btn" title="Sign out" aria-label="Sign out" data-i18n-aria-label="aria_sign_out" style="font-size:1.3rem;">&#8594;</button>
+<button class="btn-icon" id="edit-goals-btn" title="Edit goals" aria-label="Edit goals" style="font-size:1.2rem;"><span class="icon icon-settings"></span></button>
+<button class="btn-icon" id="sign-out-btn" title="Sign out" aria-label="Sign out" data-i18n-aria-label="aria_sign_out" style="font-size:1.2rem;"><span class="icon icon-logout"></span></button>
     </div>
 
     <div class="today-hero">
@@ -361,6 +361,7 @@
   <div class="toast" id="toast" style="display:none;"></div>
 </div>
 
+<script>window.onerror = (msg, src, line) => alert('Error: ' + msg + ' (line ' + line + ')');</script>
 <script type="module">
   import {
     onAuthChange, signUp, signIn, signOutUser,
