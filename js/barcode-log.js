@@ -125,11 +125,13 @@ export async function lookupBarcode(barcode) {
   if (res.status === 503) {
     throw new Error('Open Food Facts is busy right now — try again in a moment');
   }
+  if (res.status === 404) {
+    throw new BarcodeNotFoundError(trimmed);
+  }
   if (!res.ok) {
     throw new Error(`Barcode lookup failed (${res.status})`);
   }
   return normalizeOFFProduct(trimmed, await res.json());
-}
 
 /**
  * Decodes a single captured photo (same file-input-with-capture
