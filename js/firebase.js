@@ -13,12 +13,17 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword,
+  deleteUser,
 } from 'https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js';
 import {
   getDatabase,
   ref,
   get,
   set,
+  remove,
   update,
   push,
   query,
@@ -33,13 +38,13 @@ import {
 // This object is not a secret — access control is enforced by the
 // security rules in firebase-rules.json, not by hiding this config.
 const firebaseConfig = {
-  apiKey: 'AIzaSyAj72iSSmvmiKawwD6NPskV957c_Mwyz8Y',
-  authDomain: 'macroloop-b2dd5.firebaseapp.com',
-  databaseURL: 'https://macroloop-b2dd5-default-rtdb.europe-west1.firebasedatabase.app',
-  projectId: 'macroloop-b2dd5',
-  storageBucket: 'macroloop-b2dd5.firebasestorage.app',
-  messagingSenderId: '530415918048',
-  appId: '1:530415918048:web:3f5dd58d8e59b752a2e985',
+  apiKey: 'YOUR_API_KEY',
+  authDomain: 'YOUR_PROJECT_ID.firebaseapp.com',
+  databaseURL: 'https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com',
+  projectId: 'YOUR_PROJECT_ID',
+  storageBucket: 'YOUR_PROJECT_ID.appspot.com',
+  messagingSenderId: 'YOUR_SENDER_ID',
+  appId: 'YOUR_APP_ID',
 };
 
 const app = initializeApp(firebaseConfig);
@@ -65,6 +70,36 @@ export function signOutUser() {
 /** Fires immediately with the current user (or null), then on every change. */
 export function onAuthChange(callback) {
   return onAuthStateChanged(auth, callback);
+}
+
+/**
+ * Both password change and account deletion are "sensitive operations"
+ * in Firebase's security model — they throw auth/requires-recent-login
+ * unless the session is fresh, so both re-authenticate with the
+ * current password first rather than assuming the existing session is
+ * recent enough.
+ */
+async function reauthenticate(currentPassword) {
+  const credential = EmailAuthProvider.credential(auth.currentUser.email, currentPassword);
+  await reauthenticateWithCredential(auth.currentUser, credential);
+}
+
+export async function changeUserPassword(currentPassword, newPassword) {
+  await reauthenticate(currentPassword);
+  await updatePassword(auth.currentUser, newPassword);
+}
+
+/**
+ * Deletes the user's data AND their auth account. Data first, then the
+ * account — if the account delete fails partway, better to have
+ * orphaned-but-harmless empty data than a deleted account whose data
+ * silently survives with no owner who can reach it.
+ */
+export async function deleteUserAccount(currentPassword) {
+  await reauthenticate(currentPassword);
+  const uid = auth.currentUser.uid;
+  await deleteAllUserData(uid);
+  await deleteUser(auth.currentUser);
 }
 
 // ---- Profile ----
@@ -188,5 +223,28 @@ export function recordAlgorithmHistory(uid, date, entry) {
 
 export async function getAlgorithmHistory(uid) {
   const snap = await get(ref(db, `users/${uid}/algorithm_state/history`));
+  return snap.exists() ? snap.val() : {};
+}
+
+// ---- Settings: export, delete, usage ----
+
+/** Everything under this user, in one read — the brief requires a REAL data export, not a placeholder. */
+export async function getAllUserData(uid) {
+  const snap = await get(ref(db, `users/${uid}`));
+  return snap.exists() ? snap.val() : {};
+}
+
+/** Wipes every path under users/{uid}. Used by account deletion; brief 7 requires this be real, not a no-op toggle. */
+export function deleteAllUserData(uid) {
+  return remove(ref(db, `users/${uid}`));
+}
+
+/**
+ * Read-only for the client by design (see firebase-rules.json) — only
+ * the Netlify function's Admin SDK can write this, so a client can't
+ * reset their own quota. Settings just displays it.
+ */
+export async function getPhotoScanUsage(uid) {
+  const snap = await get(ref(db, `users/${uid}/photo_scan_usage`));
   return snap.exists() ? snap.val() : {};
 }
