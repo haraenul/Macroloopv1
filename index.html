@@ -19,11 +19,8 @@
 
   <!-- Auth -->
   <div id="screen-auth" class="screen">
-    <div class="auth-hero">
-      <div class="auth-mark" aria-hidden="true"></div>
-      <h1 class="auth-name" data-i18n="app_name">MacroLoop</h1>
-      <p class="app-tagline" data-i18n="app_tagline">Track what you eat, without the guesswork.</p>
-    </div>
+    <h1 data-i18n="app_name">MacroLoop</h1>
+    <p class="app-tagline" data-i18n="app_tagline">Track what you eat, without the guesswork.</p>
     <div class="card">
       <div class="field">
         <label for="auth-email" data-i18n="auth_email_label">Email</label>
@@ -127,11 +124,6 @@
         <p id="result-explanation"></p>
         <p class="error-text" id="result-warning" style="display:none;"></p>
       </div>
-      <div class="card">
-        <label for="target-weight-input" data-i18n="label_target_weight">Target weight (optional)</label>
-        <p id="healthy-range-hint" style="font-size:0.85rem; margin-top:-8px;"></p>
-        <input type="number" id="target-weight-input" step="0.1" placeholder="—" />
-      </div>
       <button class="btn-primary" id="onboarding-confirm" data-i18n="onboarding_get_started_button">Get started</button>
     </div>
   </div>
@@ -139,45 +131,43 @@
   <!-- Today -->
   <div id="screen-today" class="screen">
     <div class="top-bar">
-<div class="brand" data-i18n="app_name">MacroLoop</div>
-<button class="btn-icon" id="edit-goals-btn" title="Edit goals" aria-label="Edit goals" style="font-size:1.2rem;"><span class="icon icon-settings"></span></button>
-<button class="btn-icon" id="sign-out-btn" title="Sign out" aria-label="Sign out" data-i18n-aria-label="aria_sign_out" style="font-size:1.2rem;"><span class="icon icon-logout"></span></button>
+      <div class="brand" data-i18n="app_name">MacroLoop</div>
+      <button class="btn-icon" id="open-settings-btn" title="Settings" aria-label="Settings" data-i18n-aria-label="aria_settings"><span class="icon icon-settings" aria-hidden="true"></span></button>
     </div>
 
-    <div class="today-hero">
-      <div class="ring-wrap">
-        <svg width="300" height="300" viewBox="0 0 300 300">
-          <defs>
-            <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#e8a94c" />
-              <stop offset="100%" stop-color="#c9822f" />
-            </linearGradient>
-          </defs>
-          <circle cx="150" cy="150" r="125" fill="none" stroke="#242833" stroke-width="16" />
-          <circle id="ring-progress" class="ring-glow" cx="150" cy="150" r="125" fill="none" stroke="url(#ringGradient)" stroke-width="16"
-            stroke-linecap="round" transform="rotate(-90 150 150)"
-            stroke-dasharray="785.4" stroke-dashoffset="785.4" />
-        </svg>
-        <div class="ring-center">
-          <div class="ring-number" id="ring-remaining">0</div>
-          <div class="ring-label" data-i18n="ring_label_remaining">kcal remaining</div>
-        </div>
+    <div class="ring-wrap">
+      <div class="ring-bloom" aria-hidden="true"></div>
+      <svg width="300" height="300" viewBox="0 0 300 300">
+        <defs>
+          <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#e8a94c" />
+            <stop offset="100%" stop-color="#c9822f" />
+          </linearGradient>
+        </defs>
+        <circle cx="150" cy="150" r="125" fill="none" stroke="#242833" stroke-width="16" />
+        <circle id="ring-progress" class="ring-glow" cx="150" cy="150" r="125" fill="none" stroke="url(#ringGradient)" stroke-width="16"
+          stroke-linecap="round" transform="rotate(-90 150 150)"
+          stroke-dasharray="785.4" stroke-dashoffset="785.4" />
+      </svg>
+      <div class="ring-center">
+        <div class="ring-number" id="ring-remaining">0</div>
+        <div class="ring-label" data-i18n="ring_label_remaining">kcal remaining</div>
       </div>
-      <p class="numeric" id="exercise-credit-note" style="display:none; text-align:center; font-size:0.8rem; margin-top:-12px;"></p>
+    </div>
+    <p class="numeric" id="exercise-credit-note" style="display:none; text-align:center; font-size:0.8rem; margin-top:-12px;"></p>
 
-      <div class="macro-row">
-        <div class="macro-item macro-protein">
-          <div class="macro-label"><span data-i18n="macro_protein">Protein</span><span class="numeric"><span id="protein-consumed">0</span>/<span id="protein-target">0</span>g</span></div>
-          <div class="macro-bar-track"><div class="macro-bar-fill" id="protein-bar" style="width:0%;"></div></div>
-        </div>
-        <div class="macro-item macro-carb">
-          <div class="macro-label"><span data-i18n="macro_carbs">Carbs</span><span class="numeric"><span id="carb-consumed">0</span>/<span id="carb-target">0</span>g</span></div>
-          <div class="macro-bar-track"><div class="macro-bar-fill" id="carb-bar" style="width:0%;"></div></div>
-        </div>
-        <div class="macro-item macro-fat">
-          <div class="macro-label"><span data-i18n="macro_fat">Fat</span><span class="numeric"><span id="fat-consumed">0</span>/<span id="fat-target">0</span>g</span></div>
-          <div class="macro-bar-track"><div class="macro-bar-fill" id="fat-bar" style="width:0%;"></div></div>
-        </div>
+    <div class="macro-row">
+      <div class="macro-item macro-protein">
+        <div class="macro-label"><span data-i18n="macro_protein">Protein</span><span class="numeric"><span id="protein-consumed">0</span>/<span id="protein-target">0</span>g</span></div>
+        <div class="macro-bar-track"><div class="macro-bar-fill" id="protein-bar" style="width:0%;"></div></div>
+      </div>
+      <div class="macro-item macro-carb">
+        <div class="macro-label"><span data-i18n="macro_carbs">Carbs</span><span class="numeric"><span id="carb-consumed">0</span>/<span id="carb-target">0</span>g</span></div>
+        <div class="macro-bar-track"><div class="macro-bar-fill" id="carb-bar" style="width:0%;"></div></div>
+      </div>
+      <div class="macro-item macro-fat">
+        <div class="macro-label"><span data-i18n="macro_fat">Fat</span><span class="numeric"><span id="fat-consumed">0</span>/<span id="fat-target">0</span>g</span></div>
+        <div class="macro-bar-track"><div class="macro-bar-fill" id="fat-bar" style="width:0%;"></div></div>
       </div>
     </div>
 
@@ -187,6 +177,14 @@
       <button id="open-photo-btn" data-i18n="quick_add_photo"><span class="icon icon-photo" aria-hidden="true"></span> Photo</button>
     </div>
     <input type="file" id="photo-file-input" accept="image/*" capture="environment" style="display:none;" />
+
+    <div id="gap-fixer-nudge" class="card card--action" style="display:none; border-left: 3px solid var(--accent-energy);">
+      <p style="margin-bottom:12px;" data-i18n="gap_fixer_nudge_text">Haven't hit your macros yet today — a few realistic options are ready.</p>
+      <div style="display:flex; gap:10px;">
+        <button class="btn-primary" id="gap-fixer-nudge-open" data-i18n="gap_fixer_nudge_action" style="flex:1;">Open Gap Fixer</button>
+        <button class="btn-ghost" id="gap-fixer-nudge-dismiss" data-i18n="gap_fixer_nudge_dismiss">Dismiss</button>
+      </div>
+    </div>
 
     <h3 data-i18n="todays_log_heading">Today's log</h3>
     <div id="food-log-list"></div>
@@ -199,9 +197,9 @@
       <button class="btn-icon" id="add-exercise-btn" aria-label="Log exercise" data-i18n-aria-label="aria_log_exercise">+</button>
     </div>
 
-    <div class="today-hero" style="text-align:center;">
-      <div class="exercise-burned-label" data-i18n="exercise_kcal_burned_today">kcal burned today</div>
-      <div class="exercise-burned-number numeric" id="exercise-total-burned">0</div>
+    <div class="card" style="text-align:center;">
+      <div class="target-number numeric" id="exercise-total-burned" style="font-size:2.2rem; color:var(--accent-protein);">0</div>
+      <div class="target-unit" data-i18n="exercise_kcal_burned_today">kcal burned today</div>
     </div>
 
     <h3 data-i18n="todays_exercise_heading">Today's exercise</h3>
@@ -221,7 +219,6 @@
       </div>
       <svg id="weight-chart" width="100%" height="140" viewBox="0 0 320 140"></svg>
       <p class="numeric" id="weight-trend-summary" style="margin-top:10px; font-size:0.85rem;"></p>
-      <p id="target-weight-timeline" style="display:none; font-size:0.85rem; color:var(--text-secondary);"></p>
     </div>
 
     <div class="card card--data">
@@ -266,6 +263,154 @@
     <button class="btn-primary" id="flex-share-btn" data-i18n="flex_share_button" style="margin-top:16px;">Save image</button>
   </div>
 
+  <!-- Settings -->
+  <div id="screen-settings" class="screen">
+    <div class="top-bar">
+      <button class="btn-icon" id="settings-back-btn" aria-label="Back" data-i18n-aria-label="aria_back"><span class="icon icon-back" aria-hidden="true"></span></button>
+      <div class="brand" data-i18n="settings_screen_title">Settings</div>
+      <div style="width:44px;"></div>
+    </div>
+
+    <!-- Profile -->
+    <div class="card">
+      <h3 data-i18n="settings_section_profile">Profile</h3>
+      <p class="settings-note" data-i18n="settings_profile_note">Updating these recalculates your target — same formula as onboarding.</p>
+
+      <div class="field">
+        <label data-i18n="label_sex">Sex</label>
+        <div class="segmented" id="settings-sex-toggle">
+          <button type="button" data-value="female" data-i18n="sex_female">Female</button>
+          <button type="button" data-value="male" data-i18n="sex_male">Male</button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="settings-age-input" data-i18n="label_age">Age</label>
+        <input type="number" id="settings-age-input" min="13" max="100" />
+      </div>
+      <div class="field">
+        <label data-i18n="onboarding_step_units">Units</label>
+        <div class="segmented" id="settings-unit-toggle">
+          <button type="button" data-value="metric" data-i18n="unit_metric">Metric</button>
+          <button type="button" data-value="imperial" data-i18n="unit_imperial">Imperial</button>
+        </div>
+      </div>
+      <div class="field" id="settings-height-metric-field">
+        <label for="settings-height-cm-input" data-i18n="label_height_cm">Height (cm)</label>
+        <input type="number" id="settings-height-cm-input" />
+      </div>
+      <div class="field" id="settings-height-imperial-field" style="display:none;">
+        <label data-i18n="label_height_ft_in">Height (ft / in)</label>
+        <div style="display:flex; gap:10px;">
+          <input type="number" id="settings-height-ft-input" style="flex:1;" />
+          <input type="number" id="settings-height-in-input" style="flex:1;" />
+        </div>
+      </div>
+      <div class="field" id="settings-weight-metric-field">
+        <label for="settings-weight-kg-input" data-i18n="label_weight_kg">Weight (kg)</label>
+        <input type="number" id="settings-weight-kg-input" />
+      </div>
+      <div class="field" id="settings-weight-imperial-field" style="display:none;">
+        <label for="settings-weight-lb-input" data-i18n="label_weight_lb">Weight (lb)</label>
+        <input type="number" id="settings-weight-lb-input" />
+      </div>
+      <div class="field">
+        <label for="settings-activity-select" data-i18n="label_activity_level">Typical activity level</label>
+        <select id="settings-activity-select">
+          <option value="sedentary" data-i18n="activity_sedentary">Sedentary — little to no exercise</option>
+          <option value="light" data-i18n="activity_light">Light — exercise 1-3 days/week</option>
+          <option value="moderate" data-i18n="activity_moderate">Moderate — exercise 3-5 days/week</option>
+          <option value="active" data-i18n="activity_active">Active — exercise 6-7 days/week</option>
+          <option value="very_active" data-i18n="activity_very_active">Very active — physical job or 2x/day training</option>
+        </select>
+      </div>
+      <div class="field">
+        <label data-i18n="onboarding_step_goal">Goal</label>
+        <div class="segmented" id="settings-goal-toggle">
+          <button type="button" data-value="lose" data-i18n="goal_lose">Lose</button>
+          <button type="button" data-value="maintain" data-i18n="goal_maintain">Maintain</button>
+          <button type="button" data-value="gain" data-i18n="goal_gain">Gain</button>
+        </div>
+      </div>
+      <div class="field" id="settings-rate-field" style="display:none;">
+        <label for="settings-rate-input" data-i18n="label_rate">Target rate (% bodyweight/week)</label>
+        <input type="number" id="settings-rate-input" step="0.1" min="0.1" max="2" />
+      </div>
+
+      <p class="error-text" id="settings-profile-error" style="display:none;"></p>
+      <button class="btn-primary" id="settings-save-profile-btn" data-i18n="settings_save_profile_button">Save changes</button>
+    </div>
+
+    <!-- Notifications -->
+    <div class="card">
+      <h3 data-i18n="settings_section_notifications">Notifications</h3>
+      <div class="field">
+        <label for="settings-gap-fixer-time" data-i18n="label_gap_fixer_time">Gap Fixer reminder</label>
+        <input type="time" id="settings-gap-fixer-time" />
+      </div>
+      <p class="settings-note" data-i18n="settings_gap_fixer_note">If you haven't hit your macros by this time, a reminder appears on Today. Checked only while the app is open — not a push notification yet.</p>
+    </div>
+
+    <!-- Subscription -->
+    <div class="card">
+      <h3 data-i18n="settings_section_subscription">Subscription</h3>
+      <div id="settings-plan-display"></div>
+      <button class="btn-secondary" id="settings-upgrade-btn" data-i18n="settings_upgrade_button" style="margin-top:12px;">Upgrade to Premium</button>
+    </div>
+
+    <!-- Data -->
+    <div class="card">
+      <h3 data-i18n="settings_section_data">Your data</h3>
+      <button class="btn-secondary" id="settings-export-btn" data-i18n="settings_export_button">Export my data</button>
+      <p class="settings-note" data-i18n="settings_export_note">Downloads everything — profile, logs, and history — as a JSON file.</p>
+      <button class="btn-secondary" id="settings-delete-account-btn" data-i18n="settings_delete_account_button" style="color:var(--warning); border-color:var(--warning); margin-top:8px;">Delete account</button>
+    </div>
+
+    <!-- Account -->
+    <div class="card">
+      <h3 data-i18n="settings_section_account">Account</h3>
+      <div class="field">
+        <label data-i18n="label_email">Email</label>
+        <div class="numeric" id="settings-email-display" style="padding:12px 0; color:var(--text-secondary);"></div>
+      </div>
+      <button class="btn-secondary" id="settings-change-password-btn" data-i18n="settings_change_password_button">Change password</button>
+      <div id="settings-password-form" style="display:none; margin-top:16px;">
+        <div class="field">
+          <label for="settings-current-password" data-i18n="label_current_password">Current password</label>
+          <input type="password" id="settings-current-password" />
+        </div>
+        <div class="field">
+          <label for="settings-new-password" data-i18n="label_new_password">New password</label>
+          <input type="password" id="settings-new-password" />
+        </div>
+        <p class="error-text" id="settings-password-error" style="display:none;"></p>
+        <button class="btn-primary" id="settings-save-password-btn" data-i18n="settings_save_password_button">Update password</button>
+      </div>
+      <button class="btn-secondary" id="settings-signout-btn" data-i18n="settings_signout_button" style="margin-top:12px;">Sign out</button>
+    </div>
+
+    <!-- About -->
+    <div class="card">
+      <h3 data-i18n="settings_section_about">About</h3>
+      <p style="font-size:var(--text-xs);" data-i18n="settings_app_blurb">MacroLoop estimates your energy needs from your own logged data over time, instead of a fixed formula that never adjusts.</p>
+      <p style="font-size:var(--text-xs);" data-i18n="settings_disclaimer">MacroLoop provides general nutrition estimates and is not medical advice.</p>
+    </div>
+  </div>
+
+  <!-- Delete account confirmation sheet -->
+  <div class="sheet" id="delete-account-sheet" style="display:none;">
+    <div class="top-bar">
+      <h3 style="margin:0; color:var(--warning);" data-i18n="settings_delete_account_button">Delete account</h3>
+      <button class="btn-icon" id="delete-account-sheet-close" aria-label="Close" data-i18n-aria-label="aria_close">&times;</button>
+    </div>
+    <p data-i18n="settings_delete_warning">This permanently deletes your account and every entry you've logged. This cannot be undone.</p>
+    <div class="field">
+      <label for="delete-account-password" data-i18n="settings_delete_confirm_password_label">Enter your password to confirm</label>
+      <input type="password" id="delete-account-password" />
+    </div>
+    <p class="error-text" id="delete-account-error" style="display:none;"></p>
+    <button class="btn-primary" id="delete-account-confirm-btn" data-i18n="settings_delete_confirm_button" style="background:var(--warning); color:#2a1410;">Permanently delete my account</button>
+  </div>
+
   <!-- Log Meal sheet -->
   <div class="sheet-backdrop" id="sheet-backdrop"></div>
   <div class="sheet" id="log-meal-sheet" style="display:none;">
@@ -276,11 +421,8 @@
 
     <div id="sheet-search-view">
       <div class="field">
-        <div class="field search-with-scan">
         <input type="text" id="search-input" data-i18n-placeholder="search_placeholder" placeholder="Search foods (e.g. chicken breast)" />
-        <button type="button" id="open-barcode-btn" data-i18n-aria-label="aria_scan_barcode" aria-label="Scan barcode"><span class="icon icon-barcode" aria-hidden="true"></span></button>
       </div>
-      <input type="file" id="barcode-file-input" accept="image/*" capture="environment" style="display:none;" />
       <div id="search-results"></div>
     </div>
 
@@ -361,7 +503,6 @@
   <div class="toast" id="toast" style="display:none;"></div>
 </div>
 
-<script>window.onerror = (msg, src, line) => alert('Error: ' + msg + ' (line ' + line + ')');</script>
 <script type="module">
   import {
     onAuthChange, signUp, signIn, signOutUser,
@@ -370,15 +511,15 @@
     getFoodLogForDate, getFoodLogRange, deleteFoodLogEntry,
     getExerciseLogForDate, deleteExerciseLogEntry,
     getAlgorithmState, saveAlgorithmState, recordAlgorithmHistory, getAlgorithmHistory,
+    getAllUserData, deleteAllUserData, getPhotoScanUsage, changeUserPassword, deleteUserAccount,
   } from './js/firebase.js';
   import {
     getState, setState, patchState, subscribe, todayLocalDate, daysAgoLocalDate, daysBetween, formatLocalDate,
   } from './js/state.js';
   import {
     calculateBMR, calculateTDEE, calculateTarget,
-    calculateMacroTargets, lbToKg, ftInToCm, kgToLb,
+    calculateMacroTargets, lbToKg, ftInToCm, kgToLb, cmToFtIn,
     updateAdaptiveTDEE, ADAPTIVE_WINDOW_DAYS,
-    calculateHealthyWeightRange, estimateDaysToTarget,
   } from './js/algorithm.js';
   import {
     searchFoods, debounce, logFood, scaleToGrams, getFrequentFoodsSorted, getDailyCalorieTotals,
@@ -390,14 +531,11 @@
     compressImageToBase64, analyzeMealPhoto, logPhotoItems, needsCloserLook,
     PhotoLimitError, PhotoNetworkError, PhotoValidationError,
   } from './js/photo-log.js';
-  import {
-    lookupBarcode, detectBarcodeFromImage, isBarcodeDetectionSupported,
-    BarcodeNotFoundError, IncompleteProductError,
-  } from './js/barcode-log.js';
   import { pickGapFixerCombos } from './js/gap-fixer.js';
   import {
     getMostRecentCompletedWeekStart, computeFlexCardStats, computeStreak, drawFlexCard, exportCanvasAsPng,
   } from './js/flex-card.js';
+  import { buildDataExport, downloadDataExport, shouldShowGapFixerNudge } from './js/settings.js';
   import { t, applyStrings } from './js/strings.js';
 
   applyStrings();
@@ -559,10 +697,6 @@
 
     document.getElementById('onboarding-form').style.display = 'none';
     document.getElementById('onboarding-result').style.display = 'block';
-
-    const { minKg, maxKg } = calculateHealthyWeightRange(input.heightCm);
-    document.getElementById('healthy-range-hint').textContent =
-      t('healthy_range_hint', { min: minKg, max: maxKg });
   });
 
   document.getElementById('onboarding-confirm').addEventListener('click', async () => {
@@ -572,7 +706,6 @@
     const macros = calculateMacroTargets(target, input.weightKg);
     const date = todayLocalDate();
 
-    const targetWeightRaw = document.getElementById('target-weight-input').value;
     const profile = {
       sex: input.sex,
       age: input.age,
@@ -582,7 +715,6 @@
       rate_percent: input.ratePercent,
       unit_pref: input.unit_pref,
       premium_status: false,
-      target_weight_kg: targetWeightRaw ? Number(targetWeightRaw) : null,
     };
 
     await saveProfile(user.uid, profile);
@@ -595,9 +727,10 @@
     await recordAlgorithmHistory(user.uid, date, { tdee_estimate: Math.round(tdee), mode: 'learning' });
 
     setState('profile', profile);
-await loadAndRenderToday();
-showScreen('screen-today');
-    });
+    patchState('today', { date, target, macros, foodEntries: {} });
+    showScreen('screen-today');
+  });
+
   // ---- Today ----
 
   const RECALC_INTERVAL_DAYS = 7; // brief 4.5 point 4: "damp the weekly update"
@@ -616,6 +749,19 @@ showScreen('screen-today');
       mode: 'learning',
       last_recalculated: null,
     };
+
+    // Brief section 5's Free/Premium table: the adaptive algorithm is a
+    // premium feature. Free accounts stay in Learning Mode (the static
+    // formula) indefinitely — this check was missing when Phase 3 first
+    // shipped, so free accounts have been able to reach Personalized
+    // Mode this whole time. Downgrading a previously-personalized
+    // estimate back to 'learning' here too, in case premium status is
+    // ever revoked.
+    if (!profile.premium_status) {
+      if (state.mode === 'personalized') return { ...state, mode: 'learning' };
+      return state;
+    }
+
     const daysSinceRecalc = state.last_recalculated
       ? (Date.now() - new Date(state.last_recalculated).getTime()) / 86400000
       : Infinity;
@@ -680,6 +826,7 @@ showScreen('screen-today');
       date, target, macros, foodEntries, exerciseEntries, exerciseBurned, weightKg,
       algoMode: algoState.mode,
     });
+    checkGapFixerNudge();
   }
 
   function renderToday() {
@@ -763,41 +910,252 @@ showScreen('screen-today');
     });
   }
 
-  document.getElementById('sign-out-btn').addEventListener('click', async () => {
-if (!window.confirm('Sign out?')) return;
-await signOutUser();
-});
+  // ---- Settings ----
 
-document.getElementById('edit-goals-btn').addEventListener('click', () => {
-const profile = getState('profile');
-const weightKg = getState('today').weightKg;
-if (!profile) return;
+  document.getElementById('open-settings-btn').addEventListener('click', () => {
+    showScreen('screen-settings');
+    loadSettingsScreen();
+  });
+  document.getElementById('settings-back-btn').addEventListener('click', () => showScreen('screen-today'));
 
-onboardingUnit = 'metric';
-onboardingSex = profile.sex;
-onboardingGoal = profile.goal;
+  let settingsUnit = 'metric';
+  let settingsSex = 'female';
+  let settingsGoal = 'maintain';
 
-document.querySelectorAll('#unit-toggle button').forEach((b) => b.classList.toggle('selected', b.dataset.value === 'metric'));
-document.querySelectorAll('#sex-toggle button').forEach((b) => b.classList.toggle('selected', b.dataset.value === profile.sex));
-document.querySelectorAll('#goal-toggle button').forEach((b) => b.classList.toggle('selected', b.dataset.value === profile.goal));
+  function wireSettingsSegmented(containerId, onSelect) {
+    document.getElementById(containerId).querySelectorAll('button').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.getElementById(containerId).querySelectorAll('button').forEach((b) => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        onSelect(btn.dataset.value);
+      });
+    });
+  }
+  function selectSettingsSegmented(containerId, value) {
+    document.getElementById(containerId).querySelectorAll('button').forEach((b) => b.classList.toggle('selected', b.dataset.value === value));
+  }
 
-document.getElementById('height-metric-field').style.display = 'block';
-document.getElementById('height-imperial-field').style.display = 'none';
-document.getElementById('weight-metric-field').style.display = 'block';
-document.getElementById('weight-imperial-field').style.display = 'none';
-document.getElementById('rate-field').style.display = profile.goal === 'maintain' ? 'none' : 'block';
+  wireSettingsSegmented('settings-unit-toggle', (v) => {
+    settingsUnit = v;
+    toggleSettingsUnitFields(v === 'metric');
+  });
+  wireSettingsSegmented('settings-sex-toggle', (v) => { settingsSex = v; });
+  wireSettingsSegmented('settings-goal-toggle', (v) => {
+    settingsGoal = v;
+    document.getElementById('settings-rate-field').style.display = v === 'maintain' ? 'none' : 'block';
+  });
 
-document.getElementById('age-input').value = profile.age;
-document.getElementById('height-cm-input').value = profile.height_cm;
-document.getElementById('weight-kg-input').value = weightKg;
-document.getElementById('activity-select').value = profile.activity_level;
-document.getElementById('rate-input').value = profile.rate_percent ?? 0.75;
-document.getElementById('target-weight-input').value = profile.target_weight_kg ?? '';
+  function toggleSettingsUnitFields(metric) {
+    document.getElementById('settings-height-metric-field').style.display = metric ? 'block' : 'none';
+    document.getElementById('settings-height-imperial-field').style.display = metric ? 'none' : 'block';
+    document.getElementById('settings-weight-metric-field').style.display = metric ? 'block' : 'none';
+    document.getElementById('settings-weight-imperial-field').style.display = metric ? 'none' : 'block';
+  }
 
-document.getElementById('onboarding-result').style.display = 'none';
-document.getElementById('onboarding-form').style.display = 'block';
-showScreen('screen-onboarding');
-});
+  async function loadSettingsScreen() {
+    const user = getState('user');
+    const profile = getState('profile');
+
+    settingsUnit = profile.unit_pref;
+    settingsSex = profile.sex;
+    settingsGoal = profile.goal;
+    selectSettingsSegmented('settings-unit-toggle', profile.unit_pref);
+    selectSettingsSegmented('settings-sex-toggle', profile.sex);
+    selectSettingsSegmented('settings-goal-toggle', profile.goal);
+    toggleSettingsUnitFields(profile.unit_pref === 'metric');
+    document.getElementById('settings-rate-field').style.display = profile.goal === 'maintain' ? 'none' : 'block';
+    document.getElementById('settings-rate-input').value = profile.rate_percent ?? 0.75;
+    document.getElementById('settings-age-input').value = profile.age;
+    document.getElementById('settings-activity-select').value = profile.activity_level;
+    document.getElementById('settings-profile-error').style.display = 'none';
+
+    const weightKg = await getLatestWeight(user.uid);
+    if (profile.unit_pref === 'metric') {
+      document.getElementById('settings-height-cm-input').value = profile.height_cm;
+      document.getElementById('settings-weight-kg-input').value = weightKg;
+    } else {
+      const { feet, inches } = cmToFtIn(profile.height_cm);
+      document.getElementById('settings-height-ft-input').value = feet;
+      document.getElementById('settings-height-in-input').value = inches;
+      document.getElementById('settings-weight-lb-input').value = Math.round(kgToLb(weightKg));
+    }
+
+    document.getElementById('settings-gap-fixer-time').value = profile.gap_fixer_time || '';
+
+    const usage = await getPhotoScanUsage(user.uid);
+    const monthKey = new Date().toISOString().slice(0, 7);
+    const usedThisMonth = usage[monthKey] || 0;
+    const planEl = document.getElementById('settings-plan-display');
+    if (profile.premium_status) {
+      planEl.innerHTML = `<p style="margin-bottom:4px;"><strong>${t('plan_premium')}</strong></p><p style="margin-bottom:0;">${t('photo_scans_unlimited')}</p>`;
+      document.getElementById('settings-upgrade-btn').style.display = 'none';
+    } else {
+      planEl.innerHTML = `<p style="margin-bottom:4px;"><strong>${t('plan_free')}</strong></p><p style="margin-bottom:4px;">${t('photo_scans_used', { used: usedThisMonth, limit: 3 })}</p><p style="margin-bottom:0; font-size:var(--text-xs);">${t('adaptive_algorithm_premium_note')}</p>`;
+      document.getElementById('settings-upgrade-btn').style.display = 'block';
+    }
+
+    document.getElementById('settings-email-display').textContent = user.email;
+    document.getElementById('settings-password-form').style.display = 'none';
+    document.getElementById('settings-password-error').style.display = 'none';
+  }
+
+  document.getElementById('settings-save-profile-btn').addEventListener('click', async () => {
+    const user = getState('user');
+    const errorEl = document.getElementById('settings-profile-error');
+    errorEl.style.display = 'none';
+
+    const age = Number(document.getElementById('settings-age-input').value);
+    let heightCm, weightKg;
+    if (settingsUnit === 'metric') {
+      heightCm = Number(document.getElementById('settings-height-cm-input').value);
+      weightKg = Number(document.getElementById('settings-weight-kg-input').value);
+    } else {
+      const ft = Number(document.getElementById('settings-height-ft-input').value);
+      const inch = Number(document.getElementById('settings-height-in-input').value);
+      heightCm = ftInToCm(ft, inch);
+      weightKg = lbToKg(Number(document.getElementById('settings-weight-lb-input').value));
+    }
+    const activityLevel = document.getElementById('settings-activity-select').value;
+    const ratePercent = settingsGoal === 'maintain' ? 0.75 : Number(document.getElementById('settings-rate-input').value);
+
+    if (!age || age < 13 || age > 100 || !heightCm || !weightKg) {
+      errorEl.textContent = t('onboarding_error_missing_fields');
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    const profile = {
+      ...getState('profile'),
+      sex: settingsSex,
+      age,
+      height_cm: heightCm,
+      activity_level: activityLevel,
+      goal: settingsGoal,
+      rate_percent: ratePercent,
+      unit_pref: settingsUnit,
+      gap_fixer_time: document.getElementById('settings-gap-fixer-time').value || null,
+    };
+
+    await saveProfile(user.uid, profile);
+    await saveWeightEntry(user.uid, todayLocalDate(), weightKg);
+    setState('profile', profile);
+    showToast(t('toast_profile_saved'));
+    await loadAndRenderToday();
+  });
+
+  document.getElementById('settings-upgrade-btn').addEventListener('click', () => {
+    showToast(t('toast_upgrade_coming_soon'));
+  });
+
+  document.getElementById('settings-export-btn').addEventListener('click', async () => {
+    const user = getState('user');
+    const allData = await getAllUserData(user.uid);
+    const exportObject = buildDataExport({
+      profile: allData.profile,
+      weightLog: allData.weight_log,
+      foodLog: allData.food_log,
+      exerciseLog: allData.exercise_log,
+      algorithmState: allData.algorithm_state,
+    });
+    downloadDataExport(exportObject, `macroloop-export-${todayLocalDate()}.json`);
+    showToast(t('toast_export_ready'));
+  });
+
+  document.getElementById('settings-delete-account-btn').addEventListener('click', (e) => {
+    document.getElementById('delete-account-password').value = '';
+    document.getElementById('delete-account-error').style.display = 'none';
+    openActiveSheet('delete-account-sheet', e.currentTarget);
+  });
+  document.getElementById('delete-account-sheet-close').addEventListener('click', closeActiveSheet);
+
+  document.getElementById('delete-account-confirm-btn').addEventListener('click', async () => {
+    const password = document.getElementById('delete-account-password').value;
+    const errorEl = document.getElementById('delete-account-error');
+    errorEl.style.display = 'none';
+
+    if (!password) {
+      errorEl.textContent = t('settings_delete_password_required');
+      errorEl.style.display = 'block';
+      return;
+    }
+    if (!window.confirm(t('settings_delete_final_confirm'))) return;
+
+    try {
+      await deleteUserAccount(password);
+      showToast(t('toast_account_deleted'));
+      closeActiveSheet();
+      // onAuthChange fires on its own once the account is gone, routing to Auth.
+    } catch (err) {
+      errorEl.textContent = t(friendlyAuthErrorKey(err));
+      errorEl.style.display = 'block';
+    }
+  });
+
+  document.getElementById('settings-change-password-btn').addEventListener('click', () => {
+    const form = document.getElementById('settings-password-form');
+    const opening = form.style.display === 'none';
+    form.style.display = opening ? 'block' : 'none';
+    if (opening) {
+      document.getElementById('settings-current-password').value = '';
+      document.getElementById('settings-new-password').value = '';
+      document.getElementById('settings-password-error').style.display = 'none';
+    }
+  });
+
+  document.getElementById('settings-save-password-btn').addEventListener('click', async () => {
+    const current = document.getElementById('settings-current-password').value;
+    const next = document.getElementById('settings-new-password').value;
+    const errorEl = document.getElementById('settings-password-error');
+    errorEl.style.display = 'none';
+
+    if (!current || !next) {
+      errorEl.textContent = t('settings_password_fields_required');
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    try {
+      await changeUserPassword(current, next);
+      showToast(t('toast_password_changed'));
+      document.getElementById('settings-password-form').style.display = 'none';
+    } catch (err) {
+      errorEl.textContent = t(friendlyAuthErrorKey(err));
+      errorEl.style.display = 'block';
+    }
+  });
+
+  document.getElementById('settings-signout-btn').addEventListener('click', async () => {
+    await signOutUser();
+  });
+
+  // ---- Gap Fixer reminder nudge ----
+
+  function checkGapFixerNudge() {
+    const profile = getState('profile');
+    const banner = document.getElementById('gap-fixer-nudge');
+    const reminderTime = profile?.gap_fixer_time;
+    if (!reminderTime) {
+      banner.style.display = 'none';
+      return;
+    }
+    const now = new Date();
+    const nowHHMM = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    const show = shouldShowGapFixerNudge({
+      reminderTime,
+      nowHHMM,
+      todayDateStr: todayLocalDate(),
+      dismissedDate: localStorage.getItem('gapFixerNudgeDismissed'),
+    });
+    banner.style.display = show ? 'block' : 'none';
+  }
+
+  document.getElementById('gap-fixer-nudge-dismiss').addEventListener('click', () => {
+    localStorage.setItem('gapFixerNudgeDismissed', todayLocalDate());
+    document.getElementById('gap-fixer-nudge').style.display = 'none';
+  });
+  document.getElementById('gap-fixer-nudge-open').addEventListener('click', () => {
+    document.querySelector('.nav-item[data-screen="fixer"]').click();
+  });
 
   // ---- Sheets (shared backdrop, one active sheet at a time) ----
 
@@ -850,52 +1208,6 @@ showScreen('screen-onboarding');
     document.getElementById('sheet-search-view').style.display = 'block';
   });
 
-  document.getElementById('open-barcode-btn').addEventListener('click', () => {
-    if (isBarcodeDetectionSupported()) {
-      document.getElementById('barcode-file-input').click();
-    } else {
-      promptManualBarcode();
-    }
-  });
-
-  document.getElementById('barcode-file-input').addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    e.target.value = '';
-    if (!file) return;
-    showToast(t('toast_scanning_barcode'));
-    let barcode = null;
-    try {
-      barcode = await detectBarcodeFromImage(file);
-    } catch (err) {
-      console.error(err);
-    }
-    if (barcode) {
-      handleScannedBarcode(barcode);
-    } else {
-      promptManualBarcode();
-    }
-  });
-
-  function promptManualBarcode() {
-    const code = window.prompt(t('prompt_manual_barcode'));
-    if (code) handleScannedBarcode(code);
-  }
-
-  async function handleScannedBarcode(barcode) {
-    try {
-      const item = await lookupBarcode(barcode);
-      selectFood(item);
-    } catch (err) {
-      console.error(err);
-      if (err instanceof BarcodeNotFoundError) {
-        showToast(t('toast_barcode_not_found'));
-      } else if (err instanceof IncompleteProductError) {
-        showToast(t('toast_barcode_incomplete'));
-      } else {
-        showToast(err.message);
-      }
-    }
-  }
   async function loadRecent() {
     const user = getState('user');
     const results = document.getElementById('search-results');
@@ -1153,25 +1465,8 @@ showScreen('screen-onboarding');
 
     document.getElementById('weight-trend-summary').textContent = summarizeWeightTrend(weightSeries, profile.unit_pref);
     document.getElementById('calorie-trend-summary').textContent = summarizeCalorieTrend(calorieSeries, target);
-    renderTargetWeightTimeline(profile, weightSeries);
 
     await renderAlgorithmPanel(user.uid, profile);
-  }
-
-  function renderTargetWeightTimeline(profile, weightSeries) {
-    const el = document.getElementById('target-weight-timeline');
-    if (!profile.target_weight_kg || weightSeries.length === 0) {
-      el.style.display = 'none';
-      return;
-    }
-    const currentWeightKg = weightSeries[weightSeries.length - 1].y;
-    const weeklyChangeKcal = ((profile.rate_percent ?? 0.75) / 100) * currentWeightKg * 7700;
-    const dailyBalance = profile.goal === 'lose' ? -(weeklyChangeKcal / 7)
-      : profile.goal === 'gain' ? weeklyChangeKcal / 7
-      : 0;
-    const days = estimateDaysToTarget(currentWeightKg, profile.target_weight_kg, dailyBalance);
-    el.style.display = 'block';
-    el.textContent = days === null ? t('timeline_wrong_direction') : t('timeline_estimate', { days });
   }
 
   function summarizeWeightTrend(series, unitPref) {
@@ -1478,21 +1773,19 @@ showScreen('screen-onboarding');
     const macroAccentClass = { protein_g: 'accent-protein', carbs_g: 'accent-carb', fat_g: 'accent-fat' }[priorityMacro];
 
     listEl.innerHTML = combos
-      .map((c, i) => {
-        const isTop = i === 0;
-        return `
-        <div class="card ${isTop ? 'card--top-pick' : 'card--action'} fixer-combo-card ${macroAccentClass}">
-          ${isTop ? `<div class="top-pick-label">${t('fixer_best_match_label')}</div>` : ''}
+      .map(
+        (c, i) => `
+        <div class="card card--action fixer-combo-card ${macroAccentClass}">
           <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
             <div>
-              <div class="entry-name" style="${isTop ? 'font-size:1.05rem;' : ''}">${escapeHtml(t(`combo_${c.id}`))}</div>
+              <div class="entry-name">${escapeHtml(t(`combo_${c.id}`))}</div>
               <div class="entry-meta">${c.calories} kcal · ${c.protein_g}p / ${c.carbs_g}c / ${c.fat_g}f</div>
             </div>
-            <button class="${isTop ? 'btn-primary' : 'btn-secondary'} fixer-log-btn" data-index="${i}" style="width:auto; padding:10px 16px; flex-shrink:0;">${t('fixer_log_this_button')}</button>
+            <button class="btn-secondary fixer-log-btn" data-index="${i}" style="width:auto; padding:10px 16px; flex-shrink:0;">${t('fixer_log_this_button')}</button>
           </div>
         </div>
-      `;
-      })
+      `
+      )
       .join('');
 
     listEl.querySelectorAll('.fixer-log-btn').forEach((btn) => {
