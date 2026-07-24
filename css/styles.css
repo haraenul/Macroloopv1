@@ -1,53 +1,52 @@
 /* ==========================================================================
-   MacroLoop — visual system v3
-   Direction: "the loop, made visible." MacroLoop's actual differentiator is
-   a feedback loop — log, learn, adjust, repeat — and the gradient ring is
-   the one signature element carrying that; everything else stays quiet
-   and disciplined around it, not a competing idea. This pass adds three
-   things on top of v2's foundation: real elevation (multi-layer shadows,
-   not flat cards with a border), motion that responds like something
-   physical (spring easing, numbers that count rather than snap, sheets
-   that emerge from the control that opened them), and a display face
-   that actually earns a second look — Bricolage Grotesque in place of
-   Space Grotesk, which has become the default "modern app" choice over
-   the last couple of years. Same palette as before, still no purple/blue
-   gradient or glow-orb decoration anywhere. Dark by default.
+   MacroLoop — visual system v4
+   Full palette rework. Near-black-plus-amber was never questioned since
+   Phase 1 — it's one of the specific patterns generic/AI-generated design
+   defaults to, and no amount of shadow or spacing work inside it was ever
+   going to read as considered. New direction: a warm, muted, spice-rack
+   palette actually grounded in the subject — this is a food app, nothing
+   before this looked like one. Background is warm espresso-brown, not
+   blue-black. The four data accents (energy/protein/carb/fat) are drawn
+   from an actual pantry — rust/paprika, sage, wheat, dusty mauve — rather
+   than arbitrary "chart colors" picked for maximum contrast against each
+   other. Shape language is now deliberate by role: cards stay moderately
+   rounded, buttons are full pills, inputs are tighter — not one radius
+   value applied everywhere out of convenience. Still no gradient buttons,
+   no glow-orbs, no grain — those were tried and corrected already. Dark
+   by default.
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
 
 :root {
-  --bg: #12141a;
-  --surface: #1b1e27;
-  --surface-2: #242833;
-  --surface-raised: #262b38; /* action cards: things you tap */
-  --border: rgba(240, 237, 230, 0.09);
-  --border-strong: rgba(240, 237, 230, 0.16);
+  --bg: #181310;
+  --surface: #231b16;
+  --surface-2: #2d2219;
+  --surface-raised: #382a1e; /* action cards: things you tap */
+  --border: rgba(243, 235, 224, 0.09);
+  --border-strong: rgba(243, 235, 224, 0.18);
 
-  --text-primary: #f0ede6;
-  --text-secondary: #9b9691;
-  --text-tertiary: #6b6862;
+  --text-primary: #f3ebe0;
+  --text-secondary: #ab9a89;
+  --text-tertiary: #786a5d;
 
-  --accent-energy: #e8a94c; /* calories — energy, not alarm */
-  --accent-energy-deep: #c9822f; /* the ring's gradient partner */
-  --accent-protein: #4fb8ae;
-  --accent-carb: #8b7fd9;
-  --accent-fat: #d98a7a;
+  /* A real pantry, not arbitrary chart colors — each tied to something
+     actual: dried paprika, fresh sage, raw wheat, dusty mauve. Muted and
+     desaturated on purpose; bright/saturated accents are what read as
+     "default UI kit," not craft. */
+  --accent-energy: #c1663f; /* paprika/rust — calories, the primary signature */
+  --accent-energy-deep: #8f4527; /* the ring's gradient partner */
+  --accent-protein: #7c8a5c; /* sage */
+  --accent-carb: #c9a24a; /* raw wheat */
+  --accent-fat: #9c7080; /* dusty mauve */
 
-  --success: #7fa88c;
-  --warning: #d97060; /* reserved for safety-floor warnings only — never "you went over" */
+  --success: #647a45; /* deeper than protein-sage, stays distinguishable */
+  --warning: #a8483a; /* reserved for safety-floor warnings only — never "you went over" */
 
-  /* Bricolage Grotesque: display only — genuinely eccentric letterforms
-     (ink traps, organic curve treatment) that read as considered rather
-     than templated, but type-design commentary is consistent that it's
-     "too distracting for a lot of body text" — exactly why it stays out
-     of anything but headlines, the wordmark, and the few hero numbers. */
   --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
   --font-body: 'IBM Plex Sans', system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 
-  /* Real type scale — deliberate jumps, and now real range at both ends
-     (a genuine whisper and a genuine shout) instead of clustering. */
   --text-2xs: 0.68rem;
   --text-xs: 0.72rem;
   --text-sm: 0.85rem;
@@ -56,34 +55,31 @@
   --text-xl: 1.5rem;
   --text-2xl: 2.1rem;
   --text-3xl: 3rem;
-  --text-4xl: 4.5rem; /* the onboarding reveal earns a genuine hero size */
+  --text-4xl: 4.5rem;
 
-  --weight-light: 300; /* Bricolage's variable axis goes to 200; used deliberately, not everywhere */
+  --weight-light: 300;
   --weight-regular: 400;
   --weight-medium: 500;
   --weight-semibold: 600;
   --weight-bold: 700;
   --weight-black: 800;
 
-  /* Elevation: two shadows per level (a tight, dark contact shadow close
-     to the surface + a softer, wider ambient shadow) rather than one flat
-     shadow — this is what makes stacking read as physical depth instead
-     of "rectangle with a shadow filter applied." */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.28), 0 2px 6px rgba(0, 0, 0, 0.18);
-  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.3), 0 8px 20px rgba(0, 0, 0, 0.24);
-  --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.32), 0 16px 40px rgba(0, 0, 0, 0.32);
-  --shadow-sheet: 0 -4px 8px rgba(0, 0, 0, 0.26), 0 -16px 48px rgba(0, 0, 0, 0.4);
-  --shadow-inset-hairline: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 6px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.32), 0 8px 20px rgba(0, 0, 0, 0.26);
+  --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.34), 0 16px 40px rgba(0, 0, 0, 0.34);
+  --shadow-sheet: 0 -4px 8px rgba(0, 0, 0, 0.28), 0 -16px 48px rgba(0, 0, 0, 0.42);
+  --shadow-inset-hairline: inset 0 1px 0 rgba(255, 245, 235, 0.04);
 
-  /* Spring-ish easing for anything entering/settling — real overshoot,
-     not linear/ease. Exits stay quicker and don't overshoot; a
-     departing element settling into a bounce reads as indecisive. */
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-spring-soft: cubic-bezier(0.22, 1.12, 0.4, 1); /* gentler overshoot, for larger/full-screen moments */
+  --ease-spring-soft: cubic-bezier(0.22, 1.12, 0.4, 1);
   --ease-exit: cubic-bezier(0.4, 0, 0.7, 0.4);
 
+  /* Shape language by role, not one radius everywhere out of convenience:
+     cards stay moderately rounded, buttons are full pills, inputs and
+     small controls are tighter. */
   --radius: 18px;
   --radius-sm: 10px;
+  --radius-pill: 999px;
   --max-width: 480px;
 }
 
@@ -232,6 +228,43 @@ p {
   -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
 }
 
+.auth-hero {
+  text-align: center;
+  padding: 15vh 12px 40px;
+}
+.auth-mark {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 20px;
+  background: conic-gradient(from -90deg, var(--accent-energy), var(--accent-energy-deep) 70%, transparent 70%);
+  border-radius: 50%;
+  mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 8px));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 8px));
+}
+.auth-name {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.auth-hero .app-tagline {
+  font-weight: var(--weight-light, 300);
+  font-size: var(--text-lg);
+  margin: 0;
+}
+
+.exercise-burned-label {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+.exercise-burned-number {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-black, 800);
+  color: var(--accent-protein);
+  line-height: 1;
+}
+
 /* ---- Buttons ---- */
 
 button {
@@ -254,7 +287,7 @@ button:focus-visible {
 .btn-primary {
   width: 100%;
   background: var(--accent-energy);
-  color: #1a1408;
+  color: #241108;
   font-weight: 600;
   padding: 13px 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 6px 16px rgba(232, 169, 76, 0.22);
@@ -334,14 +367,29 @@ button:focus-visible {
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23000'%3E%3Cpath d='M12 2c1 3-2 4-2 7a3 3 0 006 0c0-1-.3-2-1-3 2 1 3.5 3.3 3.5 6a6.5 6.5 0 01-13 0c0-4 2.5-6 4-7 .8-.6 2-2 2.5-3z'/%3E%3C/svg%3E");
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23000'%3E%3Cpath d='M12 2c1 3-2 4-2 7a3 3 0 006 0c0-1-.3-2-1-3 2 1 3.5 3.3 3.5 6a6.5 6.5 0 01-13 0c0-4 2.5-6 4-7 .8-.6 2-2 2.5-3z'/%3E%3C/svg%3E");
 }
+.icon-barcode {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23000'%3E%3Crect x='2' y='4' width='2' height='16'/%3E%3Crect x='6' y='4' width='1' height='16'/%3E%3Crect x='9' y='4' width='3' height='16'/%3E%3Crect x='14' y='4' width='1' height='16'/%3E%3Crect x='17' y='4' width='2' height='16'/%3E%3Crect x='21' y='4' width='1' height='16'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23000'%3E%3Crect x='2' y='4' width='2' height='16'/%3E%3Crect x='6' y='4' width='1' height='16'/%3E%3Crect x='9' y='4' width='3' height='16'/%3E%3Crect x='14' y='4' width='1' height='16'/%3E%3Crect x='17' y='4' width='2' height='16'/%3E%3Crect x='21' y='4' width='1' height='16'/%3E%3C/svg%3E");
+}
 .icon-settings {
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Cline x1='4' y1='7' x2='20' y2='7'/%3E%3Ccircle cx='15' cy='7' r='2'/%3E%3Cline x1='4' y1='12' x2='20' y2='12'/%3E%3Ccircle cx='9' cy='12' r='2'/%3E%3Cline x1='4' y1='17' x2='20' y2='17'/%3E%3Ccircle cx='17' cy='17' r='2'/%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Cline x1='4' y1='7' x2='20' y2='7'/%3E%3Ccircle cx='15' cy='7' r='2'/%3E%3Cline x1='4' y1='12' x2='20' y2='12'/%3E%3Ccircle cx='9' cy='12' r='2'/%3E%3Cline x1='4' y1='17' x2='20' y2='17'/%3E%3Ccircle cx='17' cy='17' r='2'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='7'/%3E%3Ccircle cx='12' cy='12' r='2' fill='%23000'/%3E%3Cline x1='19' y1='12' x2='22' y2='12'/%3E%3Cline x1='15.5' y1='18.06' x2='17' y2='20.66'/%3E%3Cline x1='8.5' y1='18.06' x2='7' y2='20.66'/%3E%3Cline x1='5' y1='12' x2='2' y2='12'/%3E%3Cline x1='8.5' y1='5.94' x2='7' y2='3.34'/%3E%3Cline x1='15.5' y1='5.94' x2='17' y2='3.34'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='7'/%3E%3Ccircle cx='12' cy='12' r='2' fill='%23000'/%3E%3Cline x1='19' y1='12' x2='22' y2='12'/%3E%3Cline x1='15.5' y1='18.06' x2='17' y2='20.66'/%3E%3Cline x1='8.5' y1='18.06' x2='7' y2='20.66'/%3E%3Cline x1='5' y1='12' x2='2' y2='12'/%3E%3Cline x1='8.5' y1='5.94' x2='7' y2='3.34'/%3E%3Cline x1='15.5' y1='5.94' x2='17' y2='3.34'/%3E%3C/svg%3E");
 }
-.icon-back {
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='15 5 8 12 15 19'/%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='15 5 8 12 15 19'/%3E%3C/svg%3E");
+.icon-logout {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4'/%3E%3Cpolyline points='16 17 21 12 16 7'/%3E%3Cline x1='21' y1='12' x2='9' y2='12'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4'/%3E%3Cpolyline points='16 17 21 12 16 7'/%3E%3Cline x1='21' y1='12' x2='9' y2='12'/%3E%3C/svg%3E");
 }
+.search-with-scan { display: flex; align-items: center; gap: 8px; }
+.search-with-scan input { flex: 1; }
+#open-barcode-btn {
+  flex: 0 0 auto; width: 42px; height: 42px;
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+}
+#open-barcode-btn .icon { width: 1.2em; height: 1.2em; }
 
 /* ---- Forms ---- */
 
@@ -388,7 +436,7 @@ input:focus-visible {
 }
 .segmented button.selected {
   background: var(--accent-energy);
-  color: #1a1408;
+  color: #241108;
   font-weight: 600;
 }
 
@@ -439,29 +487,7 @@ input:focus-visible {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 16px 0 28px;
-}
-
-/* A soft glow radiating from the ring itself — not an independent
-   decorative element, just the signature ring's own light spilling
-   outward. Stays in the amber family; no purple/blue, no separate orb. */
-.ring-bloom {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 520px;
-  height: 520px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(232, 169, 76, 0.26) 0%,
-    rgba(232, 169, 76, 0.12) 38%,
-    rgba(232, 169, 76, 0.03) 62%,
-    transparent 82%
-  );
-  pointer-events: none;
-  z-index: 0;
+  margin: 4px 0 20px;
 }
 
 .ring-wrap svg {
@@ -505,26 +531,39 @@ input:focus-visible {
 
 /* ---- Macro bars ---- */
 
+.today-hero {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 28px 22px 24px;
+  box-shadow: var(--shadow-md);
+  margin: 8px 0 16px;
+}
+
 .macro-row {
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 14px;
 }
 .macro-item {
   flex: 1;
 }
 .macro-item .macro-label {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 2px;
   font-size: var(--text-sm);
   color: var(--text-secondary);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+}
+.macro-item .macro-label .numeric {
+  font-size: var(--text-base);
+  color: var(--text-primary);
 }
 .macro-bar-track {
-  height: 6px;
-  border-radius: 3px;
+  height: 10px;
+  border-radius: 5px;
   background: var(--surface-2);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
   overflow: hidden;
 }
 .macro-bar-fill {
@@ -607,7 +646,32 @@ input:focus-visible {
 
 .quick-add-row button .icon-search { color: var(--accent-energy); }
 .quick-add-row button .icon-recent { color: var(--accent-fat); }
-.quick-add-row button .icon-photo { color: var(--accent-protein); }
+
+/* Photo is the flagship, differentiating feature — real presence
+   instead of sitting as a third equal button. Solid fill, not a
+   gradient — that specific effect already read as "cheap game app"
+   once and was corrected; not repeating it. */
+.quick-add-row #open-photo-btn {
+  flex: 1.4;
+  background: var(--accent-energy);
+  color: #241108;
+  font-weight: 600;
+}
+.quick-add-row #open-photo-btn .icon-photo {
+  color: #241108;
+}
+.quick-add-row #open-search-btn,
+.quick-add-row #open-recent-btn {
+  flex: 0.85;
+  flex-direction: column;
+  gap: 4px;
+  font-size: var(--text-xs);
+}
+.quick-add-row #open-search-btn .icon,
+.quick-add-row #open-recent-btn .icon {
+  width: 1.3em;
+  height: 1.3em;
+}
 
 .fixer-combo-card {
   border-left: 3px solid transparent;
@@ -615,6 +679,20 @@ input:focus-visible {
 .fixer-combo-card.accent-protein { border-left-color: var(--accent-protein); }
 .fixer-combo-card.accent-carb { border-left-color: var(--accent-carb); }
 .fixer-combo-card.accent-fat { border-left-color: var(--accent-fat); }
+
+.card.card--top-pick {
+  background: var(--surface-raised);
+  border: 1px solid var(--accent-energy);
+  padding-top: 14px;
+}
+.top-pick-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--accent-energy);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
 
 /* ---- Log Meal sheet (modal) ---- */
 
@@ -839,4 +917,51 @@ input:focus-visible {
   font-size: var(--text-sm);
   color: var(--warning);
   margin-bottom: 12px;
+}
+
+/* ---- Settings: real hierarchy, not a uniform stack ----
+   Profile stays the primary .card — it's the one thing actually edited
+   often, and recalculates your target. Everything else here is lower-
+   frequency utility, so it recedes: no elevation, quieter heading, blends
+   toward the page background instead of competing with Profile for
+   attention. Delete account gets pulled out of "Your data" entirely
+   rather than sharing a card with "export" — a permanent, destructive
+   action needs its own visual space, not to sit one tap below a
+   harmless button at the same weight. About drops the card treatment
+   altogether and reads as plain footer text, since it's the least
+   important thing on the screen. */
+.card.card--quiet {
+  background: transparent;
+  border: 1px solid var(--border);
+  box-shadow: none;
+  padding: 16px 20px;
+}
+.card.card--quiet h3 {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+}
+
+.settings-danger-zone {
+  border: 1px solid var(--warning);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+.settings-danger-zone h3 {
+  font-size: var(--text-base);
+  color: var(--warning);
+}
+.settings-danger-zone p {
+  font-size: var(--text-xs);
+  margin-bottom: 12px;
+}
+
+.settings-footer {
+  text-align: center;
+  padding: 4px 12px 0;
+}
+.settings-footer p {
+  font-size: var(--text-2xs);
+  color: var(--text-tertiary);
+  margin-bottom: 8px;
 }
