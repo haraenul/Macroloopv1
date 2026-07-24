@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#12141a" />
+<meta name="theme-color" content="#181310" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <title>MacroLoop</title>
@@ -111,6 +111,15 @@
           <label for="rate-input" data-i18n="label_rate">Target rate (% bodyweight/week)</label>
           <input type="number" id="rate-input" step="0.1" value="0.75" min="0.1" max="2" />
         </div>
+        <div class="field" id="target-weight-metric-field" style="display:none;">
+          <label for="target-weight-kg-input" data-i18n="label_target_weight_kg">Goal weight (kg) — optional</label>
+          <input type="number" id="target-weight-kg-input" placeholder="65" />
+        </div>
+        <div class="field" id="target-weight-imperial-field" style="display:none;">
+          <label for="target-weight-lb-input" data-i18n="label_target_weight_lb">Goal weight (lb) — optional</label>
+          <input type="number" id="target-weight-lb-input" placeholder="143" />
+        </div>
+        <p class="settings-note" id="onboarding-healthy-range-hint" style="display:none; margin-top:-10px; margin-bottom:18px;"></p>
       </div>
 
       <p class="error-text" id="onboarding-error" style="display:none;"></p>
@@ -140,11 +149,11 @@
       <svg width="300" height="300" viewBox="0 0 300 300">
         <defs>
           <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#e8a94c" />
-            <stop offset="100%" stop-color="#c9822f" />
+            <stop offset="0%" stop-color="#c1663f" />
+            <stop offset="100%" stop-color="#8f4527" />
           </linearGradient>
         </defs>
-        <circle cx="150" cy="150" r="125" fill="none" stroke="#242833" stroke-width="16" />
+        <circle cx="150" cy="150" r="125" fill="none" stroke="#2d2219" stroke-width="16" />
         <circle id="ring-progress" class="ring-glow" cx="150" cy="150" r="125" fill="none" stroke="url(#ringGradient)" stroke-width="16"
           stroke-linecap="round" transform="rotate(-90 150 150)"
           stroke-dasharray="785.4" stroke-dashoffset="785.4" />
@@ -219,6 +228,7 @@
       </div>
       <svg id="weight-chart" width="100%" height="140" viewBox="0 0 320 140"></svg>
       <p class="numeric" id="weight-trend-summary" style="margin-top:10px; font-size:0.85rem;"></p>
+      <p class="numeric" id="days-to-target-summary" style="margin-top:4px; font-size:0.85rem; display:none; color:var(--text-secondary);"></p>
     </div>
 
     <div class="card card--data">
@@ -335,13 +345,22 @@
         <label for="settings-rate-input" data-i18n="label_rate">Target rate (% bodyweight/week)</label>
         <input type="number" id="settings-rate-input" step="0.1" min="0.1" max="2" />
       </div>
+      <div class="field" id="settings-target-weight-metric-field" style="display:none;">
+        <label for="settings-target-weight-kg-input" data-i18n="label_target_weight_kg">Goal weight (kg) — optional</label>
+        <input type="number" id="settings-target-weight-kg-input" placeholder="65" />
+      </div>
+      <div class="field" id="settings-target-weight-imperial-field" style="display:none;">
+        <label for="settings-target-weight-lb-input" data-i18n="label_target_weight_lb">Goal weight (lb) — optional</label>
+        <input type="number" id="settings-target-weight-lb-input" placeholder="143" />
+      </div>
+      <p class="settings-note" id="settings-healthy-range-hint" style="display:none;"></p>
 
       <p class="error-text" id="settings-profile-error" style="display:none;"></p>
       <button class="btn-primary" id="settings-save-profile-btn" data-i18n="settings_save_profile_button">Save changes</button>
     </div>
 
     <!-- Notifications -->
-    <div class="card">
+    <div class="card card--quiet">
       <h3 data-i18n="settings_section_notifications">Notifications</h3>
       <div class="field">
         <label for="settings-gap-fixer-time" data-i18n="label_gap_fixer_time">Gap Fixer reminder</label>
@@ -351,22 +370,21 @@
     </div>
 
     <!-- Subscription -->
-    <div class="card">
+    <div class="card card--quiet">
       <h3 data-i18n="settings_section_subscription">Subscription</h3>
       <div id="settings-plan-display"></div>
       <button class="btn-secondary" id="settings-upgrade-btn" data-i18n="settings_upgrade_button" style="margin-top:12px;">Upgrade to Premium</button>
     </div>
 
     <!-- Data -->
-    <div class="card">
+    <div class="card card--quiet">
       <h3 data-i18n="settings_section_data">Your data</h3>
       <button class="btn-secondary" id="settings-export-btn" data-i18n="settings_export_button">Export my data</button>
       <p class="settings-note" data-i18n="settings_export_note">Downloads everything — profile, logs, and history — as a JSON file.</p>
-      <button class="btn-secondary" id="settings-delete-account-btn" data-i18n="settings_delete_account_button" style="color:var(--warning); border-color:var(--warning); margin-top:8px;">Delete account</button>
     </div>
 
     <!-- Account -->
-    <div class="card">
+    <div class="card card--quiet">
       <h3 data-i18n="settings_section_account">Account</h3>
       <div class="field">
         <label data-i18n="label_email">Email</label>
@@ -388,13 +406,22 @@
       <button class="btn-secondary" id="settings-signout-btn" data-i18n="settings_signout_button" style="margin-top:12px;">Sign out</button>
     </div>
 
+    <!-- Danger zone: pulled out of "Your data" on purpose so a permanent,
+         destructive action isn't sitting one tap below "Export my data"
+         at the same visual weight. -->
+    <div class="settings-danger-zone">
+      <h3 data-i18n="settings_section_danger">Danger zone</h3>
+      <p data-i18n="settings_delete_warning_short">Permanently deletes your account and everything you've logged.</p>
+      <button class="btn-secondary" id="settings-delete-account-btn" data-i18n="settings_delete_account_button" style="color:var(--warning); border-color:var(--warning);">Delete account</button>
+    </div>
+
     <!-- About -->
-    <div class="card">
-      <h3 data-i18n="settings_section_about">About</h3>
-      <p style="font-size:var(--text-xs);" data-i18n="settings_app_blurb">MacroLoop estimates your energy needs from your own logged data over time, instead of a fixed formula that never adjusts.</p>
-      <p style="font-size:var(--text-xs);" data-i18n="settings_disclaimer">MacroLoop provides general nutrition estimates and is not medical advice.</p>
+    <div class="settings-footer">
+      <p data-i18n="settings_app_blurb">MacroLoop estimates your energy needs from your own logged data over time, instead of a fixed formula that never adjusts.</p>
+      <p data-i18n="settings_disclaimer">MacroLoop provides general nutrition estimates and is not medical advice.</p>
     </div>
   </div>
+
 
   <!-- Delete account confirmation sheet -->
   <div class="sheet" id="delete-account-sheet" style="display:none;">
@@ -408,7 +435,7 @@
       <input type="password" id="delete-account-password" />
     </div>
     <p class="error-text" id="delete-account-error" style="display:none;"></p>
-    <button class="btn-primary" id="delete-account-confirm-btn" data-i18n="settings_delete_confirm_button" style="background:var(--warning); color:#2a1410;">Permanently delete my account</button>
+    <button class="btn-primary" id="delete-account-confirm-btn" data-i18n="settings_delete_confirm_button" style="background:var(--warning); color:var(--bg);">Permanently delete my account</button>
   </div>
 
   <!-- Log Meal sheet -->
@@ -520,6 +547,7 @@
     calculateBMR, calculateTDEE, calculateTarget,
     calculateMacroTargets, lbToKg, ftInToCm, kgToLb, cmToFtIn,
     updateAdaptiveTDEE, ADAPTIVE_WINDOW_DAYS,
+    calculateHealthyWeightRange, estimateDaysToTarget,
   } from './js/algorithm.js';
   import {
     searchFoods, debounce, logFood, scaleToGrams, getFrequentFoodsSorted, getDailyCalorieTotals,
@@ -632,11 +660,46 @@
     document.getElementById('height-imperial-field').style.display = metric ? 'none' : 'block';
     document.getElementById('weight-metric-field').style.display = metric ? 'block' : 'none';
     document.getElementById('weight-imperial-field').style.display = metric ? 'none' : 'block';
+    updateTargetWeightFieldVisibility();
   });
   wireSegmented('sex-toggle', (v) => { onboardingSex = v; });
   wireSegmented('goal-toggle', (v) => {
     onboardingGoal = v;
     document.getElementById('rate-field').style.display = v === 'maintain' ? 'none' : 'block';
+    updateTargetWeightFieldVisibility();
+  });
+
+  // Goal weight is optional and only meaningful once there's a direction
+  // (lose/gain) to move in — hidden entirely under "maintain". The healthy
+  // range next to it is a suggestion computed from height, never a default
+  // dropped into the input: brief's "let the user override, never mandate
+  // a number" for calculateHealthyWeightRange.
+  function updateTargetWeightFieldVisibility() {
+    const show = onboardingGoal !== 'maintain';
+    const metric = onboardingUnit === 'metric';
+    document.getElementById('target-weight-metric-field').style.display = show && metric ? 'block' : 'none';
+    document.getElementById('target-weight-imperial-field').style.display = show && !metric ? 'block' : 'none';
+    updateOnboardingHealthyRangeHint();
+  }
+
+  function updateOnboardingHealthyRangeHint() {
+    const hintEl = document.getElementById('onboarding-healthy-range-hint');
+    const heightCm = onboardingUnit === 'metric'
+      ? Number(document.getElementById('height-cm-input').value)
+      : ftInToCm(Number(document.getElementById('height-ft-input').value), Number(document.getElementById('height-in-input').value));
+    if (onboardingGoal === 'maintain' || !heightCm) {
+      hintEl.style.display = 'none';
+      return;
+    }
+    const { minKg, maxKg } = calculateHealthyWeightRange(heightCm);
+    hintEl.textContent = onboardingUnit === 'metric'
+      ? t('healthy_range_hint_metric', { min: minKg, max: maxKg })
+      : t('healthy_range_hint_imperial', { min: Math.round(kgToLb(minKg)), max: Math.round(kgToLb(maxKg)) });
+    hintEl.style.display = 'block';
+  }
+
+  ['height-cm-input', 'height-ft-input', 'height-in-input'].forEach((id) => {
+    document.getElementById(id).addEventListener('input', updateOnboardingHealthyRangeHint);
   });
 
   function readOnboardingInputs() {
@@ -653,8 +716,17 @@
     }
     const activityLevel = document.getElementById('activity-select').value;
     const ratePercent = onboardingGoal === 'maintain' ? 0.75 : Number(document.getElementById('rate-input').value);
+
+    let targetWeightKg = null;
+    if (onboardingGoal !== 'maintain') {
+      const raw = onboardingUnit === 'metric'
+        ? document.getElementById('target-weight-kg-input').value
+        : document.getElementById('target-weight-lb-input').value;
+      if (raw) targetWeightKg = onboardingUnit === 'metric' ? Number(raw) : lbToKg(Number(raw));
+    }
+
     return {
-      age, heightCm, weightKg, activityLevel, ratePercent,
+      age, heightCm, weightKg, activityLevel, ratePercent, targetWeightKg,
       sex: onboardingSex, goal: onboardingGoal, unit_pref: onboardingUnit,
     };
   }
@@ -714,6 +786,7 @@
       goal: input.goal,
       rate_percent: input.ratePercent,
       unit_pref: input.unit_pref,
+      target_weight_kg: input.targetWeightKg,
       premium_status: false,
     };
 
@@ -938,11 +1011,13 @@
   wireSettingsSegmented('settings-unit-toggle', (v) => {
     settingsUnit = v;
     toggleSettingsUnitFields(v === 'metric');
+    updateSettingsTargetWeightVisibility();
   });
   wireSettingsSegmented('settings-sex-toggle', (v) => { settingsSex = v; });
   wireSettingsSegmented('settings-goal-toggle', (v) => {
     settingsGoal = v;
     document.getElementById('settings-rate-field').style.display = v === 'maintain' ? 'none' : 'block';
+    updateSettingsTargetWeightVisibility();
   });
 
   function toggleSettingsUnitFields(metric) {
@@ -951,6 +1026,37 @@
     document.getElementById('settings-weight-metric-field').style.display = metric ? 'block' : 'none';
     document.getElementById('settings-weight-imperial-field').style.display = metric ? 'none' : 'block';
   }
+
+  // Same optional-goal-weight-with-a-hint pattern as onboarding (see
+  // updateTargetWeightFieldVisibility there) — kept separate rather than
+  // shared since the two screens read from different input ids and state.
+  function updateSettingsTargetWeightVisibility() {
+    const show = settingsGoal !== 'maintain';
+    const metric = settingsUnit === 'metric';
+    document.getElementById('settings-target-weight-metric-field').style.display = show && metric ? 'block' : 'none';
+    document.getElementById('settings-target-weight-imperial-field').style.display = show && !metric ? 'block' : 'none';
+    updateSettingsHealthyRangeHint();
+  }
+
+  function updateSettingsHealthyRangeHint() {
+    const hintEl = document.getElementById('settings-healthy-range-hint');
+    const heightCm = settingsUnit === 'metric'
+      ? Number(document.getElementById('settings-height-cm-input').value)
+      : ftInToCm(Number(document.getElementById('settings-height-ft-input').value), Number(document.getElementById('settings-height-in-input').value));
+    if (settingsGoal === 'maintain' || !heightCm) {
+      hintEl.style.display = 'none';
+      return;
+    }
+    const { minKg, maxKg } = calculateHealthyWeightRange(heightCm);
+    hintEl.textContent = settingsUnit === 'metric'
+      ? t('healthy_range_hint_metric', { min: minKg, max: maxKg })
+      : t('healthy_range_hint_imperial', { min: Math.round(kgToLb(minKg)), max: Math.round(kgToLb(maxKg)) });
+    hintEl.style.display = 'block';
+  }
+
+  ['settings-height-cm-input', 'settings-height-ft-input', 'settings-height-in-input'].forEach((id) => {
+    document.getElementById(id).addEventListener('input', updateSettingsHealthyRangeHint);
+  });
 
   async function loadSettingsScreen() {
     const user = getState('user');
@@ -979,6 +1085,12 @@
       document.getElementById('settings-height-in-input').value = inches;
       document.getElementById('settings-weight-lb-input').value = Math.round(kgToLb(weightKg));
     }
+
+    if (profile.target_weight_kg) {
+      document.getElementById('settings-target-weight-kg-input').value = profile.target_weight_kg;
+      document.getElementById('settings-target-weight-lb-input').value = Math.round(kgToLb(profile.target_weight_kg));
+    }
+    updateSettingsTargetWeightVisibility();
 
     document.getElementById('settings-gap-fixer-time').value = profile.gap_fixer_time || '';
 
@@ -1018,6 +1130,14 @@
     const activityLevel = document.getElementById('settings-activity-select').value;
     const ratePercent = settingsGoal === 'maintain' ? 0.75 : Number(document.getElementById('settings-rate-input').value);
 
+    let targetWeightKg = null;
+    if (settingsGoal !== 'maintain') {
+      const rawTarget = settingsUnit === 'metric'
+        ? document.getElementById('settings-target-weight-kg-input').value
+        : document.getElementById('settings-target-weight-lb-input').value;
+      if (rawTarget) targetWeightKg = settingsUnit === 'metric' ? Number(rawTarget) : lbToKg(Number(rawTarget));
+    }
+
     if (!age || age < 13 || age > 100 || !heightCm || !weightKg) {
       errorEl.textContent = t('onboarding_error_missing_fields');
       errorEl.style.display = 'block';
@@ -1033,6 +1153,7 @@
       goal: settingsGoal,
       rate_percent: ratePercent,
       unit_pref: settingsUnit,
+      target_weight_kg: targetWeightKg,
       gap_fixer_time: document.getElementById('settings-gap-fixer-time').value || null,
     };
 
@@ -1457,16 +1578,51 @@
     const calorieSeries = await getDailyCalorieTotals(user.uid, startDate, endDate);
     const target = getState('today').target;
 
-    renderLineChart(document.getElementById('weight-chart'), weightSeries, { color: '#4fb8ae' });
+    renderLineChart(document.getElementById('weight-chart'), weightSeries, { color: '#7c8a5c' });
     renderLineChart(document.getElementById('calorie-chart'), calorieSeries, {
-      color: '#e8a94c',
+      color: '#c1663f',
       referenceValue: target,
     });
 
     document.getElementById('weight-trend-summary').textContent = summarizeWeightTrend(weightSeries, profile.unit_pref);
     document.getElementById('calorie-trend-summary').textContent = summarizeCalorieTrend(calorieSeries, target);
 
+    await renderDaysToTarget(user.uid, profile, weightSeries, target);
     await renderAlgorithmPanel(user.uid, profile);
+  }
+
+  /**
+   * Optional — only appears once a goal weight is set (Settings or
+   * onboarding) and there's a logged weight to measure from. Silently
+   * hides rather than showing a confusing number when the current pace
+   * doesn't actually move toward the goal (estimateDaysToTarget returns
+   * null for that, per algorithm.js) — better to say nothing than show
+   * a nonsense estimate.
+   */
+  async function renderDaysToTarget(uid, profile, weightSeries, target) {
+    const el = document.getElementById('days-to-target-summary');
+    if (!profile.target_weight_kg || weightSeries.length === 0) {
+      el.style.display = 'none';
+      return;
+    }
+    const algoState = await getAlgorithmState(uid);
+    if (!algoState || !algoState.current_tdee_estimate) {
+      el.style.display = 'none';
+      return;
+    }
+    const currentWeightKg = weightSeries[weightSeries.length - 1].y;
+    const dailyCalorieBalance = target - algoState.current_tdee_estimate;
+    const days = estimateDaysToTarget(currentWeightKg, profile.target_weight_kg, dailyCalorieBalance);
+
+    if (days === null) {
+      el.style.display = 'none';
+    } else if (days === 0) {
+      el.textContent = t('days_to_target_reached');
+      el.style.display = 'block';
+    } else {
+      el.textContent = t('days_to_target_summary', { days });
+      el.style.display = 'block';
+    }
   }
 
   function summarizeWeightTrend(series, unitPref) {
@@ -1835,9 +1991,9 @@
 
     if (stats.daysLogged === 0) {
       const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#12141a';
+      ctx.fillStyle = '#181310';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#9b9691';
+      ctx.fillStyle = '#ab9a89';
       ctx.font = '400 16px "IBM Plex Sans", sans-serif';
       ctx.fillText(t('flex_no_data'), 32, canvas.height / 2);
       return;
