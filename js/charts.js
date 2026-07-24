@@ -56,7 +56,7 @@ export function computeChartPoints(points, { width, height, padding = 24, refere
 export function renderLineChart(svgEl, points, options = {}) {
   const width = options.width ?? 320;
   const height = options.height ?? 140;
-  const color = options.color ?? '#e8a94c';
+  const color = options.color ?? '#c1663f';
   const ns = 'http://www.w3.org/2000/svg';
 
   svgEl.innerHTML = '';
