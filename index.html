@@ -144,39 +144,47 @@
       <button class="btn-icon" id="open-settings-btn" title="Settings" aria-label="Settings" data-i18n-aria-label="aria_settings"><span class="icon icon-settings" aria-hidden="true"></span></button>
     </div>
 
-    <div class="ring-wrap">
-      <div class="ring-bloom" aria-hidden="true"></div>
-      <svg width="300" height="300" viewBox="0 0 300 300">
-        <defs>
-          <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#c1663f" />
-            <stop offset="100%" stop-color="#8f4527" />
-          </linearGradient>
-        </defs>
-        <circle cx="150" cy="150" r="125" fill="none" stroke="#2d2219" stroke-width="16" />
-        <circle id="ring-progress" class="ring-glow" cx="150" cy="150" r="125" fill="none" stroke="url(#ringGradient)" stroke-width="16"
-          stroke-linecap="round" transform="rotate(-90 150 150)"
-          stroke-dasharray="785.4" stroke-dashoffset="785.4" />
-      </svg>
-      <div class="ring-center">
-        <div class="ring-number" id="ring-remaining">0</div>
-        <div class="ring-label" data-i18n="ring_label_remaining">kcal remaining</div>
+    <div class="today-hero">
+      <div class="ring-wrap">
+        <div class="ring-bloom" aria-hidden="true"></div>
+        <svg width="240" height="240" viewBox="0 0 240 240">
+          <defs>
+            <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#c1663f" />
+              <stop offset="100%" stop-color="#8f4527" />
+            </linearGradient>
+          </defs>
+          <circle cx="120" cy="120" r="100" fill="none" stroke="#2d2219" stroke-width="14" />
+          <circle id="ring-progress" class="ring-glow" cx="120" cy="120" r="100" fill="none" stroke="url(#ringGradient)" stroke-width="14"
+            stroke-linecap="round" transform="rotate(-90 120 120)"
+            stroke-dasharray="628.3" stroke-dashoffset="628.3" />
+        </svg>
+        <div class="ring-center">
+          <div class="ring-number" id="ring-remaining">0</div>
+          <div class="ring-label" data-i18n="ring_label_remaining">kcal remaining</div>
+        </div>
       </div>
-    </div>
-    <p class="numeric" id="exercise-credit-note" style="display:none; text-align:center; font-size:0.8rem; margin-top:-12px;"></p>
+      <p class="numeric" id="exercise-credit-note" style="display:none;"></p>
 
-    <div class="macro-row">
-      <div class="macro-item macro-protein">
-        <div class="macro-label"><span data-i18n="macro_protein">Protein</span><span class="numeric"><span id="protein-consumed">0</span>/<span id="protein-target">0</span>g</span></div>
-        <div class="macro-bar-track"><div class="macro-bar-fill" id="protein-bar" style="width:0%;"></div></div>
-      </div>
-      <div class="macro-item macro-carb">
-        <div class="macro-label"><span data-i18n="macro_carbs">Carbs</span><span class="numeric"><span id="carb-consumed">0</span>/<span id="carb-target">0</span>g</span></div>
-        <div class="macro-bar-track"><div class="macro-bar-fill" id="carb-bar" style="width:0%;"></div></div>
-      </div>
-      <div class="macro-item macro-fat">
-        <div class="macro-label"><span data-i18n="macro_fat">Fat</span><span class="numeric"><span id="fat-consumed">0</span>/<span id="fat-target">0</span>g</span></div>
-        <div class="macro-bar-track"><div class="macro-bar-fill" id="fat-bar" style="width:0%;"></div></div>
+      <div class="macro-row">
+        <div class="macro-card macro-protein">
+          <span class="icon icon-protein" aria-hidden="true"></span>
+          <div class="macro-card-label" data-i18n="macro_protein">Protein</div>
+          <div class="macro-card-value numeric"><span id="protein-consumed">0</span><span class="macro-card-target">/<span id="protein-target">0</span>g</span></div>
+          <div class="macro-bar-track"><div class="macro-bar-fill" id="protein-bar" style="width:0%;"></div></div>
+        </div>
+        <div class="macro-card macro-carb">
+          <span class="icon icon-carb" aria-hidden="true"></span>
+          <div class="macro-card-label" data-i18n="macro_carbs">Carbs</div>
+          <div class="macro-card-value numeric"><span id="carb-consumed">0</span><span class="macro-card-target">/<span id="carb-target">0</span>g</span></div>
+          <div class="macro-bar-track"><div class="macro-bar-fill" id="carb-bar" style="width:0%;"></div></div>
+        </div>
+        <div class="macro-card macro-fat">
+          <span class="icon icon-fat" aria-hidden="true"></span>
+          <div class="macro-card-label" data-i18n="macro_fat">Fat</div>
+          <div class="macro-card-value numeric"><span id="fat-consumed">0</span><span class="macro-card-target">/<span id="fat-target">0</span>g</span></div>
+          <div class="macro-bar-track"><div class="macro-bar-fill" id="fat-bar" style="width:0%;"></div></div>
+        </div>
       </div>
     </div>
 
@@ -925,7 +933,7 @@
       creditNote.style.display = 'none';
     }
 
-    const circumference = 785.4; // 2 * pi * 125 — matches the ring's r="125" in the SVG
+    const circumference = 628.3; // 2 * pi * 100 — matches the ring's r="100" in the SVG
     const fraction = budget > 0 ? Math.min(consumed / budget, 1) : 0;
     const ringEl = document.getElementById('ring-progress');
     const currentOffset = parseFloat(ringEl.style.strokeDashoffset) || circumference;
