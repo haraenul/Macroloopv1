@@ -15,7 +15,12 @@
 // Netlify) — a relative path resolves against whatever origin loaded the
 // page, and silently 404s from GitHub Pages specifically. If you're
 // editing this file for an unrelated reason, leave this line untouched.
-const PHOTO_FUNCTION_URL = 'https://soft-liger-d65c1e.netlify.app/.netlify/functions/analyze-meal-photo';
+//
+// The domain itself has also drifted more than once (gleaming-sunflower →
+// soft-liger-d65c1e → vermillion-panda-850b87) as the Netlify site got
+// recreated. If this feature 404s again, check the domain is still
+// current before assuming the code broke.
+const PHOTO_FUNCTION_URL = 'https://vermillion-panda-850b87.netlify.app/.netlify/functions/analyze-meal-photo';
 
 const MAX_DIMENSION = 1024; // plenty for food recognition; keeps the payload (and API cost) small
 const JPEG_QUALITY = 0.8;
