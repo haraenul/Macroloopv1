@@ -168,22 +168,43 @@
 
       <div class="macro-row">
         <div class="macro-card macro-protein">
-          <span class="icon icon-protein" aria-hidden="true"></span>
+          <div class="macro-ring-wrap">
+            <svg width="64" height="64" viewBox="0 0 64 64">
+              <circle cx="32" cy="32" r="26" fill="none" stroke="rgba(24,19,16,0.35)" stroke-width="6" />
+              <circle id="protein-ring-progress" cx="32" cy="32" r="26" fill="none" stroke="#7c8a5c" stroke-width="6"
+                stroke-linecap="round" transform="rotate(-90 32 32)"
+                stroke-dasharray="163.4" stroke-dashoffset="163.4" />
+            </svg>
+            <div class="macro-ring-center numeric" id="protein-consumed">0</div>
+          </div>
           <div class="macro-card-label" data-i18n="macro_protein">Protein</div>
-          <div class="macro-card-value numeric"><span id="protein-consumed">0</span><span class="macro-card-target">/<span id="protein-target">0</span>g</span></div>
-          <div class="macro-bar-track"><div class="macro-bar-fill" id="protein-bar" style="width:0%;"></div></div>
+          <div class="macro-card-target numeric">/<span id="protein-target">0</span>g</div>
         </div>
         <div class="macro-card macro-carb">
-          <span class="icon icon-carb" aria-hidden="true"></span>
+          <div class="macro-ring-wrap">
+            <svg width="64" height="64" viewBox="0 0 64 64">
+              <circle cx="32" cy="32" r="26" fill="none" stroke="rgba(24,19,16,0.35)" stroke-width="6" />
+              <circle id="carb-ring-progress" cx="32" cy="32" r="26" fill="none" stroke="#c9a24a" stroke-width="6"
+                stroke-linecap="round" transform="rotate(-90 32 32)"
+                stroke-dasharray="163.4" stroke-dashoffset="163.4" />
+            </svg>
+            <div class="macro-ring-center numeric" id="carb-consumed">0</div>
+          </div>
           <div class="macro-card-label" data-i18n="macro_carbs">Carbs</div>
-          <div class="macro-card-value numeric"><span id="carb-consumed">0</span><span class="macro-card-target">/<span id="carb-target">0</span>g</span></div>
-          <div class="macro-bar-track"><div class="macro-bar-fill" id="carb-bar" style="width:0%;"></div></div>
+          <div class="macro-card-target numeric">/<span id="carb-target">0</span>g</div>
         </div>
         <div class="macro-card macro-fat">
-          <span class="icon icon-fat" aria-hidden="true"></span>
+          <div class="macro-ring-wrap">
+            <svg width="64" height="64" viewBox="0 0 64 64">
+              <circle cx="32" cy="32" r="26" fill="none" stroke="rgba(24,19,16,0.35)" stroke-width="6" />
+              <circle id="fat-ring-progress" cx="32" cy="32" r="26" fill="none" stroke="#9c7080" stroke-width="6"
+                stroke-linecap="round" transform="rotate(-90 32 32)"
+                stroke-dasharray="163.4" stroke-dashoffset="163.4" />
+            </svg>
+            <div class="macro-ring-center numeric" id="fat-consumed">0</div>
+          </div>
           <div class="macro-card-label" data-i18n="macro_fat">Fat</div>
-          <div class="macro-card-value numeric"><span id="fat-consumed">0</span><span class="macro-card-target">/<span id="fat-target">0</span>g</span></div>
-          <div class="macro-bar-track"><div class="macro-bar-fill" id="fat-bar" style="width:0%;"></div></div>
+          <div class="macro-card-target numeric">/<span id="fat-target">0</span>g</div>
         </div>
       </div>
     </div>
@@ -952,11 +973,12 @@
     animateNumber(document.getElementById(`${key}-consumed`), Math.round(consumed));
     document.getElementById(`${key}-target`).textContent = target;
 
-    const pct = target > 0 ? Math.min((consumed / target) * 100, 100) : 0;
-    const barEl = document.getElementById(`${key}-bar`);
-    const currentPct = parseFloat(barEl.style.width) || 0;
-    springTo(`${key}-bar`, currentPct, pct, (v) => {
-      barEl.style.width = `${v}%`;
+    const miniCircumference = 163.4; // 2 * pi * 26 — matches each mini ring's r="26"
+    const pct = target > 0 ? Math.min(consumed / target, 1) : 0;
+    const ringEl = document.getElementById(`${key}-ring-progress`);
+    const currentOffset = parseFloat(ringEl.style.strokeDashoffset) || miniCircumference;
+    springTo(`${key}-ring-offset`, currentOffset, miniCircumference * (1 - pct), (v) => {
+      ringEl.style.strokeDashoffset = v;
     });
   }
 
