@@ -127,8 +127,8 @@ export function drawFlexCard(canvas, { weekLabel, stats, streak, target, goal })
   const M = 32; // outer margin, consistent on all sides
 
   const bg = ctx.createLinearGradient(0, 0, 0, H);
-  bg.addColorStop(0, '#181310');
-  bg.addColorStop(1, '#231b16');
+  bg.addColorStop(0, '#1c0f14');
+  bg.addColorStop(1, '#2a161d');
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, W, H);
 
@@ -140,41 +140,41 @@ export function drawFlexCard(canvas, { weekLabel, stats, streak, target, goal })
   const markY = 44;
   ctx.beginPath();
   ctx.arc(markX, markY, markR, -Math.PI / 2, Math.PI * 1.1);
-  ctx.strokeStyle = '#c1663f';
+  ctx.strokeStyle = '#c8184a';
   ctx.lineWidth = 3.5;
   ctx.lineCap = 'round';
   ctx.stroke();
 
-  ctx.fillStyle = '#f3ebe0';
+  ctx.fillStyle = '#f3e9e6';
   ctx.font = '700 24px "Bricolage Grotesque", sans-serif';
   ctx.textBaseline = 'middle';
   ctx.fillText('MacroLoop', markX + markR + 10, markY + 1);
   ctx.textBaseline = 'alphabetic';
 
-  ctx.fillStyle = '#786a5d';
+  ctx.fillStyle = '#6e5860';
   ctx.font = '500 14px "IBM Plex Mono", monospace';
   ctx.fillText(weekLabel, M, 80);
 
   // ---- Hero number ----
-  ctx.fillStyle = '#c1663f';
+  ctx.fillStyle = '#c8184a';
   ctx.font = '800 76px "Bricolage Grotesque", sans-serif';
   ctx.fillText(`${stats.daysLogged}/7`, M, 190);
-  ctx.fillStyle = '#ab9a89';
+  ctx.fillStyle = '#a38990';
   ctx.font = '400 15px "IBM Plex Sans", sans-serif';
   ctx.fillText('days logged', M, 214);
 
   // ---- Streak + adherence, side by side instead of stacked lines ----
   const statY = 258;
-  ctx.fillStyle = '#f3ebe0';
+  ctx.fillStyle = '#f3e9e6';
   ctx.font = '700 22px "Bricolage Grotesque", sans-serif';
   ctx.fillText(`${streak}`, M, statY);
   const streakNumWidth = ctx.measureText(`${streak}`).width;
-  ctx.fillStyle = '#ab9a89';
+  ctx.fillStyle = '#a38990';
   ctx.font = '400 14px "IBM Plex Sans", sans-serif';
   ctx.fillText(streak === 1 ? 'day streak' : 'day streak', M + streakNumWidth + 8, statY);
 
   const aligned = isAdherenceGoalAligned(stats.adherencePct, goal);
-  ctx.fillStyle = aligned ? '#647a45' : '#ab9a89';
+  ctx.fillStyle = aligned ? '#647a45' : '#a38990';
   ctx.font = '600 15px "IBM Plex Mono", monospace';
   ctx.fillText(`${stats.adherencePct}% of target`, M, statY + 28);
 
@@ -190,12 +190,12 @@ export function drawFlexCard(canvas, { weekLabel, stats, streak, target, goal })
     const h = day.calories > 0 ? Math.max(8, barsHeight * Math.min(ratio, 1)) : 4;
     const x = M + i * (barWidth + gap);
     const y = barsTop + barsHeight - h;
-    ctx.fillStyle = day.calories > 0 ? '#7c8a5c' : 'rgba(243,235,224,0.10)';
+    ctx.fillStyle = day.calories > 0 ? '#7c8a5c' : 'rgba(243,233,230,0.10)';
     roundedRect(ctx, x, y, barWidth, h, Math.min(6, h / 2));
     ctx.fill();
   });
 
-  ctx.fillStyle = '#786a5d';
+  ctx.fillStyle = '#6e5860';
   ctx.font = '500 12px "IBM Plex Mono", monospace';
   ctx.textAlign = 'center';
   ['M', 'T', 'W', 'T', 'F', 'S', 'S'].forEach((label, i) => {
@@ -205,13 +205,13 @@ export function drawFlexCard(canvas, { weekLabel, stats, streak, target, goal })
 
   // ---- Bottom hairline + subtle brand tag, so a cropped share still
   // reads as MacroLoop even if the header gets cut off ----
-  ctx.strokeStyle = 'rgba(243,235,224,0.09)';
+  ctx.strokeStyle = 'rgba(243,233,230,0.09)';
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(M, H - 34);
   ctx.lineTo(W - M, H - 34);
   ctx.stroke();
-  ctx.fillStyle = '#786a5d';
+  ctx.fillStyle = '#6e5860';
   ctx.font = '500 11px "IBM Plex Mono", monospace';
   ctx.fillText('macroloop', M, H - 16);
 }

@@ -25,6 +25,8 @@ export const STRINGS = {
   aria_log_weight: 'Log weight',
   aria_regenerate: 'Regenerate',
   aria_settings: 'Settings',
+  aria_search: 'Search',
+  aria_recent: 'Recent',
   aria_back: 'Back',
 
   // ---- Settings ----
@@ -137,7 +139,7 @@ export const STRINGS = {
   warning_rate_aggressive: 'That rate is faster than the ~0.5–1% of bodyweight/week most guidance treats as sustainable.',
 
   // ---- Today ----
-  ring_label_remaining: 'kcal remaining',
+  hero_label_remaining: 'kcal remaining',
   exercise_credit_note: 'Budget includes +{amount} kcal from exercise',
   macro_protein: 'Protein',
   macro_carbs: 'Carbs',
