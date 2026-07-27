@@ -1,51 +1,58 @@
 /* ==========================================================================
-   MacroLoop — visual system v4
-   Full palette rework. Near-black-plus-amber was never questioned since
-   Phase 1 — it's one of the specific patterns generic/AI-generated design
-   defaults to, and no amount of shadow or spacing work inside it was ever
-   going to read as considered. New direction: a warm, muted, spice-rack
-   palette actually grounded in the subject — this is a food app, nothing
-   before this looked like one. Background is warm espresso-brown, not
-   blue-black. The four data accents (energy/protein/carb/fat) are drawn
-   from an actual pantry — rust/paprika, sage, wheat, dusty mauve — rather
-   than arbitrary "chart colors" picked for maximum contrast against each
-   other. Shape language is now deliberate by role: cards stay moderately
-   rounded, buttons are full pills, inputs are tighter — not one radius
-   value applied everywhere out of convenience. Still no gradient buttons,
-   no glow-orbs, no grain — those were tried and corrected already. Dark
-   by default.
-   ========================================================================== */
+   MacroLoop — visual system v5
+   v4 fixed the "generic AI dark mode" problem at the surface level: real
+   palette, real shadows, pill buttons. It didn't fix it structurally —
+   every screen was still built from the same unmodified skeleton (ring,
+   equal-weight cards, equal-weight buttons), just recolored. A palette
+   change on an unchanged skeleton is still a reskin.
+   v5 changes the skeleton on the one screen that matters most (Today)
+   and changes what the palette is grounded in. Karkade — hibiscus tea —
+   is a genuine, specific reference point for a nutrition app in this
+   region: deep, saturated wine-red, spent in exactly one place (the hero
+   number's over-budget state) rather than smeared across every stat as
+   decoration. Everything else recedes on purpose. One typeface family
+   (IBM Plex) carries display, body, and numeric duty through weight and
+   role instead of three unrelated fonts — restraint, not novelty — and
+   its Arabic cut is a real match to the Latin cut, not a bolted-on
+   substitute, because this app is not English-first with Arabic
+   support added after the fact. Still no gradient buttons, no
+   glow-orbs, no grain. Dark by default. */
 
-@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700..800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap');
 
 :root {
-  --bg: #181310;
-  --surface: #231b16;
-  --surface-2: #2d2219;
-  --surface-raised: #382a1e; /* action cards: things you tap */
-  --border: rgba(243, 235, 224, 0.09);
-  --border-strong: rgba(243, 235, 224, 0.18);
+  --bg: #1c0f14;
+  --surface: #2a161d;
+  --surface-2: #35202a;
+  --surface-raised: #40242f; /* action cards: things you tap */
+  --border: rgba(243, 233, 230, 0.09);
+  --border-strong: rgba(243, 233, 230, 0.18);
 
-  --text-primary: #f3ebe0;
-  --text-secondary: #ab9a89;
-  --text-tertiary: #786a5d;
+  --text-primary: #f3e9e6;
+  --text-secondary: #a38990;
+  --text-tertiary: #6e5860;
 
-  /* A real pantry, not arbitrary chart colors — each tied to something
-     actual: dried paprika, fresh sage, raw wheat, dusty mauve. Muted and
-     desaturated on purpose; bright/saturated accents are what read as
-     "default UI kit," not craft. */
-  --accent-energy: #c1663f; /* paprika/rust — calories, the primary signature */
-  --accent-energy-deep: #8f4527; /* the ring's gradient partner */
-  --accent-protein: #7c8a5c; /* sage */
-  --accent-carb: #c9a24a; /* raw wheat */
+  /* Karkade is the ONE loud color in the app — spent on the hero number
+     when you're over budget, nowhere else as decoration. Everything
+     else here stays quiet by comparison; that contrast is the point. */
+  --accent-energy: #c8184a; /* karkade — hibiscus tea, reserved for the hero's over-budget state */
+  --accent-energy-deep: #8f1236;
+  --accent-protein: #7c8a5c; /* sage — used small, rare, never as a competing bold color */
+  --accent-carb: #d1a13a; /* gold — dates, ful, sun; secondary and sparing */
   --accent-fat: #9c7080; /* dusty mauve */
 
   --success: #647a45; /* deeper than protein-sage, stays distinguishable */
   --warning: #a8483a; /* reserved for safety-floor warnings only — never "you went over" */
 
-  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
-  --font-body: 'IBM Plex Sans', system-ui, sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  /* One family, three roles, not three unrelated fonts. Weight and role
+     do the differentiating instead of typeface novelty. Plex Sans Arabic
+     sits in the same stack as Plex Sans rather than behind a [dir="rtl"]
+     override — the browser already picks whichever font in the stack
+     covers a given character, so mixed Arabic/Latin text in one element
+     resolves correctly with no extra rule needed. */
+  --font-display: 'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  --font-body: 'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace; /* every number in the app, including the Today hero */
 
   --text-2xs: 0.68rem;
   --text-xs: 0.72rem;
@@ -287,10 +294,10 @@ button:focus-visible {
 .btn-primary {
   width: 100%;
   background: var(--accent-energy);
-  color: #241108;
+  color: var(--bg);
   font-weight: 600;
   padding: 13px 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 6px 16px rgba(232, 169, 76, 0.22);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 6px 16px rgba(200, 24, 74, 0.22);
 }
 .btn-primary:active {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 2px 6px rgba(232, 169, 76, 0.18);
@@ -436,7 +443,7 @@ input:focus-visible {
 }
 .segmented button.selected {
   background: var(--accent-energy);
-  color: #241108;
+  color: var(--bg);
   font-weight: 600;
 }
 
@@ -477,117 +484,121 @@ input:focus-visible {
   margin-bottom: 16px;
 }
 
-/* ---- Today screen: the ring — the signature element ----
-   Gradient stroke (defined in index.html's <defs>) + a slow, ambient
-   breathing glow. This is the one place the app spends its boldness —
-   everything else stays quiet and disciplined around it. */
+/* ---- Today screen: the hero number — the signature moment ----
+   No ring. The number is the display face (Plex Mono) and carries the
+   hero on typography alone. Start-aligned, not centered — under
+   dir="rtl" that flips to the right automatically via text-align:
+   start, no separate rule needed. The Loop mark reused below is pure
+   identity — an oversized, low-opacity watermark, not a second
+   progress indicator; it never moves or reports data. Karkade appears
+   on the number itself only once you're over budget — the one place
+   this screen spends a loud color. */
 
-.ring-wrap {
+.today-hero {
   position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0 0 16px;
+  padding: 12px 4px 28px;
+  text-align: start;
+  overflow: hidden;
 }
 
-.ring-wrap svg {
-  position: relative;
-  z-index: 1;
-  filter: drop-shadow(0 0 24px rgba(193, 102, 63, 0.18));
-}
-
-.ring-glow {
-  animation: ring-breathe 5s ease-in-out infinite;
-  transform-origin: 150px 150px;
-}
-@keyframes ring-breathe {
-  0%, 100% { opacity: 0.55; }
-  50% { opacity: 1; }
-}
-
-.ring-center {
+.loop-watermark {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  z-index: 1;
+  top: -30px;
+  inset-inline-end: -70px;
+  width: 320px;
+  height: 320px;
+  background: conic-gradient(from -90deg, var(--accent-energy), var(--accent-energy-deep) 70%, transparent 70%);
+  border-radius: 50%;
+  mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 4px));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 4px));
+  opacity: 0.07;
+  pointer-events: none;
+  z-index: 0;
 }
-.ring-center .ring-number {
-  font-family: var(--font-display);
-  font-optical-sizing: auto;
-  font-size: 3.4rem;
-  font-weight: var(--weight-black);
-  letter-spacing: -0.03em;
+
+.hero-number {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-mono);
+  font-size: var(--text-4xl);
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.02em;
   line-height: 1;
   font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
 }
-.ring-center .ring-label {
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
+.hero-number--over {
+  color: var(--accent-energy);
+}
+
+.hero-label {
+  position: relative;
+  z-index: 1;
+  font-size: var(--text-base);
   color: var(--text-secondary);
-  font-weight: 400;
+  margin: 2px 0 20px;
 }
 
 #exercise-credit-note {
-  text-align: center;
+  position: relative;
+  z-index: 1;
+  text-align: start;
   font-size: var(--text-sm);
   color: var(--text-secondary);
-  margin: 0 0 14px;
+  margin: -12px 0 16px;
 }
 
-/* ---- Macro bars ---- */
+/* ---- Macro emphasis — protein gets real presence; carbs and fat are
+   one quiet line, not two more decorated cards. Unequal on purpose:
+   three identically-treated stats is decoration, not a point of view. */
 
-.today-hero {
-  background: var(--surface);
-  border-radius: var(--radius);
-  padding: 28px 22px 24px;
-  box-shadow: var(--shadow-md);
-  margin: 8px 0 16px;
+.macro-emphasis {
+  position: relative;
+  z-index: 1;
 }
-
-.macro-row {
+.macro-primary {
+  margin-bottom: 10px;
+}
+.macro-primary-row {
   display: flex;
   justify-content: space-between;
-  gap: 10px;
+  align-items: baseline;
+  margin-bottom: 6px;
 }
-.macro-card {
-  flex: 1;
-  min-width: 0;
-  text-align: center;
-  border-radius: var(--radius-sm);
-  padding: 14px 8px 12px;
-}
-.macro-ring-wrap {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  margin: 0 0 8px;
-}
-.macro-ring-center {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+.macro-primary-label {
   font-size: var(--text-base);
-  font-weight: var(--weight-semibold);
-}
-.macro-card-label {
-  font-size: var(--text-xs);
   color: var(--text-secondary);
 }
-.macro-card-target {
-  font-size: var(--text-2xs);
+.macro-primary-value {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+}
+.macro-primary-target {
+  font-size: var(--text-sm);
+  font-weight: 400;
   color: var(--text-tertiary);
 }
-.macro-protein {
-  background: rgba(124, 138, 92, 0.14);
+.macro-primary-track {
+  height: 3px;
+  border-radius: 2px;
+  background: var(--surface-2);
+  overflow: hidden;
 }
-.macro-carb {
-  background: rgba(201, 162, 74, 0.14);
+.macro-primary-fill {
+  height: 100%;
+  background: var(--accent-protein);
+  border-radius: 2px;
 }
-.macro-fat {
-  background: rgba(156, 112, 128, 0.14);
+
+.macro-secondary {
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+}
+.macro-secondary-dot {
+  margin: 0 6px;
+  color: var(--text-tertiary);
 }
 
 /* ---- Food log list ---- */
@@ -628,56 +639,42 @@ input:focus-visible {
   color: var(--text-tertiary);
 }
 
-/* ---- Quick add row — action items: lifted, feels tappable ---- */
+/* ---- Quick add row — one dominant action, not three equal ones.
+   Photo is the flagship, differentiating feature; Search and Recent
+   are real but secondary, so they're small icon buttons off to the
+   side instead of matching Photo's size and just changing color. */
 
 .quick-add-row {
   display: flex;
+  align-items: center;
   gap: 10px;
   margin-bottom: 20px;
 }
-.quick-add-row button {
+
+.quick-add-primary {
   flex: 1;
-  background: var(--surface-raised);
-  color: var(--text-primary);
-  padding: 12px;
-  font-size: var(--text-sm);
+  background: var(--accent-energy);
+  color: var(--bg);
+  font-weight: 600;
+  padding: 14px;
+  font-size: var(--text-base);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 2px 6px rgba(0, 0, 0, 0.18);
+  gap: 8px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 2px 6px rgba(0, 0, 0, 0.18);
 }
-.quick-add-row button:active {
+.quick-add-primary:active {
   box-shadow: none;
 }
+.quick-add-primary .icon-photo {
+  color: var(--bg);
+}
 
-.quick-add-row button .icon-search { color: var(--accent-energy); }
-.quick-add-row button .icon-recent { color: var(--accent-fat); }
-
-/* Photo is the flagship, differentiating feature — real presence
-   instead of sitting as a third equal button. Solid fill, not a
-   gradient — that specific effect already read as "cheap game app"
-   once and was corrected; not repeating it. */
-.quick-add-row #open-photo-btn {
-  flex: 1.4;
-  background: var(--accent-energy);
-  color: #241108;
-  font-weight: 600;
-}
-.quick-add-row #open-photo-btn .icon-photo {
-  color: #241108;
-}
-.quick-add-row #open-search-btn,
-.quick-add-row #open-recent-btn {
-  flex: 0.85;
-  flex-direction: column;
-  gap: 4px;
-  font-size: var(--text-xs);
-}
-.quick-add-row #open-search-btn .icon,
-.quick-add-row #open-recent-btn .icon {
-  width: 1.3em;
-  height: 1.3em;
+.quick-add-secondary {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .fixer-combo-card {
@@ -912,13 +909,13 @@ input:focus-visible {
   color: var(--text-secondary);
 }
 .confidence-low {
-  background: rgba(217, 112, 96, 0.15);
+  background: rgba(168, 72, 58, 0.15);
   color: var(--warning);
 }
 
 .photo-item-unidentified {
-  border: 1px dashed rgba(217, 112, 96, 0.4);
-  background: rgba(217, 112, 96, 0.04);
+  border: 1px dashed rgba(168, 72, 58, 0.4);
+  background: rgba(168, 72, 58, 0.04);
 }
 .photo-item-unidentified-note {
   font-size: var(--text-sm);
