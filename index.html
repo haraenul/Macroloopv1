@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#181310" />
+<meta name="theme-color" content="#1c0f14" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <title>MacroLoop</title>
@@ -145,74 +145,33 @@
     </div>
 
     <div class="today-hero">
-      <div class="ring-wrap">
-        <div class="ring-bloom" aria-hidden="true"></div>
-        <svg width="240" height="240" viewBox="0 0 240 240">
-          <defs>
-            <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#c1663f" />
-              <stop offset="100%" stop-color="#8f4527" />
-            </linearGradient>
-          </defs>
-          <circle cx="120" cy="120" r="100" fill="none" stroke="#2d2219" stroke-width="14" />
-          <circle id="ring-progress" class="ring-glow" cx="120" cy="120" r="100" fill="none" stroke="url(#ringGradient)" stroke-width="14"
-            stroke-linecap="round" transform="rotate(-90 120 120)"
-            stroke-dasharray="628.3" stroke-dashoffset="628.3" />
-        </svg>
-        <div class="ring-center">
-          <div class="ring-number" id="ring-remaining">0</div>
-          <div class="ring-label" data-i18n="ring_label_remaining">kcal remaining</div>
-        </div>
-      </div>
+      <div class="loop-watermark" aria-hidden="true"></div>
+      <div class="hero-number" id="hero-remaining">0</div>
+      <div class="hero-label" data-i18n="hero_label_remaining">kcal remaining</div>
       <p class="numeric" id="exercise-credit-note" style="display:none;"></p>
 
-      <div class="macro-row">
-        <div class="macro-card macro-protein">
-          <div class="macro-ring-wrap">
-            <svg width="64" height="64" viewBox="0 0 64 64">
-              <circle cx="32" cy="32" r="26" fill="none" stroke="rgba(24,19,16,0.35)" stroke-width="6" />
-              <circle id="protein-ring-progress" cx="32" cy="32" r="26" fill="none" stroke="#7c8a5c" stroke-width="6"
-                stroke-linecap="round" transform="rotate(-90 32 32)"
-                stroke-dasharray="163.4" stroke-dashoffset="163.4" />
-            </svg>
-            <div class="macro-ring-center numeric" id="protein-consumed">0</div>
+      <div class="macro-emphasis">
+        <div class="macro-primary">
+          <div class="macro-primary-row">
+            <span class="macro-primary-label" data-i18n="macro_protein">Protein</span>
+            <span class="macro-primary-value numeric"><span id="protein-consumed">0</span><span class="macro-primary-target">/<span id="protein-target">0</span>g</span></span>
           </div>
-          <div class="macro-card-label" data-i18n="macro_protein">Protein</div>
-          <div class="macro-card-target numeric">/<span id="protein-target">0</span>g</div>
+          <div class="macro-primary-track"><div class="macro-primary-fill" id="protein-bar"></div></div>
         </div>
-        <div class="macro-card macro-carb">
-          <div class="macro-ring-wrap">
-            <svg width="64" height="64" viewBox="0 0 64 64">
-              <circle cx="32" cy="32" r="26" fill="none" stroke="rgba(24,19,16,0.35)" stroke-width="6" />
-              <circle id="carb-ring-progress" cx="32" cy="32" r="26" fill="none" stroke="#c9a24a" stroke-width="6"
-                stroke-linecap="round" transform="rotate(-90 32 32)"
-                stroke-dasharray="163.4" stroke-dashoffset="163.4" />
-            </svg>
-            <div class="macro-ring-center numeric" id="carb-consumed">0</div>
-          </div>
-          <div class="macro-card-label" data-i18n="macro_carbs">Carbs</div>
-          <div class="macro-card-target numeric">/<span id="carb-target">0</span>g</div>
-        </div>
-        <div class="macro-card macro-fat">
-          <div class="macro-ring-wrap">
-            <svg width="64" height="64" viewBox="0 0 64 64">
-              <circle cx="32" cy="32" r="26" fill="none" stroke="rgba(24,19,16,0.35)" stroke-width="6" />
-              <circle id="fat-ring-progress" cx="32" cy="32" r="26" fill="none" stroke="#9c7080" stroke-width="6"
-                stroke-linecap="round" transform="rotate(-90 32 32)"
-                stroke-dasharray="163.4" stroke-dashoffset="163.4" />
-            </svg>
-            <div class="macro-ring-center numeric" id="fat-consumed">0</div>
-          </div>
-          <div class="macro-card-label" data-i18n="macro_fat">Fat</div>
-          <div class="macro-card-target numeric">/<span id="fat-target">0</span>g</div>
+        <div class="macro-secondary numeric">
+          <span data-i18n="macro_carbs">Carbs</span> <span id="carb-consumed">0</span>/<span id="carb-target">0</span>g
+          <span class="macro-secondary-dot" aria-hidden="true">&middot;</span>
+          <span data-i18n="macro_fat">Fat</span> <span id="fat-consumed">0</span>/<span id="fat-target">0</span>g
         </div>
       </div>
     </div>
 
     <div class="quick-add-row">
-      <button id="open-search-btn" data-i18n="quick_add_search"><span class="icon icon-search" aria-hidden="true"></span> Search</button>
-      <button id="open-recent-btn" data-i18n="quick_add_recent"><span class="icon icon-recent" aria-hidden="true"></span> Recent</button>
-      <button id="open-photo-btn" data-i18n="quick_add_photo"><span class="icon icon-photo" aria-hidden="true"></span> Photo</button>
+      <button id="open-photo-btn" class="quick-add-primary" data-i18n="quick_add_photo"><span class="icon icon-photo" aria-hidden="true"></span> Photo</button>
+      <div class="quick-add-secondary">
+        <button class="btn-icon" id="open-search-btn" aria-label="Search" data-i18n-aria-label="aria_search"><span class="icon icon-search" aria-hidden="true"></span></button>
+        <button class="btn-icon" id="open-recent-btn" aria-label="Recent" data-i18n-aria-label="aria_recent"><span class="icon icon-recent" aria-hidden="true"></span></button>
+      </div>
     </div>
     <input type="file" id="photo-file-input" accept="image/*" capture="environment" style="display:none;" />
 
@@ -944,7 +903,13 @@
     // Exercise adds back to the day's budget (the standard "eat back what
     // you burn" pattern) — an assumption, the brief didn't specify this.
     const budget = today.target + (today.exerciseBurned || 0);
-    animateNumber(document.getElementById('ring-remaining'), Math.round(budget - consumed));
+    const remaining = Math.round(budget - consumed);
+    const heroEl = document.getElementById('hero-remaining');
+    animateNumber(heroEl, remaining);
+    // Karkade is the app's one loud color, spent here and nowhere else on
+    // this screen: the hero number turns it on only once you're actually
+    // over budget, not as a permanent decoration.
+    heroEl.classList.toggle('hero-number--over', remaining < 0);
 
     const creditNote = document.getElementById('exercise-credit-note');
     if (today.exerciseBurned > 0) {
@@ -954,31 +919,29 @@
       creditNote.style.display = 'none';
     }
 
-    const circumference = 628.3; // 2 * pi * 100 — matches the ring's r="100" in the SVG
-    const fraction = budget > 0 ? Math.min(consumed / budget, 1) : 0;
-    const ringEl = document.getElementById('ring-progress');
-    const currentOffset = parseFloat(ringEl.style.strokeDashoffset) || circumference;
-    springTo('ring-offset', currentOffset, circumference * (1 - fraction), (v) => {
-      ringEl.style.strokeDashoffset = v;
-    });
-
-    updateMacroBar('protein', proteinC, today.macros.proteinG);
-    updateMacroBar('carb', carbC, today.macros.carbG);
-    updateMacroBar('fat', fatC, today.macros.fatG);
+    updateProteinFill(proteinC, today.macros.proteinG);
+    animateNumber(document.getElementById('carb-consumed'), Math.round(carbC));
+    document.getElementById('carb-target').textContent = today.macros.carbG;
+    animateNumber(document.getElementById('fat-consumed'), Math.round(fatC));
+    document.getElementById('fat-target').textContent = today.macros.fatG;
 
     renderFoodLogList(today.foodEntries);
   }
 
-  function updateMacroBar(key, consumed, target) {
-    animateNumber(document.getElementById(`${key}-consumed`), Math.round(consumed));
-    document.getElementById(`${key}-target`).textContent = target;
+  // Protein is the one macro that gets a progress indicator on Today —
+  // deliberately not carbs or fat too, per the brief: three identically-
+  // decorated stats reads as decoration, not a point of view. A plain
+  // underline fill rather than a bar-in-a-box, since it's supporting a
+  // typographic hero, not competing with it for shape.
+  function updateProteinFill(consumed, target) {
+    animateNumber(document.getElementById('protein-consumed'), Math.round(consumed));
+    document.getElementById('protein-target').textContent = target;
 
-    const miniCircumference = 163.4; // 2 * pi * 26 — matches each mini ring's r="26"
-    const pct = target > 0 ? Math.min(consumed / target, 1) : 0;
-    const ringEl = document.getElementById(`${key}-ring-progress`);
-    const currentOffset = parseFloat(ringEl.style.strokeDashoffset) || miniCircumference;
-    springTo(`${key}-ring-offset`, currentOffset, miniCircumference * (1 - pct), (v) => {
-      ringEl.style.strokeDashoffset = v;
+    const pct = target > 0 ? Math.min((consumed / target) * 100, 100) : 0;
+    const fillEl = document.getElementById('protein-bar');
+    const currentPct = parseFloat(fillEl.style.width) || 0;
+    springTo('protein-fill', currentPct, pct, (v) => {
+      fillEl.style.width = `${v}%`;
     });
   }
 
@@ -1610,7 +1573,7 @@
 
     renderLineChart(document.getElementById('weight-chart'), weightSeries, { color: '#7c8a5c' });
     renderLineChart(document.getElementById('calorie-chart'), calorieSeries, {
-      color: '#c1663f',
+      color: '#c8184a',
       referenceValue: target,
     });
 
@@ -2021,9 +1984,9 @@
 
     if (stats.daysLogged === 0) {
       const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#181310';
+      ctx.fillStyle = '#1c0f14';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#ab9a89';
+      ctx.fillStyle = '#a38990';
       ctx.font = '400 16px "IBM Plex Sans", sans-serif';
       ctx.fillText(t('flex_no_data'), 32, canvas.height / 2);
       return;
