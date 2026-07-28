@@ -1030,46 +1030,65 @@ input:focus-visible {
    across the very first thing a new visitor sees and the app itself. */
 
 .intro-screen {
-  display: flex;
-  flex-direction: column;
   min-height: 100vh;
   padding: 24px 22px;
   position: relative;
   overflow: hidden;
 }
-
-.loop-watermark--intro {
-  position: absolute;
-  top: -40px;
-  inset-inline-end: -90px;
-  width: 380px;
-  height: 380px;
-  background: conic-gradient(from -90deg, var(--accent-energy), var(--accent-energy-deep) 70%, transparent 70%);
-  border-radius: 50%;
-  mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 4px));
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 4px));
-  opacity: 0.09;
-  pointer-events: none;
+.intro-screen.active {
+  display: flex;
+  flex-direction: column;
 }
 
-.intro-mark {
-  width: 64px;
-  height: 64px;
+.intro-hero-mark {
+  width: 100%;
+  aspect-ratio: 1;
+  max-width: 280px;
+  margin: 8vh auto 32px;
+  position: relative;
+}
+.intro-hero-mark::before,
+.intro-hero-mark::after {
+  content: '';
+  position: absolute;
+  inset: 0;
   border-radius: 50%;
   background: conic-gradient(from -90deg, var(--accent-energy), var(--accent-energy-deep) 70%, transparent 70%);
-  mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 6px));
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 6px));
-  margin-top: auto;
-  margin-bottom: 24px;
-  position: relative;
-  z-index: 1;
+}
+.intro-hero-mark::before {
+  mask: radial-gradient(farthest-side, transparent calc(100% - 14px), #000 calc(100% - 14px));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 14px), #000 calc(100% - 14px));
+  animation: intro-mark-spin 40s linear infinite;
+}
+.intro-hero-mark::after {
+  inset: 15%;
+  opacity: 0.35;
+  mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 8px));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 8px));
+  animation: intro-mark-spin 28s linear infinite reverse;
+}
+@keyframes intro-mark-spin {
+  to { transform: rotate(360deg); }
+}
+
+.intro-ambient-glow {
+  position: absolute;
+  top: -20%;
+  inset-inline-start: -30%;
+  width: 160%;
+  height: 60%;
+  background: radial-gradient(closest-side, rgba(200, 24, 74, 0.16), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .intro-title {
   font-family: var(--font-display);
-  font-size: var(--text-3xl);
+  font-size: var(--text-4xl);
   font-weight: 700;
+  letter-spacing: -0.02em;
   margin-bottom: 12px;
+  text-align: center;
   position: relative;
   z-index: 1;
 }
@@ -1079,6 +1098,8 @@ input:focus-visible {
   color: var(--text-secondary);
   line-height: 1.4;
   max-width: 30ch;
+  text-align: center;
+  margin: 0 auto;
   position: relative;
   z-index: 1;
 }
