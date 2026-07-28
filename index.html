@@ -17,6 +17,59 @@
     <div class="spinner" style="margin-top: 40vh;"></div>
   </div>
 
+  <!-- Intro 1: Welcome -->
+  <div id="screen-intro-1" class="screen intro-screen">
+    <div class="loop-watermark loop-watermark--intro" aria-hidden="true"></div>
+    <div class="intro-mark" aria-hidden="true"></div>
+    <h1 class="intro-title" data-i18n="app_name">MacroLoop</h1>
+    <p class="intro-tagline" data-i18n="intro1_tagline">The calorie tracker that learns your body, instead of guessing at it forever.</p>
+    <div class="intro-actions">
+      <button class="btn-primary" id="intro-1-next-btn" data-i18n="intro_get_started_button">Get started</button>
+      <button class="btn-ghost intro-skip" id="intro-1-skip-btn" data-i18n="intro_skip_button">Skip intro</button>
+    </div>
+  </div>
+
+  <!-- Intro 2: The adaptive algorithm, explained honestly -->
+  <div id="screen-intro-2" class="screen intro-screen">
+    <div class="intro-top-row">
+      <button class="btn-icon" id="intro-2-back-btn" aria-label="Back" data-i18n-aria-label="aria_back"><span class="icon icon-back" aria-hidden="true"></span></button>
+      <div class="intro-dots"><span class="intro-dot"></span><span class="intro-dot intro-dot--active"></span><span class="intro-dot"></span></div>
+      <button class="intro-skip-inline" id="intro-2-skip-btn" data-i18n="intro_skip_button">Skip</button>
+    </div>
+    <h2 class="intro-headline" data-i18n="intro2_headline">Most apps use one formula. Forever.</h2>
+    <p class="intro-body" data-i18n="intro2_body">MacroLoop starts with the same kind of estimate every tracker uses. But no formula knows your actual metabolism — so after about two weeks of logging, it quietly adjusts your targets based on what's really happening, not just your age and weight.</p>
+    <div class="intro-compare">
+      <div class="intro-compare-step">
+        <div class="intro-compare-label" data-i18n="intro2_week1_label">Week 1</div>
+        <div class="intro-compare-value" data-i18n="intro2_week1_value">Standard formula</div>
+      </div>
+      <div class="intro-compare-arrow" aria-hidden="true">&rarr;</div>
+      <div class="intro-compare-step">
+        <div class="intro-compare-label" data-i18n="intro2_week3_label">Week 3+</div>
+        <div class="intro-compare-value intro-compare-value--accent" data-i18n="intro2_week3_value">Personalized to you</div>
+      </div>
+    </div>
+    <div class="intro-actions">
+      <button class="btn-primary" id="intro-2-next-btn" data-i18n="intro_continue_button">Continue</button>
+    </div>
+  </div>
+
+  <!-- Intro 3: Photo logging -->
+  <div id="screen-intro-3" class="screen intro-screen">
+    <div class="intro-top-row">
+      <button class="btn-icon" id="intro-3-back-btn" aria-label="Back" data-i18n-aria-label="aria_back"><span class="icon icon-back" aria-hidden="true"></span></button>
+      <div class="intro-dots"><span class="intro-dot"></span><span class="intro-dot"></span><span class="intro-dot intro-dot--active"></span></div>
+      <button class="intro-skip-inline" id="intro-3-skip-btn" data-i18n="intro_skip_button">Skip</button>
+    </div>
+    <span class="icon icon-photo intro-feature-icon" aria-hidden="true"></span>
+    <h2 class="intro-headline" data-i18n="intro3_headline">Snap a photo, skip the search</h2>
+    <p class="intro-body" data-i18n="intro3_body">Point your camera at a plate and MacroLoop identifies what's on it — no scrolling through a food database to log a meal.</p>
+    <div class="intro-actions">
+      <button class="btn-primary" id="intro-3-next-btn" data-i18n="intro_get_started_button">Get started</button>
+      <button class="btn-ghost intro-skip" id="intro-3-signin-btn" data-i18n="intro_have_account_button">Already have an account? Sign in</button>
+    </div>
+  </div>
+
   <!-- Auth -->
   <div id="screen-auth" class="screen">
     <h1 data-i18n="app_name">MacroLoop</h1>
@@ -38,6 +91,11 @@
 
   <!-- Onboarding -->
   <div id="screen-onboarding" class="screen">
+    <div class="onboarding-progress-row">
+      <button class="btn-icon" id="onboarding-back-btn" aria-label="Back" data-i18n-aria-label="aria_back" style="display:none;"><span class="icon icon-back" aria-hidden="true"></span></button>
+      <div class="onboarding-progress-track"><div class="onboarding-progress-fill" id="onboarding-progress-fill"></div></div>
+      <span class="onboarding-progress-label numeric" id="onboarding-progress-label">1 / 4</span>
+    </div>
     <h1 data-i18n="onboarding_title">Let's set your target</h1>
     <p data-i18n="onboarding_subtitle">Takes under two minutes.</p>
 
@@ -123,17 +181,37 @@
       </div>
 
       <p class="error-text" id="onboarding-error" style="display:none;"></p>
-      <button class="btn-primary" id="onboarding-calculate" data-i18n="onboarding_calculate_button">Calculate my target</button>
+      <button class="btn-primary" id="onboarding-next-btn" data-i18n="intro_continue_button">Continue</button>
+      <button class="btn-primary" id="onboarding-calculate" data-i18n="onboarding_calculate_button" style="display:none;">Calculate my target</button>
     </div>
 
     <div id="onboarding-result" style="display:none;">
       <div class="card result-card">
+        <div class="result-ready-label" data-i18n="result_ready_label">Your plan is ready</div>
         <div class="target-number numeric" id="result-target">0</div>
         <div class="target-unit" data-i18n="unit_kcal_per_day">kcal/day</div>
         <p id="result-explanation"></p>
         <p class="error-text" id="result-warning" style="display:none;"></p>
       </div>
-      <button class="btn-primary" id="onboarding-confirm" data-i18n="onboarding_get_started_button">Get started</button>
+      <button class="btn-primary" id="onboarding-continue-btn" data-i18n="intro_continue_button">Continue</button>
+    </div>
+  </div>
+
+  <!-- Notification opt-in (last onboarding step, before entering the app) -->
+  <div id="screen-notification-optin" class="screen">
+    <div class="intro-top-row">
+      <button class="btn-icon" id="notif-back-btn" aria-label="Back" data-i18n-aria-label="aria_back"><span class="icon icon-back" aria-hidden="true"></span></button>
+    </div>
+    <span class="icon icon-recent intro-feature-icon" aria-hidden="true"></span>
+    <h2 class="intro-headline" data-i18n="notif_headline">Stay on track</h2>
+    <p class="intro-body" data-i18n="notif_body">If you haven't hit your macros by a time you pick, MacroLoop shows a gentle reminder on Today. Set it now, or skip and add it later in Settings.</p>
+    <div class="field">
+      <label for="notif-gap-fixer-time" data-i18n="label_gap_fixer_time">Gap Fixer reminder</label>
+      <input type="time" id="notif-gap-fixer-time" value="19:00" />
+    </div>
+    <div class="intro-actions">
+      <button class="btn-primary" id="onboarding-finish-btn" data-i18n="notif_enable_button">Set reminder &amp; finish</button>
+      <button class="btn-ghost intro-skip" id="onboarding-skip-notif-btn" data-i18n="notif_skip_button">Skip for now</button>
     </div>
   </div>
 
@@ -230,12 +308,13 @@
 
   <!-- Bottom nav — shown once there's more than one real screen to switch between -->
   <nav class="bottom-nav" id="bottom-nav">
-    <button class="nav-item active" data-screen="today" data-i18n="nav_today">Today</button>
-    <button class="nav-item" data-screen="exercise" data-i18n="nav_exercise">Exercise</button>
-    <button class="nav-item" data-screen="progress" data-i18n="nav_progress">Progress</button>
-    <button class="nav-item" data-screen="fixer" data-i18n="nav_fixer">Fixer</button>
-    <button class="nav-item" data-screen="flex" data-i18n="nav_flex">Flex</button>
+    <button class="nav-item active" data-screen="today"><span class="icon icon-nav-today" aria-hidden="true"></span><span data-i18n="nav_today">Today</span></button>
+    <button class="nav-item" data-screen="exercise"><span class="icon icon-nav-exercise" aria-hidden="true"></span><span data-i18n="nav_exercise">Exercise</span></button>
+    <button class="nav-item" data-screen="progress"><span class="icon icon-nav-progress" aria-hidden="true"></span><span data-i18n="nav_progress">Progress</span></button>
+    <button class="nav-item" data-screen="fixer"><span class="icon icon-nav-fixer" aria-hidden="true"></span><span data-i18n="nav_fixer">Fixer</span></button>
+    <button class="nav-item" data-screen="flex"><span class="icon icon-nav-flex" aria-hidden="true"></span><span data-i18n="nav_flex">Flex</span></button>
   </nav>
+  <button class="nav-fab" id="nav-fab-photo-btn" aria-label="Log a meal photo" data-i18n-aria-label="quick_add_photo_aria"><span class="icon icon-photo" aria-hidden="true"></span></button>
 
   <!-- Gap Fixer -->
   <div id="screen-fixer" class="screen">
@@ -565,7 +644,9 @@
     document.getElementById(id).classList.add('active');
 
     const nav = document.getElementById('bottom-nav');
-    nav.style.display = NAV_SCREENS.includes(id) ? 'flex' : 'none';
+    const isNavScreen = NAV_SCREENS.includes(id);
+    nav.style.display = isNavScreen ? 'flex' : 'none';
+    document.getElementById('nav-fab-photo-btn').style.display = isNavScreen ? 'flex' : 'none';
     document.querySelectorAll('.nav-item').forEach((btn) => {
       btn.classList.toggle('active', `screen-${btn.dataset.screen}` === id);
     });
@@ -640,6 +721,59 @@
       });
     });
   }
+
+  // ---- Onboarding: stepped wizard ----
+  // The four .onboarding-step blocks below are unchanged from the single-
+  // scroll version — this only controls which one is visible at a time.
+  // readOnboardingInputs() and every field listener still read the DOM
+  // exactly as before; nothing about data collection changed, only how
+  // much of the form is on screen at once.
+
+  let onboardingStepIndex = 0;
+
+  function updateOnboardingStepView() {
+    const steps = document.querySelectorAll('#onboarding-form .onboarding-step');
+    steps.forEach((el, i) => { el.style.display = i === onboardingStepIndex ? 'block' : 'none'; });
+
+    const isLast = onboardingStepIndex === steps.length - 1;
+    document.getElementById('onboarding-back-btn').style.display = onboardingStepIndex === 0 ? 'none' : 'flex';
+    document.getElementById('onboarding-next-btn').style.display = isLast ? 'none' : 'block';
+    document.getElementById('onboarding-calculate').style.display = isLast ? 'block' : 'none';
+    document.getElementById('onboarding-progress-fill').style.width = `${((onboardingStepIndex + 1) / steps.length) * 100}%`;
+    document.getElementById('onboarding-progress-label').textContent = `${onboardingStepIndex + 1} / ${steps.length}`;
+    document.getElementById('onboarding-error').style.display = 'none';
+  }
+
+  document.getElementById('onboarding-back-btn').addEventListener('click', () => {
+    onboardingStepIndex = Math.max(onboardingStepIndex - 1, 0);
+    updateOnboardingStepView();
+  });
+
+  document.getElementById('onboarding-next-btn').addEventListener('click', () => {
+    const steps = document.querySelectorAll('#onboarding-form .onboarding-step');
+    // "About you" is step index 1 and the only step with hard-required
+    // fields — the rest have sensible pre-selected defaults, so there's
+    // nothing to validate on them.
+    if (onboardingStepIndex === 1) {
+      const age = Number(document.getElementById('age-input').value);
+      const heightOk = onboardingUnit === 'metric'
+        ? Number(document.getElementById('height-cm-input').value) > 0
+        : Number(document.getElementById('height-ft-input').value) > 0;
+      const weightOk = onboardingUnit === 'metric'
+        ? Number(document.getElementById('weight-kg-input').value) > 0
+        : Number(document.getElementById('weight-lb-input').value) > 0;
+      if (!age || age < 13 || age > 100 || !heightOk || !weightOk) {
+        const errorEl = document.getElementById('onboarding-error');
+        errorEl.textContent = t('onboarding_error_missing_fields');
+        errorEl.style.display = 'block';
+        return;
+      }
+    }
+    onboardingStepIndex = Math.min(onboardingStepIndex + 1, steps.length - 1);
+    updateOnboardingStepView();
+  });
+
+  updateOnboardingStepView();
 
   wireSegmented('unit-toggle', (v) => {
     onboardingUnit = v;
@@ -759,7 +893,15 @@
     document.getElementById('onboarding-result').style.display = 'block';
   });
 
-  document.getElementById('onboarding-confirm').addEventListener('click', async () => {
+  document.getElementById('onboarding-continue-btn').addEventListener('click', () => {
+    showScreen('screen-notification-optin');
+  });
+
+  document.getElementById('notif-back-btn').addEventListener('click', () => {
+    showScreen('screen-onboarding');
+  });
+
+  async function finishOnboarding(gapFixerTime) {
     const user = getState('user');
     if (!user || !lastComputed) return;
     const { input, target, tdee } = lastComputed;
@@ -775,6 +917,7 @@
       rate_percent: input.ratePercent,
       unit_pref: input.unit_pref,
       target_weight_kg: input.targetWeightKg,
+      gap_fixer_time: gapFixerTime,
       premium_status: false,
     };
 
@@ -790,6 +933,13 @@
     setState('profile', profile);
     patchState('today', { date, target, macros, foodEntries: {} });
     showScreen('screen-today');
+  }
+
+  document.getElementById('onboarding-finish-btn').addEventListener('click', () => {
+    finishOnboarding(document.getElementById('notif-gap-fixer-time').value || null);
+  });
+  document.getElementById('onboarding-skip-notif-btn').addEventListener('click', () => {
+    finishOnboarding(null);
   });
 
   // ---- Today ----
@@ -1724,6 +1874,9 @@
   document.getElementById('open-photo-btn').addEventListener('click', () => {
     document.getElementById('photo-file-input').click();
   });
+  document.getElementById('nav-fab-photo-btn').addEventListener('click', () => {
+    document.getElementById('photo-file-input').click();
+  });
 
   document.getElementById('photo-file-input').addEventListener('change', async (e) => {
     const file = e.target.files[0];
@@ -2005,6 +2158,25 @@
     showToast(t('toast_flex_saved'));
   });
 
+  // ---- Intro screens (pre-auth, first-time visitors only) ----
+
+  const INTRO_SEEN_KEY = 'macroloop_seen_intro';
+
+  function finishIntro() {
+    try { localStorage.setItem(INTRO_SEEN_KEY, '1'); } catch (err) { /* private browsing etc. — non-fatal, they'll just see intro again next time */ }
+    showScreen('screen-auth');
+  }
+
+  document.getElementById('intro-1-next-btn').addEventListener('click', () => showScreen('screen-intro-2'));
+  document.getElementById('intro-1-skip-btn').addEventListener('click', finishIntro);
+  document.getElementById('intro-2-back-btn').addEventListener('click', () => showScreen('screen-intro-1'));
+  document.getElementById('intro-2-skip-btn').addEventListener('click', finishIntro);
+  document.getElementById('intro-2-next-btn').addEventListener('click', () => showScreen('screen-intro-3'));
+  document.getElementById('intro-3-back-btn').addEventListener('click', () => showScreen('screen-intro-2'));
+  document.getElementById('intro-3-skip-btn').addEventListener('click', finishIntro);
+  document.getElementById('intro-3-next-btn').addEventListener('click', finishIntro);
+  document.getElementById('intro-3-signin-btn').addEventListener('click', finishIntro);
+
   // ---- Nav ----
 
   document.querySelectorAll('.nav-item').forEach((btn) => {
@@ -2023,7 +2195,9 @@
   onAuthChange(async (user) => {
     setState('user', user);
     if (!user) {
-      showScreen('screen-auth');
+      let hasSeenIntro = false;
+      try { hasSeenIntro = !!localStorage.getItem(INTRO_SEEN_KEY); } catch (err) { /* private browsing — default to showing the intro */ }
+      showScreen(hasSeenIntro ? 'screen-auth' : 'screen-intro-1');
       return;
     }
     try {
