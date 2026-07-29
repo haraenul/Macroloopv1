@@ -2135,17 +2135,35 @@
     const streak = computeStreak(foodLogRange, todayLocalDate());
     const canvas = document.getElementById('flex-canvas');
 
+    // The canvas was rendering at a fixed 384x440 pixel buffer stretched to
+    // fill a wider CSS box, which looks soft on any real phone screen —
+    // devicePixelRatio is always >1 there. Render into the real physical
+    // pixel count instead and scale the context to match, via
+    // setTransform (not scale, so repeat calls to this function — the
+    // refresh button — don't compound the scale each time).
+    const LOGICAL_W = 384;
+    const LOGICAL_H = 440;
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = LOGICAL_W * dpr;
+    canvas.height = LOGICAL_H * dpr;
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
     if (stats.daysLogged === 0) {
-      const ctx = canvas.getContext('2d');
       ctx.fillStyle = '#1c0f14';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, LOGICAL_W, LOGICAL_H);
       ctx.fillStyle = '#a38990';
       ctx.font = '400 16px "IBM Plex Sans", sans-serif';
-      ctx.fillText(t('flex_no_data'), 32, canvas.height / 2);
+      ctx.fillText(t('flex_no_data'), 32, LOGICAL_H / 2);
       return;
     }
 
-    drawFlexCard(canvas, {
+    // drawFlexCard reads canvas.width/height directly to lay out its fixed,
+    // hand-tuned 384x440 composition — a proxy keeps it seeing exactly
+    // that logical size while the context underneath is the real,
+    // dpr-scaled one, so nothing in that file needs to change for this.
+    const canvasProxy = { width: LOGICAL_W, height: LOGICAL_H, getContext: () => ctx };
+    drawFlexCard(canvasProxy, {
       weekLabel: t('flex_week_label', { startDate: weekStartStr }),
       stats, streak, target,
       goal: getState('profile').goal,
