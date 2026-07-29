@@ -450,6 +450,7 @@ input:focus-visible {
   outline: 2px solid var(--accent-energy);
   outline-offset: 1px;
 }
+
 .segmented {
   display: flex;
   gap: 8px;
@@ -1021,18 +1022,18 @@ input:focus-visible {
   font-size: var(--text-2xs);
   color: var(--text-tertiary);
   margin-bottom: 8px;
-  }
+}
+
 /* ---- Pre-auth intro sequence + onboarding wizard chrome ----
    Same visual language as Today: Plex type, karkade used once per
    screen at most, the Loop watermark reused again for continuity
    across the very first thing a new visitor sees and the app itself. */
 
 .intro-screen {
-  height: 100vh;
-  height: 100dvh;
-  padding: 20px 22px;
+  min-height: 100vh;
+  padding: 24px 22px;
   position: relative;
-  overflow-y: auto;
+  overflow: hidden;
 }
 .intro-screen.active {
   display: flex;
@@ -1042,10 +1043,9 @@ input:focus-visible {
 .intro-hero-mark {
   width: 100%;
   aspect-ratio: 1;
-  max-width: 200px;
-  margin: 4vh auto 24px;
+  max-width: 280px;
+  margin: 8vh auto 32px;
   position: relative;
-  flex-shrink: 0;
 }
 .intro-hero-mark::before,
 .intro-hero-mark::after {
@@ -1053,26 +1053,18 @@ input:focus-visible {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: conic-gradient(
-    from -90deg,
-    transparent 0deg,
-    var(--accent-energy) 24deg,
-    var(--accent-energy-deep) 230deg,
-    transparent 270deg,
-    transparent 360deg
-  );
-  filter: blur(0.5px);
+  background: conic-gradient(from -90deg, var(--accent-energy), var(--accent-energy-deep) 70%, transparent 70%);
 }
 .intro-hero-mark::before {
-  mask: radial-gradient(farthest-side, transparent calc(100% - 28px), #000 calc(100% - 15px), #000 calc(100% - 7px), transparent 100%);
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 28px), #000 calc(100% - 15px), #000 calc(100% - 7px), transparent 100%);
+  mask: radial-gradient(farthest-side, transparent calc(100% - 14px), #000 calc(100% - 14px));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 14px), #000 calc(100% - 14px));
   animation: intro-mark-spin 40s linear infinite;
 }
 .intro-hero-mark::after {
   inset: 15%;
-  opacity: 0.4;
-  mask: radial-gradient(farthest-side, transparent calc(100% - 18px), #000 calc(100% - 9px), #000 calc(100% - 4px), transparent 100%);
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 18px), #000 calc(100% - 9px), #000 calc(100% - 4px), transparent 100%);
+  opacity: 0.35;
+  mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 8px));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 8px));
   animation: intro-mark-spin 28s linear infinite reverse;
 }
 @keyframes intro-mark-spin {
@@ -1092,14 +1084,13 @@ input:focus-visible {
 
 .intro-title {
   font-family: var(--font-display);
-  font-size: clamp(2.1rem, 10vw, 3rem);
+  font-size: var(--text-4xl);
   font-weight: 700;
   letter-spacing: -0.02em;
   margin-bottom: 12px;
   text-align: center;
   position: relative;
   z-index: 1;
-  white-space: nowrap;
 }
 
 .intro-tagline {
