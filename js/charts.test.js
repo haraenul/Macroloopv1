@@ -2,7 +2,7 @@
 // Run: node js/charts.test.js
 
 import assert from 'node:assert/strict';
-import { computeChartPoints } from './charts.js';
+import { computeChartPoints, computeAreaPath, findNearestPlottedIndex, formatShortDateLabel } from './charts.js';
 
 let passed = 0;
 function test(name, fn) {
@@ -65,6 +65,40 @@ test('no reference value means referencePy is null', () => {
 test('empty input returns an empty plotted array instead of throwing', () => {
   const { plotted } = computeChartPoints([], { width: 100, height: 100 });
   assert.deepEqual(plotted, []);
+});
+
+test('area path closes down to the baseline and back, not left open', () => {
+  const path = computeAreaPath([{ px: 10, py: 50 }, { px: 90, py: 20 }], 100);
+  assert.equal(path, 'M 10.0 50.0 L 90.0 20.0 L 90.0 100.0 L 10.0 100.0 Z');
+});
+
+test('a single-point area path is a closed sliver, not a crash', () => {
+  const path = computeAreaPath([{ px: 50, py: 30 }], 100);
+  assert.equal(path, 'M 50.0 30.0 L 50.0 100.0 Z');
+});
+
+test('empty points produce an empty area path', () => {
+  assert.equal(computeAreaPath([], 100), '');
+});
+
+test('nearest-point lookup picks the closer of two neighbors', () => {
+  const plotted = [{ px: 0 }, { px: 50 }, { px: 100 }];
+  assert.equal(findNearestPlottedIndex(plotted, 40), 1);
+  assert.equal(findNearestPlottedIndex(plotted, 10), 0);
+  assert.equal(findNearestPlottedIndex(plotted, 76), 2);
+});
+
+test('nearest-point lookup on empty input returns -1, not a crash', () => {
+  assert.equal(findNearestPlottedIndex([], 50), -1);
+});
+
+test('short date label reads month/day from an ISO date string', () => {
+  assert.equal(formatShortDateLabel('2026-07-04'), '7/4');
+  assert.equal(formatShortDateLabel('2026-12-31'), '12/31');
+});
+
+test('short date label falls back to the raw value for non-date x labels', () => {
+  assert.equal(formatShortDateLabel('week 3'), 'week 3');
 });
 
 console.log(`\n${passed} passed`);

@@ -146,7 +146,7 @@ export function drawFlexCard(canvas, { weekLabel, stats, streak, target, goal })
   ctx.stroke();
 
   ctx.fillStyle = '#f3e9e6';
-  ctx.font = '700 24px "Bricolage Grotesque", sans-serif';
+  ctx.font = '700 24px "IBM Plex Sans", sans-serif';
   ctx.textBaseline = 'middle';
   ctx.fillText('MacroLoop', markX + markR + 10, markY + 1);
   ctx.textBaseline = 'alphabetic';
@@ -157,7 +157,7 @@ export function drawFlexCard(canvas, { weekLabel, stats, streak, target, goal })
 
   // ---- Hero number ----
   ctx.fillStyle = '#c8184a';
-  ctx.font = '800 76px "Bricolage Grotesque", sans-serif';
+  ctx.font = '700 76px "IBM Plex Sans", sans-serif';
   ctx.fillText(`${stats.daysLogged}/7`, M, 190);
   ctx.fillStyle = '#a38990';
   ctx.font = '400 15px "IBM Plex Sans", sans-serif';
@@ -166,7 +166,7 @@ export function drawFlexCard(canvas, { weekLabel, stats, streak, target, goal })
   // ---- Streak + adherence, side by side instead of stacked lines ----
   const statY = 258;
   ctx.fillStyle = '#f3e9e6';
-  ctx.font = '700 22px "Bricolage Grotesque", sans-serif';
+  ctx.font = '700 22px "IBM Plex Sans", sans-serif';
   ctx.fillText(`${streak}`, M, statY);
   const streakNumWidth = ctx.measureText(`${streak}`).width;
   ctx.fillStyle = '#a38990';
@@ -179,8 +179,8 @@ export function drawFlexCard(canvas, { weekLabel, stats, streak, target, goal })
   ctx.fillText(`${stats.adherencePct}% of target`, M, statY + 28);
 
   // ---- Bar chart — full width, rounded tops, evenly filling the card ----
-  const barsTop = 296;
-  const barsHeight = 88;
+  const barsTop = 320;
+  const barsHeight = 92;
   const chartWidth = W - M * 2;
   const barWidth = 26;
   const gap = (chartWidth - barWidth * 7) / 6;
@@ -199,7 +199,7 @@ export function drawFlexCard(canvas, { weekLabel, stats, streak, target, goal })
   ctx.font = '500 12px "IBM Plex Mono", monospace';
   ctx.textAlign = 'center';
   ['M', 'T', 'W', 'T', 'F', 'S', 'S'].forEach((label, i) => {
-    ctx.fillText(label, M + i * (barWidth + gap) + barWidth / 2, barsTop + barsHeight + 20);
+    ctx.fillText(label, M + i * (barWidth + gap) + barWidth / 2, barsTop + barsHeight + 22);
   });
   ctx.textAlign = 'left';
 
@@ -208,12 +208,12 @@ export function drawFlexCard(canvas, { weekLabel, stats, streak, target, goal })
   ctx.strokeStyle = 'rgba(243,233,230,0.09)';
   ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.moveTo(M, H - 24);
-  ctx.lineTo(W - M, H - 24);
+  ctx.moveTo(M, H - 34);
+  ctx.lineTo(W - M, H - 34);
   ctx.stroke();
   ctx.fillStyle = '#6e5860';
   ctx.font = '500 11px "IBM Plex Mono", monospace';
-  ctx.fillText('macroloop', M, H - 8);
+  ctx.fillText('macroloop', M, H - 16);
 }
 
 /** Triggers a browser download of the canvas as a PNG. */

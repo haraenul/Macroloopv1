@@ -9,7 +9,7 @@
 // No animation library — this genuinely is small enough to hand-roll,
 // and it keeps the same zero-dependency approach as the rest of the app.
 
-function prefersReducedMotion() {
+export function prefersReducedMotion() {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
