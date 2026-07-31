@@ -18,7 +18,7 @@
    support added after the fact. Still no gradient buttons, no
    glow-orbs, no grain. Dark by default. */
 
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700..800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap');
 
 :root {
   --bg: #1c0f14;
@@ -1030,10 +1030,11 @@ input:focus-visible {
    across the very first thing a new visitor sees and the app itself. */
 
 .intro-screen {
-  min-height: 100vh;
-  padding: 24px 22px;
+  height: 100vh;
+  height: 100dvh;
+  padding: 20px 22px;
   position: relative;
-  overflow: hidden;
+  overflow-y: auto;
 }
 .intro-screen.active {
   display: flex;
@@ -1043,9 +1044,10 @@ input:focus-visible {
 .intro-hero-mark {
   width: 100%;
   aspect-ratio: 1;
-  max-width: 280px;
-  margin: 8vh auto 32px;
+  max-width: 200px;
+  margin: 4vh auto 24px;
   position: relative;
+  flex-shrink: 0;
 }
 .intro-hero-mark::before,
 .intro-hero-mark::after {
@@ -1053,18 +1055,26 @@ input:focus-visible {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: conic-gradient(from -90deg, var(--accent-energy), var(--accent-energy-deep) 70%, transparent 70%);
+  background: conic-gradient(
+    from -90deg,
+    transparent 0deg,
+    var(--accent-energy) 24deg,
+    var(--accent-energy-deep) 230deg,
+    transparent 270deg,
+    transparent 360deg
+  );
+  filter: blur(0.5px);
 }
 .intro-hero-mark::before {
-  mask: radial-gradient(farthest-side, transparent calc(100% - 14px), #000 calc(100% - 14px));
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 14px), #000 calc(100% - 14px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 28px), #000 calc(100% - 15px), #000 calc(100% - 7px), transparent 100%);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 28px), #000 calc(100% - 15px), #000 calc(100% - 7px), transparent 100%);
   animation: intro-mark-spin 40s linear infinite;
 }
 .intro-hero-mark::after {
   inset: 15%;
-  opacity: 0.35;
-  mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 8px));
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 8px));
+  opacity: 0.4;
+  mask: radial-gradient(farthest-side, transparent calc(100% - 18px), #000 calc(100% - 9px), #000 calc(100% - 4px), transparent 100%);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 18px), #000 calc(100% - 9px), #000 calc(100% - 4px), transparent 100%);
   animation: intro-mark-spin 28s linear infinite reverse;
 }
 @keyframes intro-mark-spin {
@@ -1084,13 +1094,14 @@ input:focus-visible {
 
 .intro-title {
   font-family: var(--font-display);
-  font-size: var(--text-4xl);
+  font-size: clamp(2.1rem, 10vw, 3rem);
   font-weight: 700;
   letter-spacing: -0.02em;
   margin-bottom: 12px;
   text-align: center;
   position: relative;
   z-index: 1;
+  white-space: nowrap;
 }
 
 .intro-tagline {
@@ -1230,219 +1241,96 @@ input:focus-visible {
   margin-bottom: 6px;
 }
 
-/* ================================================================
-   v6 additions — daily momentum, an interactive Progress screen, a
-   real photo-scan moment, and a Premium paywall. Everything below
-   reuses the existing palette, type, shadow and easing tokens rather
-   than introducing new ones — restraint stays the rule, not just the
-   v5 pitch.
-   ================================================================ */
-
-/* ---- Empty states get a small anchor icon ---- */
-/* An empty screen is an invitation, not a dead end — a quiet icon above
-   the copy, reusing whatever glyph already represents that screen
-   (search, photo, exercise, Fixer) rather than inventing a new one. */
-.empty-state-icon {
-  display: block;
-  width: 26px;
-  height: 26px;
-  margin: 0 auto 10px;
-  color: var(--text-tertiary);
-  opacity: 0.8;
-}
-
-/* ---- Today: streak badge ---- */
-/* Sits beside the settings icon, not competing with the hero number for
-   attention — a quiet daily readout, not a gamified banner. Gold
-   (--accent-carb) is the app's secondary, sparing accent; sage is
-   already protein's and karkade stays reserved for over-budget. */
-.top-bar-right {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.streak-badge {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
-}
-.streak-badge .icon {
-  width: 15px;
-  height: 15px;
-  color: var(--accent-carb);
-}
-
-/* ---- Today: a quiet acknowledgment when protein crosses 100% ---- */
-/* Not confetti — that would fight the whole point of this palette —
-   just the fill briefly brightening and settling back. Automatically
-   shortened to near-nothing by the global prefers-reduced-motion rule
-   above. */
-@keyframes protein-settle {
-  0% { filter: brightness(1); }
-  35% { filter: brightness(1.4); }
-  100% { filter: brightness(1); }
-}
-.macro-primary-fill--settled {
-  animation: protein-settle 1.1s var(--ease-spring-soft);
-}
-
-/* ---- Photo analyzing overlay: the flagship feature's one "wow" beat ---- */
-/* Previously a bare spinner that didn't even show the photo you'd just
-   taken. Now it's the actual photo, with a slow scan sweep — a neutral
-   cream highlight (text-primary at low opacity), deliberately not
-   karkade: that color is spent already, on Today's hero, and staying
-   scarce is the entire point of it. This is a functional scanning cue,
-   not a decorative glow. */
-.photo-scan-stage {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: min(260px, 78vw);
-  text-align: center;
-}
-.photo-scan-frame {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  border-radius: var(--radius);
-  overflow: hidden;
-  background: var(--surface-2);
-  box-shadow: var(--shadow-lg);
-  animation: photo-scan-pulse 2.2s ease-in-out infinite;
-}
-.photo-scan-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-.photo-scan-sweep {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 50%;
-  top: -50%;
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    rgba(243, 233, 230, 0.05) 40%,
-    rgba(243, 233, 230, 0.2) 50%,
-    rgba(243, 233, 230, 0.05) 60%,
-    transparent
-  );
-  animation: photo-scan-sweep-move 2.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
-}
-@keyframes photo-scan-sweep-move {
-  0% { top: -50%; }
-  100% { top: 100%; }
-}
-@keyframes photo-scan-pulse {
-  0%, 100% { box-shadow: var(--shadow-lg); }
-  50% { box-shadow: var(--shadow-lg), 0 0 0 3px var(--border-strong); }
-}
-.photo-scan-caption {
-  color: var(--text-primary);
-  font-size: var(--text-sm);
-  margin-top: 14px;
-}
-
-/* ---- Onboarding: staged reveal ---- */
-/* #result-ready-label doubles as the changing stage caption during the
-   reveal (base rate -> adjusted for activity -> your target), settling
-   on its original "Your plan is ready" copy as the final resting state
-   — same element, same string, no extra markup. The explanation and
-   continue button hold back until the sequence lands, so the build-up
-   reads as one small piece of proof rather than a number counting up
-   in front of text that was already fully there. */
-#result-explanation,
-#onboarding-continue-btn {
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-#result-explanation.revealed,
-#onboarding-continue-btn.revealed {
-  opacity: 1;
-}
-
 /* ---- Premium paywall ---- */
-/* Two real differentiators, not a generic feature-bullet wall: the
-   adaptive algorithm and unlimited photo scans are the only things
-   this app actually gates, so those are the only two rows here. */
+
 .paywall-hero {
   text-align: center;
-  padding: 8px 0 22px;
+  padding: 8px 20px 24px;
 }
 .paywall-hero-icon {
-  width: 34px;
-  height: 34px;
-  color: var(--accent-carb);
-  margin-bottom: 14px;
+  width: 32px;
+  height: 32px;
+  color: var(--accent-energy);
+  margin-bottom: 12px;
 }
 .paywall-hero-line {
   font-family: var(--font-display);
-  font-size: var(--text-lg);
+  font-size: var(--text-xl);
   font-weight: 600;
-  line-height: 1.4;
-  max-width: 26ch;
-  margin: 0 auto;
+  line-height: 1.3;
 }
+
 .paywall-compare-row {
   display: grid;
-  grid-template-columns: 1.3fr 1fr 1.2fr;
+  grid-template-columns: 1.4fr 1fr 1fr;
   gap: 8px;
   align-items: center;
-  padding: 11px 0;
+  padding: 10px 0;
   font-size: var(--text-sm);
+  border-bottom: 1px solid var(--border);
 }
-.paywall-compare-row + .paywall-compare-row {
-  border-top: 1px solid var(--border);
+.paywall-compare-row:last-child {
+  border-bottom: none;
 }
 .paywall-compare-header {
-  padding-top: 0;
-  padding-bottom: 12px;
-}
-.paywall-col-label {
   font-size: var(--text-xs);
   color: var(--text-tertiary);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  padding-bottom: 6px;
+}
+.paywall-col-label {
+  text-align: center;
 }
 .paywall-col-label--premium {
-  color: var(--accent-carb);
+  color: var(--accent-energy);
+  font-weight: 600;
 }
 .paywall-feature-label {
   color: var(--text-secondary);
 }
 .paywall-premium-value {
-  color: var(--text-primary);
+  text-align: center;
+  color: var(--accent-energy);
   font-weight: 600;
 }
+.paywall-compare-row > div:nth-child(2) {
+  text-align: center;
+  color: var(--text-tertiary);
+}
+
 .paywall-price-card {
   text-align: center;
+  padding: 20px;
 }
 .paywall-price {
   font-family: var(--font-mono);
   font-size: var(--text-3xl);
   font-weight: 700;
-  color: var(--text-primary);
 }
 .paywall-price-period {
   font-size: var(--text-base);
-  color: var(--text-tertiary);
-  font-weight: 500;
+  color: var(--text-secondary);
+  font-weight: 400;
 }
 .paywall-fine-print {
   font-size: var(--text-xs);
   color: var(--text-tertiary);
-  margin-top: 6px;
+  margin: 6px 0 0;
 }
+
 .paywall-secure-note {
   text-align: center;
   font-size: var(--text-xs);
   color: var(--text-tertiary);
   margin-top: 10px;
+}
+
+.paywall-dev-toggle {
+  margin-top: 20px;
+  width: 100%;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  padding: 10px;
+  background: transparent;
 }
