@@ -42,10 +42,6 @@ export const STRINGS = {
 
   // ---- Onboarding wizard / notification opt-in ----
   result_ready_label: 'Your plan is ready',
-  result_stage_bmr: 'Base metabolic rate',
-  result_stage_tdee: 'Adjusted for your activity',
-  result_stage_deficit: 'Minus your daily deficit',
-  result_stage_surplus: 'Plus your daily surplus',
   notif_headline: 'Stay on track',
   notif_body: "If you haven't hit your macros by a time you pick, MacroLoop shows a gentle reminder on Today. Set it now, or skip and add it later in Settings.",
   notif_enable_button: 'Set reminder & finish',
@@ -77,6 +73,7 @@ export const STRINGS = {
   photo_scans_unlimited: 'Unlimited photo scans',
   adaptive_algorithm_premium_note: 'Personalized Mode (the adaptive algorithm) is a premium feature — free accounts use the standard formula.',
   settings_upgrade_button: 'Upgrade to Premium',
+  toast_upgrade_coming_soon: "Upgrades aren't set up yet — this is a placeholder for now.",
 
   settings_section_data: 'Your data',
   settings_export_button: 'Export my data',
@@ -329,9 +326,6 @@ export const STRINGS = {
   toast_flex_saved: 'Card saved to your downloads',
 
   // ---- Premium paywall ----
-  // Only the two things this app actually gates — the adaptive
-  // algorithm and photo-scan limits — not a generic feature-bullet
-  // wall invented to make the list look longer.
   paywall_title: 'MacroLoop Premium',
   paywall_hero_line: 'A formula guesses. An algorithm learns.',
   paywall_col_free: 'Free',
@@ -348,9 +342,12 @@ export const STRINGS = {
   paywall_checkout_button: 'Continue to checkout',
   paywall_secure_note: 'Secure checkout, handled by Stripe.',
   paywall_processing: 'Finishing up — this can take a few seconds…',
+  paywall_dev_toggle_button: 'Developer: force premium on this account',
   toast_checkout_error: "Couldn't start checkout — check your connection and try again.",
+  toast_checkout_success: "You're on Premium — your algorithm starts personalizing right away.",
   toast_checkout_cancelled: 'Checkout cancelled — no charge made.',
-  toast_checkout_success: "You're on Premium! Activating now…",
+  toast_dev_premium_on: 'Premium forced on for this account (dev only).',
+  toast_dev_premium_off: 'Premium forced off for this account (dev only).',
 };
 
 /**

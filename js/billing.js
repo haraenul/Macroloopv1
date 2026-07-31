@@ -11,7 +11,7 @@
 // and for the same reason: GitHub Pages (this app's primary test
 // frontend) can't run Netlify Functions at all, so a relative path
 // silently 404s from there. DO NOT change this back to a relative path.
-const CHECKOUT_FUNCTION_URL = 'https://vermillion-panda-850b87.netlify.app/.netlify/functions/create-checkout-session';
+const CHECKOUT_FUNCTION_URL = 'https://magnificent-truffle-0d1dc1.netlify.app/.netlify/functions/create-checkout-session';
 
 /** Thrown when the checkout session couldn't be started at all — network failure, or the function itself erroring. */
 export class CheckoutError extends Error {
