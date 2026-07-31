@@ -187,7 +187,7 @@
 
     <div id="onboarding-result" style="display:none;">
       <div class="card result-card">
-        <div class="result-ready-label" id="result-stage-label" data-i18n="result_ready_label">Your plan is ready</div>
+        <div class="result-ready-label" data-i18n="result_ready_label">Your plan is ready</div>
         <div class="target-number numeric" id="result-target">0</div>
         <div class="target-unit" data-i18n="unit_kcal_per_day">kcal/day</div>
         <p id="result-explanation"></p>
@@ -219,13 +219,7 @@
   <div id="screen-today" class="screen">
     <div class="top-bar">
       <div class="brand" data-i18n="app_name">MacroLoop</div>
-      <div class="top-bar-right">
-        <div class="streak-badge" id="streak-badge" style="display:none;">
-          <span class="icon icon-streak" aria-hidden="true"></span>
-          <span class="numeric" id="streak-count">0</span>
-        </div>
-        <button class="btn-icon" id="open-settings-btn" title="Settings" aria-label="Settings" data-i18n-aria-label="aria_settings"><span class="icon icon-settings" aria-hidden="true"></span></button>
-      </div>
+      <button class="btn-icon" id="open-settings-btn" title="Settings" aria-label="Settings" data-i18n-aria-label="aria_settings"><span class="icon icon-settings" aria-hidden="true"></span></button>
     </div>
 
     <div class="today-hero">
@@ -538,7 +532,16 @@
     <p class="error-text" id="paywall-error" style="display:none;"></p>
     <button class="btn-primary" id="paywall-checkout-btn" data-i18n="paywall_checkout_button">Continue to checkout</button>
     <p class="paywall-secure-note" data-i18n="paywall_secure_note">Secure checkout, handled by Stripe.</p>
+
+    <!-- Developer-only override — NOT part of the paying user's flow, so
+         it's kept visually distinct (dashed border, muted) rather than
+         looking like a real pricing option. Remove before a real launch;
+         it exists purely so premium-gated features can be tested without
+         a live Stripe payment. Flips the same profile.premium_status
+         field the webhook would, directly on this account only. -->
+    <button class="btn-ghost paywall-dev-toggle" id="paywall-dev-toggle-btn" data-i18n="paywall_dev_toggle_button">Developer: force premium on this account</button>
   </div>
+
 
   <!-- Delete account confirmation sheet -->
   <div class="sheet" id="delete-account-sheet" style="display:none;">
@@ -636,17 +639,11 @@
     <button class="btn-primary" id="confirm-photo-log-btn" data-i18n="photo_log_meal_button">Log this meal</button>
   </div>
 
-  <!-- Photo analyzing overlay — shows the photo just taken, with a scan
-       sweep across it, rather than a bare spinner over nothing. Uses
-       the .active toggle (not raw style.display) so it picks up the
-       same fade+blur transition every other sheet-backdrop already has. -->
-  <div class="sheet-backdrop" id="photo-loading-backdrop">
-    <div class="photo-scan-stage">
-      <div class="photo-scan-frame">
-        <img id="photo-scan-preview" class="photo-scan-image" alt="" />
-        <div class="photo-scan-sweep" aria-hidden="true"></div>
-      </div>
-      <p class="photo-scan-caption" data-i18n="photo_analyzing">Analyzing your photo&hellip;</p>
+  <!-- Photo analyzing overlay -->
+  <div class="sheet-backdrop" id="photo-loading-backdrop" style="display:none;">
+    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center;">
+      <div class="spinner" style="width:32px; height:32px; margin-bottom:12px;"></div>
+      <p style="color:var(--text-primary);" data-i18n="photo_analyzing">Analyzing your photo&hellip;</p>
     </div>
   </div>
 
@@ -677,7 +674,8 @@
   } from './js/food-log.js';
   import { ACTIVITIES, calculateCaloriesBurned, logExercise } from './js/exercise-log.js';
   import { renderLineChart } from './js/charts.js';
-  import { animateNumber, springTo, openSheetFromElement, closeSheetToElement, prefersReducedMotion } from './js/motion.js';
+  import { animateNumber, springTo, openSheetFromElement, closeSheetToElement } from './js/motion.js';
+  import { startCheckout, parseCheckoutReturnStatus, CheckoutError } from './js/billing.js';
   import {
     compressImageToBase64, analyzeMealPhoto, logPhotoItems, needsCloserLook,
     PhotoLimitError, PhotoNetworkError, PhotoValidationError,
@@ -688,7 +686,6 @@
   } from './js/flex-card.js';
   import { buildDataExport, downloadDataExport, shouldShowGapFixerNudge } from './js/settings.js';
   import { t, applyStrings } from './js/strings.js';
-  import { startCheckout, parseCheckoutReturnStatus } from './js/billing.js';
 
   applyStrings();
 
@@ -722,13 +719,6 @@
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
-  }
-
-  // An empty screen is an invitation, not a dead end: every empty state
-  // gets a small icon anchor, reusing whichever glyph already
-  // represents that screen rather than inventing a generic one.
-  function emptyStateHtml(iconClass, text) {
-    return `<div class="empty-state"><span class="icon ${iconClass} empty-state-icon" aria-hidden="true"></span><div>${text}</div></div>`;
   }
 
   // ---- Auth ----
@@ -917,58 +907,6 @@
     };
   }
 
-  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-  let resultRevealGeneration = 0; // bumped on every calculate click, so a fast double-click can't leave two staged sequences racing each other on the same elements
-
-  // The first real number the app ever shows you is the whole pitch of
-  // intro screen 2 ("no formula knows your actual metabolism") — so
-  // rather than landing in one jump, it stages BMR -> activity-adjusted
-  // TDEE -> goal-adjusted target, each briefly labeled and visible, and
-  // only then reveals the explanation. Skips straight to the end state
-  // under reduced motion, same as everywhere else in the app.
-  async function revealOnboardingResult({ bmr, tdee, target, goal }) {
-    const myGeneration = ++resultRevealGeneration;
-    const stillCurrent = () => myGeneration === resultRevealGeneration;
-
-    const stageLabel = document.getElementById('result-stage-label');
-    const targetEl = document.getElementById('result-target');
-    const explanationEl = document.getElementById('result-explanation');
-    const continueBtn = document.getElementById('onboarding-continue-btn');
-
-    explanationEl.classList.remove('revealed');
-    continueBtn.classList.remove('revealed');
-    targetEl.textContent = '0';
-
-    if (prefersReducedMotion()) {
-      stageLabel.textContent = t('result_ready_label');
-      animateNumber(targetEl, target);
-      explanationEl.classList.add('revealed');
-      continueBtn.classList.add('revealed');
-      return;
-    }
-
-    stageLabel.textContent = t('result_stage_bmr');
-    animateNumber(targetEl, Math.round(bmr));
-    await wait(900);
-    if (!stillCurrent()) return;
-
-    stageLabel.textContent = t('result_stage_tdee');
-    animateNumber(targetEl, Math.round(tdee));
-    await wait(850);
-    if (!stillCurrent()) return;
-
-    if (goal !== 'maintain') {
-      stageLabel.textContent = t(goal === 'lose' ? 'result_stage_deficit' : 'result_stage_surplus');
-      animateNumber(targetEl, target);
-      await wait(750);
-      if (!stillCurrent()) return;
-    }
-
-    stageLabel.textContent = t('result_ready_label');
-    explanationEl.classList.add('revealed');
-    continueBtn.classList.add('revealed');
-  }
-
   document.getElementById('onboarding-calculate').addEventListener('click', () => {
     const errorEl = document.getElementById('onboarding-error');
     errorEl.style.display = 'none';
@@ -994,6 +932,8 @@
 
     lastComputed = { input, bmr, tdee, target, warning };
 
+    document.getElementById('result-target').textContent = '0';
+    animateNumber(document.getElementById('result-target'), target);
     document.getElementById('result-explanation').textContent = explanation;
     const warningEl = document.getElementById('result-warning');
     if (warning) {
@@ -1005,7 +945,6 @@
 
     document.getElementById('onboarding-form').style.display = 'none';
     document.getElementById('onboarding-result').style.display = 'block';
-    revealOnboardingResult({ bmr, tdee, target, goal: input.goal });
   });
 
   document.getElementById('onboarding-continue-btn').addEventListener('click', () => {
@@ -1148,15 +1087,8 @@
     const exerciseEntries = await getExerciseLogForDate(user.uid, date);
     const exerciseBurned = Object.values(exerciseEntries).reduce((s, e) => s + (e.calories_burned || 0), 0);
 
-    // Same 60-day lookback the Flex card already fetches for this exact
-    // computation — surfacing it daily here too, rather than only once
-    // a week, is the only thing that's new.
-    const streakLookbackStart = daysAgoLocalDate(59);
-    const streakFoodLogRange = await getFoodLogRange(user.uid, streakLookbackStart, date);
-    const streak = computeStreak(streakFoodLogRange, date);
-
     patchState('today', {
-      date, target, macros, foodEntries, exerciseEntries, exerciseBurned, weightKg, streak,
+      date, target, macros, foodEntries, exerciseEntries, exerciseBurned, weightKg,
       algoMode: algoState.mode,
     });
     checkGapFixerNudge();
@@ -1197,15 +1129,6 @@
     animateNumber(document.getElementById('fat-consumed'), Math.round(fatC));
     document.getElementById('fat-target').textContent = today.macros.fatG;
 
-    const streakBadge = document.getElementById('streak-badge');
-    if (today.streak > 0) {
-      document.getElementById('streak-count').textContent = today.streak;
-      streakBadge.setAttribute('aria-label', t('flex_streak_label', { count: today.streak }));
-      streakBadge.style.display = 'flex';
-    } else {
-      streakBadge.style.display = 'none';
-    }
-
     renderFoodLogList(today.foodEntries);
   }
 
@@ -1214,7 +1137,6 @@
   // decorated stats reads as decoration, not a point of view. A plain
   // underline fill rather than a bar-in-a-box, since it's supporting a
   // typographic hero, not competing with it for shape.
-  let proteinBarInitialized = false; // guards the settle-moment below so it only ever fires on a real crossing, never on the first render after a page load/reload
   function updateProteinFill(consumed, target) {
     animateNumber(document.getElementById('protein-consumed'), Math.round(consumed));
     document.getElementById('protein-target').textContent = target;
@@ -1222,19 +1144,6 @@
     const pct = target > 0 ? Math.min((consumed / target) * 100, 100) : 0;
     const fillEl = document.getElementById('protein-bar');
     const currentPct = parseFloat(fillEl.style.width) || 0;
-
-    // A quiet acknowledgment the instant you cross 100% — not confetti,
-    // just the fill briefly brightening and settling back. Guarded by
-    // proteinBarInitialized so re-opening the app already at 100% (not
-    // a real crossing) doesn't spuriously replay it.
-    if (proteinBarInitialized && currentPct < 100 && pct >= 100) {
-      fillEl.classList.remove('macro-primary-fill--settled');
-      // eslint-disable-next-line no-unused-expressions
-      void fillEl.offsetWidth; // restart the animation if it somehow overlaps a previous run
-      fillEl.classList.add('macro-primary-fill--settled');
-    }
-    proteinBarInitialized = true;
-
     springTo('protein-fill', currentPct, pct, (v) => {
       fillEl.style.width = `${v}%`;
     });
@@ -1244,7 +1153,7 @@
     const container = document.getElementById('food-log-list');
     const entries = Object.entries(entriesMap || {});
     if (entries.length === 0) {
-      container.innerHTML = emptyStateHtml('icon-photo', t('empty_food_log'));
+      container.innerHTML = `<div class="empty-state">${t('empty_food_log')}</div>`;
       return;
     }
     container.innerHTML = entries
@@ -1455,7 +1364,6 @@
   document.getElementById('settings-upgrade-btn').addEventListener('click', () => {
     showScreen('screen-paywall');
   });
-
   document.getElementById('paywall-back-btn').addEventListener('click', () => {
     showScreen('screen-settings');
   });
@@ -1465,21 +1373,31 @@
     const errorEl = document.getElementById('paywall-error');
     errorEl.style.display = 'none';
     btn.disabled = true;
-    const originalLabel = btn.textContent;
-    btn.textContent = t('paywall_processing');
     try {
       const user = getState('user');
       const idToken = await user.getIdToken();
       const url = await startCheckout(idToken);
       // Full navigation, not a fetch — Checkout is a Stripe-hosted page
-      // the browser needs to actually load.
+      // the browser needs to actually load, not a response to read.
       window.location.href = url;
     } catch (err) {
-      errorEl.textContent = t('toast_checkout_error');
+      errorEl.textContent = err instanceof CheckoutError ? err.message : t('toast_checkout_error');
       errorEl.style.display = 'block';
       btn.disabled = false;
-      btn.textContent = originalLabel;
     }
+  });
+
+  // Dev-only — see the button's own comment in the HTML. Writes directly
+  // to this account's profile, same field the Stripe webhook flips for a
+  // real payment; nothing else about the gating logic changes.
+  document.getElementById('paywall-dev-toggle-btn').addEventListener('click', async () => {
+    const user = getState('user');
+    const profile = getState('profile');
+    const newStatus = !profile.premium_status;
+    await saveProfile(user.uid, { ...profile, premium_status: newStatus });
+    setState('profile', { ...profile, premium_status: newStatus });
+    showToast(newStatus ? t('toast_dev_premium_on') : t('toast_dev_premium_off'));
+    showScreen('screen-settings');
   });
 
   document.getElementById('settings-export-btn').addEventListener('click', async () => {
@@ -1649,7 +1567,7 @@
     results.innerHTML = '<div class="spinner"></div>';
     const frequent = await getFrequentFoodsSorted(user.uid);
     if (frequent.length === 0) {
-      results.innerHTML = emptyStateHtml('icon-recent', t('empty_frequent_foods'));
+      results.innerHTML = `<div class="empty-state">${t('empty_frequent_foods')}</div>`;
       return;
     }
     renderResults(frequent.slice(0, 20).map((f) => ({
@@ -1671,12 +1589,12 @@
     try {
       const items = await searchFoods(text.trim());
       if (items.length === 0) {
-        results.innerHTML = emptyStateHtml('icon-search', t('empty_search_results'));
+        results.innerHTML = `<div class="empty-state">${t('empty_search_results')}</div>`;
       } else {
         renderResults(items);
       }
     } catch (err) {
-      results.innerHTML = emptyStateHtml('icon-search', t('search_failed'));
+      results.innerHTML = `<div class="empty-state">${t('search_failed')}</div>`;
     }
   }, 600);
   document.getElementById('search-input').addEventListener('input', (e) => debouncedSearch(e.target.value));
@@ -1848,7 +1766,7 @@
 
     const container = document.getElementById('exercise-log-list');
     if (entries.length === 0) {
-      container.innerHTML = emptyStateHtml('icon-nav-exercise', t('empty_exercise_log'));
+      container.innerHTML = `<div class="empty-state">${t('empty_exercise_log')}</div>`;
       return;
     }
     container.innerHTML = entries
@@ -1892,14 +1810,10 @@
     const calorieSeries = await getDailyCalorieTotals(user.uid, startDate, endDate);
     const target = getState('today').target;
 
-    renderLineChart(document.getElementById('weight-chart'), weightSeries, {
-      color: '#7c8a5c',
-      valueFormatter: (kg) => (profile.unit_pref === 'imperial' ? `${kgToLb(kg).toFixed(1)} lb` : `${kg.toFixed(1)} kg`),
-    });
+    renderLineChart(document.getElementById('weight-chart'), weightSeries, { color: '#7c8a5c' });
     renderLineChart(document.getElementById('calorie-chart'), calorieSeries, {
       color: '#c8184a',
       referenceValue: target,
-      valueFormatter: (kcal) => `${Math.round(kcal)} kcal`,
     });
 
     document.getElementById('weight-trend-summary').textContent = summarizeWeightTrend(weightSeries, profile.unit_pref);
@@ -2059,15 +1973,10 @@
     if (!file) return;
 
     const backdrop = document.getElementById('photo-loading-backdrop');
-    const previewImg = document.getElementById('photo-scan-preview');
-    previewImg.src = '';
-    backdrop.classList.add('active');
+    backdrop.style.display = 'block';
     try {
       const user = getState('user');
       const [imageBase64, idToken] = await Promise.all([compressImageToBase64(file), user.getIdToken()]);
-      // Reuses the exact same compressed string headed to the API —
-      // no extra encoding pass just to show a preview.
-      previewImg.src = `data:image/jpeg;base64,${imageBase64}`;
       const result = await analyzeMealPhoto(imageBase64, idToken);
 
       photoReviewItems = result.items;
@@ -2093,7 +2002,7 @@
         showToast(t('toast_photo_unknown_failed'));
       }
     } finally {
-      backdrop.classList.remove('active');
+      backdrop.style.display = 'none';
     }
   });
 
@@ -2109,7 +2018,7 @@
     }
 
     if (photoReviewItems.length === 0) {
-      container.innerHTML = emptyStateHtml('icon-photo', t('photo_all_removed'));
+      container.innerHTML = `<div class="empty-state">${t('photo_all_removed')}</div>`;
       updatePhotoReviewTotal();
       return;
     }
@@ -2248,7 +2157,7 @@
     });
 
     if (combos.length === 0) {
-      listEl.innerHTML = emptyStateHtml('icon-nav-fixer', t('fixer_no_combos_fit'));
+      listEl.innerHTML = `<div class="empty-state">${t('fixer_no_combos_fit')}</div>`;
       return;
     }
 
@@ -2315,17 +2224,35 @@
     const streak = computeStreak(foodLogRange, todayLocalDate());
     const canvas = document.getElementById('flex-canvas');
 
+    // The canvas was rendering at a fixed 384x440 pixel buffer stretched to
+    // fill a wider CSS box, which looks soft on any real phone screen —
+    // devicePixelRatio is always >1 there. Render into the real physical
+    // pixel count instead and scale the context to match, via
+    // setTransform (not scale, so repeat calls to this function — the
+    // refresh button — don't compound the scale each time).
+    const LOGICAL_W = 384;
+    const LOGICAL_H = 440;
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = LOGICAL_W * dpr;
+    canvas.height = LOGICAL_H * dpr;
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
     if (stats.daysLogged === 0) {
-      const ctx = canvas.getContext('2d');
       ctx.fillStyle = '#1c0f14';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, LOGICAL_W, LOGICAL_H);
       ctx.fillStyle = '#a38990';
       ctx.font = '400 16px "IBM Plex Sans", sans-serif';
-      ctx.fillText(t('flex_no_data'), 32, canvas.height / 2);
+      ctx.fillText(t('flex_no_data'), 32, LOGICAL_H / 2);
       return;
     }
 
-    drawFlexCard(canvas, {
+    // drawFlexCard reads canvas.width/height directly to lay out its fixed,
+    // hand-tuned 384x440 composition — a proxy keeps it seeing exactly
+    // that logical size while the context underneath is the real,
+    // dpr-scaled one, so nothing in that file needs to change for this.
+    const canvasProxy = { width: LOGICAL_W, height: LOGICAL_H, getContext: () => ctx };
+    drawFlexCard(canvasProxy, {
       weekLabel: t('flex_week_label', { startDate: weekStartStr }),
       stats, streak, target,
       goal: getState('profile').goal,
@@ -2392,12 +2319,12 @@
 
       // Stripe redirects back to '/?checkout=success' or '...=cancelled'.
       // premium_status itself flips asynchronously via stripe-webhook.js,
-      // not here — this only surfaces the right toast and strips the
-      // param so refreshing the page doesn't show it again.
+      // not from this redirect directly — this is purely the toast, and
+      // clearing the param so refreshing the page doesn't show it again.
       const checkoutStatus = parseCheckoutReturnStatus(window.location.search);
       if (checkoutStatus) {
-        showToast(t(checkoutStatus === 'success' ? 'toast_checkout_success' : 'toast_checkout_cancelled'));
-        history.replaceState(null, '', window.location.pathname);
+        showToast(checkoutStatus === 'success' ? t('toast_checkout_success') : t('toast_checkout_cancelled'));
+        window.history.replaceState({}, '', window.location.pathname);
       }
     } catch (err) {
       console.error(err);
