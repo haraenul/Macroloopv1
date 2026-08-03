@@ -325,6 +325,18 @@ export const STRINGS = {
   flex_no_data: 'Log a few days this week to generate your card.',
   toast_flex_saved: 'Card saved to your downloads',
 
+  // ---- Orbit header ----
+  app_name_caps: 'MACROLOOP',
+  orbit_sub_exercise_credit: '+{amount} from exercise',
+  orbit_label_exercise: 'Kcal burned today',
+  orbit_sub_exercise_count: '{count} logged today',
+  orbit_label_weight_kg: 'Kg current weight',
+  orbit_label_weight_lb: 'Lb current weight',
+  orbit_label_protein_gap: 'G protein gap',
+  orbit_sub_combos_found: '{count} combos found',
+  orbit_label_days_logged: 'Days logged this week',
+  orbit_sub_streak: '{count} day streak',
+
   // ---- Premium paywall ----
   paywall_title: 'MacroLoop Premium',
   paywall_hero_line: 'A formula guesses. An algorithm learns.',
