@@ -215,129 +215,153 @@
     </div>
   </div>
 
-  <!-- Today -->
-  <div id="screen-today" class="screen">
-    <div class="top-bar">
-      <div class="brand" data-i18n="app_name">MacroLoop</div>
-      <button class="btn-icon" id="open-settings-btn" title="Settings" aria-label="Settings" data-i18n-aria-label="aria_settings"><span class="icon icon-settings" aria-hidden="true"></span></button>
+  <!-- Orbit header — persistent across Today/Exercise/Progress/Fixer/Flex.
+       One dial that recontextualizes per page instead of five separate
+       hero sections; navigation is tapping a moon, not a separate nav
+       bar. Markup and the 90s stagger below are transcribed from the
+       synthesis mockup as closely as the real app's ids/i18n allow. -->
+  <div id="screen-main-shell" class="screen">
+    <div class="orbit-header">
+      <div class="top-row">
+        <div class="brand">
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="var(--accent-energy)" stroke-width="2.2" stroke-dasharray="2.6 2.2"/><circle cx="12" cy="12" r="1.6" fill="var(--accent-energy)"/></svg>
+          <span class="brand-name" data-i18n="app_name_caps">MACROLOOP</span>
+        </div>
+        <button class="icon-btn" id="open-settings-btn" aria-label="Settings" data-i18n-aria-label="aria_settings"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="7" stroke-dasharray="2.2 2.2"/></svg></button>
+      </div>
+
+      <div class="orbit-system">
+        <svg class="orbit-dial-svg" width="264" height="264" viewBox="0 0 264 264">
+          <g stroke="#26282f" stroke-width="1.4">
+            <line x1="130.0" y1="44.0" x2="130.0" y2="37.0"/>
+            <line x1="173.0" y1="55.5" x2="176.5" y2="49.5"/>
+            <line x1="204.5" y1="87.0" x2="210.5" y2="83.5"/>
+            <line x1="216.0" y1="130.0" x2="223.0" y2="130.0"/>
+            <line x1="204.5" y1="173.0" x2="210.5" y2="176.5"/>
+            <line x1="173.0" y1="204.5" x2="176.5" y2="210.5"/>
+            <line x1="130.0" y1="216.0" x2="130.0" y2="223.0"/>
+            <line x1="87.0" y1="204.5" x2="83.5" y2="210.5"/>
+            <line x1="55.5" y1="173.0" x2="49.5" y2="176.5"/>
+            <line x1="44.0" y1="130.0" x2="37.0" y2="130.0"/>
+            <line x1="55.5" y1="87.0" x2="49.5" y2="83.5"/>
+            <line x1="87.0" y1="55.5" x2="83.5" y2="49.5"/>
+          </g>
+          <circle cx="130" cy="130" r="78" fill="none" stroke="#1c1e23" stroke-width="7"/>
+          <circle id="orbit-fill-arc" cx="130" cy="130" r="78" fill="none" stroke="var(--accent-energy)" stroke-width="7" stroke-linecap="round" stroke-dasharray="490.09" stroke-dashoffset="490.09" transform="rotate(-90 130 130)"/>
+        </svg>
+
+        <div class="orbit-center-readout">
+          <div class="orbit-number numeric" id="orbit-center-number">0</div>
+          <div class="orbit-label" id="orbit-label"></div>
+          <div class="orbit-sub" id="orbit-sub"></div>
+        </div>
+
+        <div class="orbit-pivot" style="animation-delay:0s;"><div class="orbit-moon" style="animation-delay:0s;">
+          <div class="moon-dot active-moon" data-page="today"><span class="icon icon-nav-today" aria-hidden="true"></span></div>
+          <div class="moon-label" data-i18n="nav_today">Today</div>
+        </div></div>
+        <div class="orbit-pivot" style="animation-delay:-18s;"><div class="orbit-moon" style="animation-delay:-18s;">
+          <div class="moon-dot" data-page="exercise"><span class="icon icon-nav-exercise" aria-hidden="true"></span></div>
+          <div class="moon-label" data-i18n="nav_exercise">Exercise</div>
+        </div></div>
+        <div class="orbit-pivot" style="animation-delay:-36s;"><div class="orbit-moon" style="animation-delay:-36s;">
+          <div class="moon-dot" data-page="progress"><span class="icon icon-nav-progress" aria-hidden="true"></span></div>
+          <div class="moon-label" data-i18n="nav_progress">Progress</div>
+        </div></div>
+        <div class="orbit-pivot" style="animation-delay:-54s;"><div class="orbit-moon" style="animation-delay:-54s;">
+          <div class="moon-dot" data-page="fixer"><span class="icon icon-nav-fixer" aria-hidden="true"></span></div>
+          <div class="moon-label" data-i18n="nav_fixer">Fixer</div>
+        </div></div>
+        <div class="orbit-pivot" style="animation-delay:-72s;"><div class="orbit-moon" style="animation-delay:-72s;">
+          <div class="moon-dot" data-page="flex"><span class="icon icon-nav-flex" aria-hidden="true"></span></div>
+          <div class="moon-label" data-i18n="nav_flex">Flex</div>
+        </div></div>
+      </div>
     </div>
 
-    <div class="today-hero">
-      <div class="loop-watermark" aria-hidden="true"></div>
-      <div class="hero-number" id="hero-remaining">0</div>
-      <div class="hero-label" data-i18n="hero_label_remaining">kcal remaining</div>
-      <p class="numeric" id="exercise-credit-note" style="display:none;"></p>
-
-      <div class="macro-emphasis">
-        <div class="macro-primary">
-          <div class="macro-primary-row">
-            <span class="macro-primary-label" data-i18n="macro_protein">Protein</span>
-            <span class="macro-primary-value numeric"><span id="protein-consumed">0</span><span class="macro-primary-target">/<span id="protein-target">0</span>g</span></span>
+    <div class="pages-wrap">
+      <!-- Today -->
+      <div id="page-today" class="app-page">
+        <div class="card" style="padding:14px 16px; margin-bottom:14px;">
+          <div class="macro-summary-row numeric">
+            <span data-i18n="macro_protein">Protein</span> <span id="protein-consumed">0</span>/<span id="protein-target">0</span>g
+            <span class="macro-secondary-dot" aria-hidden="true">&middot;</span>
+            <span data-i18n="macro_carbs">Carbs</span> <span id="carb-consumed">0</span>/<span id="carb-target">0</span>g
+            <span class="macro-secondary-dot" aria-hidden="true">&middot;</span>
+            <span data-i18n="macro_fat">Fat</span> <span id="fat-consumed">0</span>/<span id="fat-target">0</span>g
           </div>
-          <div class="macro-primary-track"><div class="macro-primary-fill" id="protein-bar"></div></div>
         </div>
-        <div class="macro-secondary numeric">
-          <span data-i18n="macro_carbs">Carbs</span> <span id="carb-consumed">0</span>/<span id="carb-target">0</span>g
-          <span class="macro-secondary-dot" aria-hidden="true">&middot;</span>
-          <span data-i18n="macro_fat">Fat</span> <span id="fat-consumed">0</span>/<span id="fat-target">0</span>g
+        <div class="quick-add-row">
+          <button id="open-photo-btn" class="quick-add-primary" data-i18n="quick_add_photo"><span class="icon icon-photo" aria-hidden="true"></span> Photo</button>
+          <div class="quick-add-secondary">
+            <button class="btn-icon" id="open-search-btn" aria-label="Search" data-i18n-aria-label="aria_search"><span class="icon icon-search" aria-hidden="true"></span></button>
+            <button class="btn-icon" id="open-recent-btn" aria-label="Recent" data-i18n-aria-label="aria_recent"><span class="icon icon-recent" aria-hidden="true"></span></button>
+          </div>
         </div>
+        <input type="file" id="photo-file-input" accept="image/*" capture="environment" style="display:none;" />
+
+        <div id="gap-fixer-nudge" class="card card--action" style="display:none; border-left: 3px solid var(--accent-energy);">
+          <p style="margin-bottom:12px;" data-i18n="gap_fixer_nudge_text">Haven't hit your macros yet today — a few realistic options are ready.</p>
+          <div style="display:flex; gap:10px;">
+            <button class="btn-primary" id="gap-fixer-nudge-open" data-i18n="gap_fixer_nudge_action" style="flex:1;">Open Gap Fixer</button>
+            <button class="btn-ghost" id="gap-fixer-nudge-dismiss" data-i18n="gap_fixer_nudge_dismiss">Dismiss</button>
+          </div>
+        </div>
+
+        <h3 data-i18n="todays_log_heading">Today's log</h3>
+        <div id="food-log-list"></div>
+      </div>
+
+      <!-- Exercise -->
+      <div id="page-exercise" class="app-page">
+        <div class="page-action-row">
+          <button class="btn-icon" id="add-exercise-btn" aria-label="Log exercise" data-i18n-aria-label="aria_log_exercise">+</button>
+        </div>
+        <h3 data-i18n="todays_exercise_heading">Today's exercise</h3>
+        <div id="exercise-log-list"></div>
+      </div>
+
+      <!-- Progress -->
+      <div id="page-progress" class="app-page">
+        <div class="card card--data">
+          <div class="top-bar" style="margin-bottom:12px;">
+            <h3 style="margin:0;" data-i18n="weight_card_title">Weight</h3>
+            <button class="btn-icon" id="add-weight-btn" aria-label="Log weight" data-i18n-aria-label="aria_log_weight">+</button>
+          </div>
+          <svg id="weight-chart" width="100%" height="140" viewBox="0 0 320 140"></svg>
+          <p class="numeric" id="weight-trend-summary" style="margin-top:10px; font-size:0.85rem;"></p>
+          <p class="numeric" id="days-to-target-summary" style="margin-top:4px; font-size:0.85rem; display:none; color:var(--text-secondary);"></p>
+        </div>
+
+        <div class="card card--data">
+          <h3 style="margin-bottom:12px;" data-i18n="daily_calories_card_title">Daily calories</h3>
+          <svg id="calorie-chart" width="100%" height="140" viewBox="0 0 320 140"></svg>
+          <p class="numeric" id="calorie-trend-summary" style="margin-top:10px; font-size:0.85rem;"></p>
+        </div>
+
+        <div class="card" id="algorithm-panel"></div>
+      </div>
+
+      <!-- Gap Fixer -->
+      <div id="page-fixer" class="app-page">
+        <p data-i18n="fixer_subtitle">Realistic options that fit what's left of today's budget.</p>
+        <p class="numeric" id="fixer-remaining-summary" style="margin-bottom:16px;"></p>
+        <div id="fixer-combo-list"></div>
+        <button class="btn-secondary" id="fixer-refresh-btn" data-i18n="fixer_refresh_button" style="margin-top:8px;">Show me other options</button>
+      </div>
+
+      <!-- Weekly Flex Card -->
+      <div id="page-flex" class="app-page">
+        <div class="page-action-row">
+          <button class="btn-icon" id="flex-refresh-btn" aria-label="Regenerate" data-i18n-aria-label="aria_regenerate">&#8635;</button>
+        </div>
+        <p data-i18n="flex_subtitle_current">This week's card generates automatically each Monday — or tap refresh anytime.</p>
+        <div class="card" style="padding:0; overflow:hidden;">
+          <canvas id="flex-canvas" width="384" height="440" style="width:100%; display:block;"></canvas>
+        </div>
+        <button class="btn-primary" id="flex-share-btn" data-i18n="flex_share_button" style="margin-top:16px;">Save image</button>
       </div>
     </div>
-
-    <div class="quick-add-row">
-      <button id="open-photo-btn" class="quick-add-primary" data-i18n="quick_add_photo"><span class="icon icon-photo" aria-hidden="true"></span> Photo</button>
-      <div class="quick-add-secondary">
-        <button class="btn-icon" id="open-search-btn" aria-label="Search" data-i18n-aria-label="aria_search"><span class="icon icon-search" aria-hidden="true"></span></button>
-        <button class="btn-icon" id="open-recent-btn" aria-label="Recent" data-i18n-aria-label="aria_recent"><span class="icon icon-recent" aria-hidden="true"></span></button>
-      </div>
-    </div>
-    <input type="file" id="photo-file-input" accept="image/*" capture="environment" style="display:none;" />
-
-    <div id="gap-fixer-nudge" class="card card--action" style="display:none; border-left: 3px solid var(--accent-energy);">
-      <p style="margin-bottom:12px;" data-i18n="gap_fixer_nudge_text">Haven't hit your macros yet today — a few realistic options are ready.</p>
-      <div style="display:flex; gap:10px;">
-        <button class="btn-primary" id="gap-fixer-nudge-open" data-i18n="gap_fixer_nudge_action" style="flex:1;">Open Gap Fixer</button>
-        <button class="btn-ghost" id="gap-fixer-nudge-dismiss" data-i18n="gap_fixer_nudge_dismiss">Dismiss</button>
-      </div>
-    </div>
-
-    <h3 data-i18n="todays_log_heading">Today's log</h3>
-    <div id="food-log-list"></div>
-  </div>
-
-  <!-- Exercise -->
-  <div id="screen-exercise" class="screen">
-    <div class="top-bar">
-      <div class="brand" data-i18n="exercise_screen_title">Exercise</div>
-      <button class="btn-icon" id="add-exercise-btn" aria-label="Log exercise" data-i18n-aria-label="aria_log_exercise">+</button>
-    </div>
-
-    <div class="card" style="text-align:center;">
-      <div class="target-number numeric" id="exercise-total-burned" style="font-size:2.2rem; color:var(--accent-protein);">0</div>
-      <div class="target-unit" data-i18n="exercise_kcal_burned_today">kcal burned today</div>
-    </div>
-
-    <h3 data-i18n="todays_exercise_heading">Today's exercise</h3>
-    <div id="exercise-log-list"></div>
-  </div>
-
-  <!-- Progress -->
-  <div id="screen-progress" class="screen">
-    <div class="top-bar">
-      <div class="brand" data-i18n="progress_screen_title">Progress</div>
-    </div>
-
-    <div class="card card--data">
-      <div class="top-bar" style="margin-bottom:12px;">
-        <h3 style="margin:0;" data-i18n="weight_card_title">Weight</h3>
-        <button class="btn-icon" id="add-weight-btn" aria-label="Log weight" data-i18n-aria-label="aria_log_weight">+</button>
-      </div>
-      <svg id="weight-chart" width="100%" height="140" viewBox="0 0 320 140"></svg>
-      <p class="numeric" id="weight-trend-summary" style="margin-top:10px; font-size:0.85rem;"></p>
-      <p class="numeric" id="days-to-target-summary" style="margin-top:4px; font-size:0.85rem; display:none; color:var(--text-secondary);"></p>
-    </div>
-
-    <div class="card card--data">
-      <h3 style="margin-bottom:12px;" data-i18n="daily_calories_card_title">Daily calories</h3>
-      <svg id="calorie-chart" width="100%" height="140" viewBox="0 0 320 140"></svg>
-      <p class="numeric" id="calorie-trend-summary" style="margin-top:10px; font-size:0.85rem;"></p>
-    </div>
-
-    <div class="card" id="algorithm-panel"></div>
-  </div>
-
-  <!-- Bottom nav — shown once there's more than one real screen to switch between -->
-  <nav class="bottom-nav" id="bottom-nav">
-    <button class="nav-item active" data-screen="today"><span class="icon icon-nav-today" aria-hidden="true"></span><span data-i18n="nav_today">Today</span></button>
-    <button class="nav-item" data-screen="exercise"><span class="icon icon-nav-exercise" aria-hidden="true"></span><span data-i18n="nav_exercise">Exercise</span></button>
-    <button class="nav-item" data-screen="progress"><span class="icon icon-nav-progress" aria-hidden="true"></span><span data-i18n="nav_progress">Progress</span></button>
-    <button class="nav-item" data-screen="fixer"><span class="icon icon-nav-fixer" aria-hidden="true"></span><span data-i18n="nav_fixer">Fixer</span></button>
-    <button class="nav-item" data-screen="flex"><span class="icon icon-nav-flex" aria-hidden="true"></span><span data-i18n="nav_flex">Flex</span></button>
-  </nav>
-  <button class="nav-fab" id="nav-fab-photo-btn" aria-label="Log a meal photo" data-i18n-aria-label="quick_add_photo_aria"><span class="icon icon-photo" aria-hidden="true"></span></button>
-
-  <!-- Gap Fixer -->
-  <div id="screen-fixer" class="screen">
-    <div class="top-bar">
-      <div class="brand" data-i18n="fixer_screen_title">Gap Fixer</div>
-    </div>
-    <p data-i18n="fixer_subtitle">Realistic options that fit what's left of today's budget.</p>
-    <p class="numeric" id="fixer-remaining-summary" style="margin-bottom:16px;"></p>
-    <div id="fixer-combo-list"></div>
-    <button class="btn-secondary" id="fixer-refresh-btn" data-i18n="fixer_refresh_button" style="margin-top:8px;">Show me other options</button>
-  </div>
-
-  <!-- Weekly Flex Card -->
-  <div id="screen-flex" class="screen">
-    <div class="top-bar">
-      <div class="brand" data-i18n="flex_screen_title">Weekly Flex Card</div>
-      <button class="btn-icon" id="flex-refresh-btn" aria-label="Regenerate" data-i18n-aria-label="aria_regenerate">&#8635;</button>
-    </div>
-    <p data-i18n="flex_subtitle_current">This week's card generates automatically each Monday — or tap refresh anytime.</p>
-    <div class="card" style="padding:0; overflow:hidden;">
-      <canvas id="flex-canvas" width="384" height="440" style="width:100%; display:block;"></canvas>
-    </div>
-    <button class="btn-primary" id="flex-share-btn" data-i18n="flex_share_button" style="margin-top:16px;">Save image</button>
   </div>
 
   <!-- Settings -->
@@ -674,7 +698,7 @@
   } from './js/food-log.js';
   import { ACTIVITIES, calculateCaloriesBurned, logExercise } from './js/exercise-log.js';
   import { renderLineChart } from './js/charts.js';
-  import { animateNumber, springTo, openSheetFromElement, closeSheetToElement } from './js/motion.js';
+  import { animateNumber, springTo, openSheetFromElement, closeSheetToElement, prefersReducedMotion } from './js/motion.js';
   import { startCheckout, parseCheckoutReturnStatus, CheckoutError } from './js/billing.js';
   import {
     compressImageToBase64, analyzeMealPhoto, logPhotoItems, needsCloserLook,
@@ -691,20 +715,149 @@
 
   // ---- Screen management ----
 
-  const NAV_SCREENS = ['screen-today', 'screen-exercise', 'screen-progress', 'screen-fixer', 'screen-flex'];
-
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach((el) => el.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-
-    const nav = document.getElementById('bottom-nav');
-    const isNavScreen = NAV_SCREENS.includes(id);
-    nav.style.display = isNavScreen ? 'flex' : 'none';
-    document.getElementById('nav-fab-photo-btn').style.display = isNavScreen ? 'flex' : 'none';
-    document.querySelectorAll('.nav-item').forEach((btn) => {
-      btn.classList.toggle('active', `screen-${btn.dataset.screen}` === id);
-    });
   }
+
+  // ---- Orbit header: one dial, five pages ----
+  // The moons are the nav now — showPage swaps which .app-page is visible
+  // and recomputes the dial from real state, instead of the mockup's
+  // static per-page object. animateOrbitValue/setOrbitDial are otherwise
+  // a direct port of the mockup's own easing and geometry.
+
+  const ORBIT_CIRCUMFERENCE = 490.09; // 2 * pi * 78 — matches the dial's r="78"
+  let currentPage = 'today';
+  let orbitValueRaf = null;
+
+  function animateOrbitValue(el, from, to, decimals) {
+    if (orbitValueRaf) cancelAnimationFrame(orbitValueRaf);
+    if (prefersReducedMotion()) {
+      el.textContent = to.toFixed(decimals);
+      return;
+    }
+    const start = performance.now();
+    const duration = 600;
+    function frame(now) {
+      const t = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      el.textContent = (from + (to - from) * eased).toFixed(decimals);
+      if (t < 1) orbitValueRaf = requestAnimationFrame(frame);
+    }
+    orbitValueRaf = requestAnimationFrame(frame);
+  }
+
+  function setOrbitDial({ value, decimals = 0, label, sub = '', fraction = 0 }) {
+    const numberEl = document.getElementById('orbit-center-number');
+    const from = parseFloat(numberEl.textContent) || 0;
+    animateOrbitValue(numberEl, from, value, decimals);
+    document.getElementById('orbit-label').textContent = label;
+    document.getElementById('orbit-sub').textContent = sub;
+    const arc = document.getElementById('orbit-fill-arc');
+    const clamped = Math.max(0, Math.min(1, fraction));
+    arc.style.strokeDashoffset = ORBIT_CIRCUMFERENCE * (1 - clamped);
+  }
+
+  // Computes each page's dial summary from real app state at the moment
+  // you switch to it — this is the piece that replaces the mockup's
+  // hardcoded pageOrbitData object.
+  async function computeOrbitDataForPage(page) {
+    const user = getState('user');
+    const profile = getState('profile');
+    if (page === 'today') {
+      const today = getState('today');
+      const entries = Object.values(today.foodEntries || {});
+      const consumed = entries.reduce((s, e) => s + (e.calories || 0), 0);
+      const budget = (today.target || 0) + (today.exerciseBurned || 0);
+      return {
+        value: Math.round(budget - consumed),
+        decimals: 0,
+        label: t('hero_label_remaining'),
+        sub: today.exerciseBurned > 0 ? t('orbit_sub_exercise_credit', { amount: today.exerciseBurned }) : '',
+        fraction: budget > 0 ? consumed / budget : 0,
+      };
+    }
+    if (page === 'exercise') {
+      const entries = await getExerciseLogForDate(user.uid, todayLocalDate());
+      const burned = Object.values(entries || {}).reduce((s, e) => s + (e.calories_burned || 0), 0);
+      return {
+        value: Math.round(burned), decimals: 0,
+        label: t('orbit_label_exercise'),
+        sub: Object.keys(entries || {}).length ? t('orbit_sub_exercise_count', { count: Object.keys(entries).length }) : '',
+        fraction: Math.min(burned / 300, 1), // 300kcal as a loose visual reference, not a tracked goal — this app doesn't have an exercise target to compute against
+      };
+    }
+    if (page === 'progress') {
+      const latestWeightKg = await getLatestWeight(user.uid);
+      const weightKg = latestWeightKg || profile.target_weight_kg || 0;
+      const displayWeight = profile.unit_pref === 'imperial' ? kgToLb(weightKg) : weightKg;
+      return {
+        value: displayWeight, decimals: profile.unit_pref === 'imperial' ? 0 : 1,
+        label: profile.unit_pref === 'imperial' ? t('orbit_label_weight_lb') : t('orbit_label_weight_kg'),
+        sub: '',
+        fraction: 0.5,
+      };
+    }
+    if (page === 'fixer') {
+      const today = getState('today');
+      const entries = Object.values(today.foodEntries || {});
+      const proteinConsumed = entries.reduce((s, e) => s + (e.protein_g || 0), 0);
+      const carbConsumed = entries.reduce((s, e) => s + (e.carbs_g || 0), 0);
+      const fatConsumed = entries.reduce((s, e) => s + (e.fat_g || 0), 0);
+      const macros = today.macros || { proteinG: 0, carbG: 0, fatG: 0 };
+      const gap = Math.max(0, Math.round(macros.proteinG - proteinConsumed));
+      const consumed = entries.reduce((s, e) => s + (e.calories || 0), 0);
+      const remainingCalories = Math.max(0, (today.target || 0) - consumed);
+      const { combos } = pickGapFixerCombos({
+        remainingCalories,
+        remainingProtein: macros.proteinG - proteinConsumed,
+        remainingCarbs: macros.carbG - carbConsumed,
+        remainingFat: macros.fatG - fatConsumed,
+        targetProtein: macros.proteinG,
+        targetCarbs: macros.carbG,
+        targetFat: macros.fatG,
+      });
+      return {
+        value: gap, decimals: 0,
+        label: t('orbit_label_protein_gap'),
+        sub: t('orbit_sub_combos_found', { count: combos.length }),
+        fraction: macros.proteinG > 0 ? proteinConsumed / macros.proteinG : 0,
+      };
+    }
+    if (page === 'flex') {
+      const weekStart = getMostRecentCompletedWeekStart(todayLocalDate());
+      const foodLogRange = await getFoodLogRange(user.uid, daysAgoLocalDate(13), todayLocalDate());
+      const stats = computeFlexCardStats({ weekStart, foodLogRange, target: getState('today').target });
+      const streak = computeStreak(foodLogRange, todayLocalDate());
+      return {
+        value: stats.daysLogged, decimals: 0,
+        label: t('orbit_label_days_logged'),
+        sub: t('orbit_sub_streak', { count: streak }),
+        fraction: stats.daysLogged / 7,
+      };
+    }
+    return { value: 0, decimals: 0, label: '', sub: '', fraction: 0 };
+  }
+
+  async function showPage(page) {
+    currentPage = page;
+    document.querySelectorAll('.app-page').forEach((el) => el.classList.toggle('active', el.id === `page-${page}`));
+    document.querySelectorAll('.moon-dot').forEach((el) => el.classList.toggle('active-moon', el.dataset.page === page));
+    const orbitData = await computeOrbitDataForPage(page);
+    setOrbitDial(orbitData);
+
+    // Lazy-load each page's own content the first time it's opened,
+    // same "don't fetch what you can't see yet" approach the old
+    // per-screen nav used.
+    if (page === 'exercise') await loadAndRenderExercise();
+    if (page === 'progress') await loadAndRenderProgress();
+    if (page === 'fixer') await loadAndRenderFixer();
+    if (page === 'flex') await loadAndRenderFlex();
+  }
+
+  document.querySelectorAll('.moon-dot').forEach((moon) => {
+    moon.addEventListener('click', () => showPage(moon.dataset.page));
+  });
 
   let toastTimer;
   function showToast(msg, ms = 3000) {
@@ -986,7 +1139,8 @@
 
     setState('profile', profile);
     patchState('today', { date, target, macros, foodEntries: {} });
-    showScreen('screen-today');
+    showScreen('screen-main-shell');
+    await showPage('today');
   }
 
   document.getElementById('onboarding-finish-btn').addEventListener('click', () => {
@@ -1099,54 +1253,24 @@
     if (!today.target) return; // not loaded yet
 
     const entries = Object.values(today.foodEntries || {});
-    const consumed = entries.reduce((sum, e) => sum + (e.calories || 0), 0);
     const proteinC = entries.reduce((s, e) => s + (e.protein_g || 0), 0);
     const carbC = entries.reduce((s, e) => s + (e.carbs_g || 0), 0);
     const fatC = entries.reduce((s, e) => s + (e.fat_g || 0), 0);
 
-    // Exercise adds back to the day's budget (the standard "eat back what
-    // you burn" pattern) — an assumption, the brief didn't specify this.
-    const budget = today.target + (today.exerciseBurned || 0);
-    const remaining = Math.round(budget - consumed);
-    const heroEl = document.getElementById('hero-remaining');
-    animateNumber(heroEl, remaining);
-    // Karkade is the app's one loud color, spent here and nowhere else on
-    // this screen: the hero number turns it on only once you're actually
-    // over budget, not as a permanent decoration.
-    heroEl.classList.toggle('hero-number--over', remaining < 0);
-
-    const creditNote = document.getElementById('exercise-credit-note');
-    if (today.exerciseBurned > 0) {
-      creditNote.textContent = t('exercise_credit_note', { amount: today.exerciseBurned });
-      creditNote.style.display = 'block';
-    } else {
-      creditNote.style.display = 'none';
-    }
-
-    updateProteinFill(proteinC, today.macros.proteinG);
+    animateNumber(document.getElementById('protein-consumed'), Math.round(proteinC));
+    document.getElementById('protein-target').textContent = today.macros.proteinG;
     animateNumber(document.getElementById('carb-consumed'), Math.round(carbC));
     document.getElementById('carb-target').textContent = today.macros.carbG;
     animateNumber(document.getElementById('fat-consumed'), Math.round(fatC));
     document.getElementById('fat-target').textContent = today.macros.fatG;
 
     renderFoodLogList(today.foodEntries);
-  }
 
-  // Protein is the one macro that gets a progress indicator on Today —
-  // deliberately not carbs or fat too, per the brief: three identically-
-  // decorated stats reads as decoration, not a point of view. A plain
-  // underline fill rather than a bar-in-a-box, since it's supporting a
-  // typographic hero, not competing with it for shape.
-  function updateProteinFill(consumed, target) {
-    animateNumber(document.getElementById('protein-consumed'), Math.round(consumed));
-    document.getElementById('protein-target').textContent = target;
-
-    const pct = target > 0 ? Math.min((consumed / target) * 100, 100) : 0;
-    const fillEl = document.getElementById('protein-bar');
-    const currentPct = parseFloat(fillEl.style.width) || 0;
-    springTo('protein-fill', currentPct, pct, (v) => {
-      fillEl.style.width = `${v}%`;
-    });
+    // The dial only reflects Today's numbers while Today is actually the
+    // active page — logging food from elsewhere shouldn't yank you back.
+    if (currentPage === 'today') {
+      computeOrbitDataForPage('today').then(setOrbitDial);
+    }
   }
 
   function renderFoodLogList(entriesMap) {
@@ -1186,7 +1310,7 @@
     showScreen('screen-settings');
     loadSettingsScreen();
   });
-  document.getElementById('settings-back-btn').addEventListener('click', () => showScreen('screen-today'));
+  document.getElementById('settings-back-btn').addEventListener('click', () => { showScreen('screen-main-shell'); showPage('today'); });
 
   let settingsUnit = 'metric';
   let settingsSex = 'female';
@@ -1761,8 +1885,6 @@
 
   function renderExerciseList(entriesMap) {
     const entries = Object.entries(entriesMap || {});
-    const total = entries.reduce((sum, [, e]) => sum + (e.calories_burned || 0), 0);
-    document.getElementById('exercise-total-burned').textContent = total;
 
     const container = document.getElementById('exercise-log-list');
     if (entries.length === 0) {
@@ -1961,9 +2083,6 @@
   let photoReviewItems = [];
 
   document.getElementById('open-photo-btn').addEventListener('click', () => {
-    document.getElementById('photo-file-input').click();
-  });
-  document.getElementById('nav-fab-photo-btn').addEventListener('click', () => {
     document.getElementById('photo-file-input').click();
   });
 
@@ -2315,7 +2434,8 @@
       }
       setState('profile', profile);
       await loadAndRenderToday();
-      showScreen('screen-today');
+      showScreen('screen-main-shell');
+      await showPage('today');
 
       // Stripe redirects back to '/?checkout=success' or '...=cancelled'.
       // premium_status itself flips asynchronously via stripe-webhook.js,
