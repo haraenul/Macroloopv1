@@ -1,58 +1,55 @@
 /* ==========================================================================
-   MacroLoop — visual system v5
-   v4 fixed the "generic AI dark mode" problem at the surface level: real
-   palette, real shadows, pill buttons. It didn't fix it structurally —
-   every screen was still built from the same unmodified skeleton (ring,
-   equal-weight cards, equal-weight buttons), just recolored. A palette
-   change on an unchanged skeleton is still a reskin.
-   v5 changes the skeleton on the one screen that matters most (Today)
-   and changes what the palette is grounded in. Karkade — hibiscus tea —
-   is a genuine, specific reference point for a nutrition app in this
-   region: deep, saturated wine-red, spent in exactly one place (the hero
-   number's over-budget state) rather than smeared across every stat as
-   decoration. Everything else recedes on purpose. One typeface family
-   (IBM Plex) carries display, body, and numeric duty through weight and
-   role instead of three unrelated fonts — restraint, not novelty — and
-   its Arabic cut is a real match to the Latin cut, not a bolted-on
-   substitute, because this app is not English-first with Arabic
-   support added after the fact. Still no gradient buttons, no
-   glow-orbs, no grain. Dark by default. */
+   MacroLoop — visual system v6 ("the synthesis")
+   Adopted wholesale from a design exploration built outside this session
+   and confirmed by the user as the new direction, deliberately kept close
+   to the source rather than blended with v5's own palette — v5's karkade
+   idea survives here (still the one loud color), but the exact hex values,
+   the neutral near-black instead of a wine-tinted one, and the type trio
+   below are the source's, not renegotiated. The orbit header is the
+   signature element now: one dial that recontextualizes per screen
+   instead of a different hero per screen. */
 
-@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700..800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+Arabic:wght@400;600;700&family=Space+Mono:wght@400;500;700&display=swap');
 
 :root {
-  --bg: #1c0f14;
-  --surface: #2a161d;
-  --surface-2: #35202a;
-  --surface-raised: #40242f; /* action cards: things you tap */
-  --border: rgba(243, 233, 230, 0.09);
-  --border-strong: rgba(243, 233, 230, 0.18);
+  --bg: #0c0d10;
+  --surface: #16171b;
+  --surface-2: #1e2025;
+  --surface-raised: #262830;
+  --border: rgba(237, 240, 242, 0.08);
+  --border-strong: rgba(237, 240, 242, 0.18);
 
-  --text-primary: #f3e9e6;
-  --text-secondary: #a38990;
-  --text-tertiary: #6e5860;
+  --text-primary: #eef0f2;
+  --text-secondary: #8b8f96;
+  --text-tertiary: #5c6066;
 
-  /* Karkade is the ONE loud color in the app — spent on the hero number
-     when you're over budget, nowhere else as decoration. Everything
-     else here stays quiet by comparison; that contrast is the point. */
-  --accent-energy: #c8184a; /* karkade — hibiscus tea, reserved for the hero's over-budget state */
+  --accent-energy: #d31b4f; /* karkade */
   --accent-energy-deep: #8f1236;
-  --accent-protein: #7c8a5c; /* sage — used small, rare, never as a competing bold color */
-  --accent-carb: #d1a13a; /* gold — dates, ful, sun; secondary and sparing */
-  --accent-fat: #9c7080; /* dusty mauve */
+  --accent-protein: #7ba36c; /* sage */
+  --accent-carb: #c9a15a; /* gold */
+  --accent-fat: #9c7080; /* mauve */
+  --accent-brass: #b8763f; /* new: exercise/secondary accent, not in v5 */
 
-  --success: #647a45; /* deeper than protein-sage, stays distinguishable */
-  --warning: #a8483a; /* reserved for safety-floor warnings only — never "you went over" */
+  --success: #7ba36c;
+  --warning: #a8483a;
 
-  /* One family, three roles, not three unrelated fonts. Weight and role
-     do the differentiating instead of typeface novelty. Plex Sans Arabic
-     sits in the same stack as Plex Sans rather than behind a [dir="rtl"]
-     override — the browser already picks whichever font in the stack
-     covers a given character, so mixed Arabic/Latin text in one element
-     resolves correctly with no extra rule needed. */
-  --font-display: 'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif;
-  --font-body: 'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, monospace; /* every number in the app, including the Today hero */
+  /* Syne carries display moments (headlines, the orbit dial's number),
+     Manrope carries body/UI text, Space Mono carries every other number.
+     Three fonts with distinct jobs — the source's choice, not a
+     restraint call. Noto Sans Arabic rides in the body stack for the
+     same reason Plex Sans Arabic did in v5: this app is not English-
+     first with Arabic bolted on, even though no Arabic strings are
+     filled in yet — Manrope and Syne have no Arabic cut of their own,
+     so body text needs a real fallback already in place. */
+  --font-display: 'Syne', 'Noto Sans Arabic', sans-serif;
+  --font-body: 'Manrope', 'Noto Sans Arabic', sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, monospace;
+
+  --radius-sm: 9px;
+  --radius: 15px;
+  --radius-pill: 999px;
+  --ease-orbit: cubic-bezier(0.22, 1, 0.36, 1);
+
 
   --text-2xs: 0.68rem;
   --text-xs: 0.72rem;
@@ -83,10 +80,8 @@
 
   /* Shape language by role, not one radius everywhere out of convenience:
      cards stay moderately rounded, buttons are full pills, inputs and
-     small controls are tighter. */
-  --radius: 18px;
-  --radius-sm: 10px;
-  --radius-pill: 999px;
+     small controls are tighter. Values themselves now live at the top
+     of :root, matched to the synthesis mockup. */
   --max-width: 480px;
 }
 
@@ -505,121 +500,221 @@ input:focus-visible {
   margin-bottom: 16px;
 }
 
-/* ---- Today screen: the hero number — the signature moment ----
-   No ring. The number is the display face (Plex Mono) and carries the
-   hero on typography alone. Start-aligned, not centered — under
-   dir="rtl" that flips to the right automatically via text-align:
-   start, no separate rule needed. The Loop mark reused below is pure
-   identity — an oversized, low-opacity watermark, not a second
-   progress indicator; it never moves or reports data. Karkade appears
-   on the number itself only once you're over budget — the one place
-   this screen spends a loud color. */
+/* ---- Orbit header — the signature element now. One persistent dial
+   that recontextualizes per page (kcal on Today, kg on Progress, etc.)
+   instead of a separate hero per screen; the five moons orbiting it are
+   navigation, replacing the old bottom nav entirely. Transcribed from
+   the source mockup with only variable names translated to this file's
+   existing token names — the values, timing, and geometry are theirs. */
 
-.today-hero {
+.orbit-header {
+  flex-shrink: 0;
+  padding: 20px 20px 4px;
   position: relative;
-  padding: 12px 4px 28px;
-  text-align: start;
-  overflow: hidden;
 }
-
-.loop-watermark {
-  position: absolute;
-  top: -30px;
-  inset-inline-end: -70px;
-  width: 320px;
-  height: 320px;
-  background: conic-gradient(from -90deg, var(--accent-energy), var(--accent-energy-deep) 70%, transparent 70%);
-  border-radius: 50%;
-  mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 4px));
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 4px));
-  opacity: 0.07;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.hero-number {
-  position: relative;
-  z-index: 1;
-  font-family: var(--font-mono);
-  font-size: var(--text-4xl);
-  font-weight: var(--weight-semibold);
-  letter-spacing: -0.02em;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-  color: var(--text-primary);
-  transition: color 0.3s ease;
-}
-.hero-number--over {
-  color: var(--accent-energy);
-}
-
-.hero-label {
-  position: relative;
-  z-index: 1;
-  font-size: var(--text-base);
-  color: var(--text-secondary);
-  margin: 2px 0 20px;
-}
-
-#exercise-credit-note {
-  position: relative;
-  z-index: 1;
-  text-align: start;
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
-  margin: -12px 0 16px;
-}
-
-/* ---- Macro emphasis — protein gets real presence; carbs and fat are
-   one quiet line, not two more decorated cards. Unequal on purpose:
-   three identically-treated stats is decoration, not a point of view. */
-
-.macro-emphasis {
-  position: relative;
-  z-index: 1;
-}
-.macro-primary {
-  margin-bottom: 10px;
-}
-.macro-primary-row {
+.top-row {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: baseline;
   margin-bottom: 6px;
 }
-.macro-primary-label {
-  font-size: var(--text-base);
-  color: var(--text-secondary);
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-.macro-primary-value {
-  font-size: var(--text-xl);
-  font-weight: var(--weight-semibold);
+.brand-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 14px;
   color: var(--text-primary);
+  letter-spacing: 0.01em;
 }
-.macro-primary-target {
-  font-size: var(--text-sm);
-  font-weight: 400;
-  color: var(--text-tertiary);
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s var(--ease-orbit);
 }
-.macro-primary-track {
-  height: 3px;
-  border-radius: 2px;
+.icon-btn:hover {
   background: var(--surface-2);
-  overflow: hidden;
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+  transform: rotate(20deg);
 }
-.macro-primary-fill {
-  height: 100%;
-  background: var(--accent-protein);
-  border-radius: 2px;
+.icon-btn:active {
+  transform: scale(0.9);
+}
+.icon-btn:hover:active {
+  transform: rotate(20deg) scale(0.9);
 }
 
-.macro-secondary {
-  font-size: var(--text-sm);
-  color: var(--text-tertiary);
+.orbit-system {
+  position: relative;
+  width: 264px;
+  height: 264px;
+  margin: 0 auto;
+  max-width: 100%;
 }
-.macro-secondary-dot {
-  margin: 0 6px;
+.orbit-dial-svg {
+  position: absolute;
+  inset: 0;
+}
+#orbit-fill-arc {
+  transition: stroke-dashoffset 0.9s var(--ease-orbit);
+}
+.orbit-center-readout {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+}
+.orbit-number {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 42px;
+  color: var(--text-primary);
+  line-height: 1;
+}
+.orbit-label {
+  font-family: var(--font-body);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  margin-top: 8px;
+}
+.orbit-sub {
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.04em;
+  color: var(--accent-brass);
+  margin-top: 5px;
+  min-height: 11px;
+}
+
+.orbit-pivot {
+  position: absolute;
+  inset: 0;
+  animation: orbit-spin 90s linear infinite;
+  will-change: transform;
+}
+.orbit-moon {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  margin-left: -20px;
+  width: 40px;
+  animation: orbit-counter 90s linear infinite;
+  will-change: transform;
+}
+.moon-dot {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1.5px solid var(--border-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  cursor: pointer;
+  transition: all 0.3s var(--ease-orbit);
+  color: var(--text-secondary);
+}
+.moon-dot .icon {
+  width: 16px;
+  height: 16px;
+}
+.moon-dot:hover {
+  transform: scale(1.18);
+  border-color: var(--accent-brass);
+  color: var(--text-primary);
+}
+.moon-dot:active {
+  transform: scale(0.94);
+}
+.moon-dot.active-moon {
+  background: var(--accent-energy);
+  border-color: var(--accent-energy);
+  color: #fff;
+  box-shadow: 0 0 0 5px rgba(211, 27, 79, 0.16);
+}
+.moon-dot.active-moon:active {
+  background: var(--accent-energy-deep);
+  border-color: var(--accent-energy-deep);
+}
+.moon-label {
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: 7.5px;
   color: var(--text-tertiary);
+  margin-top: 5px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+@keyframes orbit-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes orbit-counter {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
+}
+/* Motion-sensitive users get the same layout, frozen — the design
+   itself (recontextualizing dial, moons as nav) is unchanged, only
+   the perpetual spin is paused, which is the least invasive way to
+   respect the OS-level preference without altering what anyone else
+   sees. */
+@media (prefers-reduced-motion: reduce) {
+  .orbit-pivot, .orbit-moon {
+    animation-play-state: paused;
+  }
+}
+
+.pages-wrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+.app-page {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  padding: 6px 20px 46px;
+  display: none;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.app-page::-webkit-scrollbar {
+  display: none;
+}
+.app-page.active {
+  display: block;
+}
+.page-action-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+}
+
+#screen-main-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
 }
 
 /* ---- Food log list ---- */
@@ -835,69 +930,6 @@ input:focus-visible {
   to {
     transform: rotate(360deg);
   }
-}
-
-/* ---- Bottom nav ---- */
-
-.bottom-nav {
-  display: none; /* toggled to 'flex' by JS once there's a real screen to show */
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: var(--max-width);
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-  padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
-  gap: 8px;
-  z-index: 5;
-}
-
-.nav-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  background: transparent;
-  color: var(--text-secondary);
-  padding: 6px 4px;
-  font-size: var(--text-2xs);
-  font-weight: 500;
-  min-height: 48px;
-}
-.nav-item .icon {
-  width: 20px;
-  height: 20px;
-}
-.nav-item.active {
-  color: var(--accent-energy);
-}
-
-.nav-fab {
-  position: fixed;
-  bottom: calc(64px + env(safe-area-inset-bottom, 0px));
-  left: 50%;
-  transform: translateX(-50%);
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: var(--accent-energy);
-  display: none; /* toggled to 'flex' by JS alongside the nav bar */
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
-  z-index: 6;
-}
-.nav-fab .icon {
-  width: 22px;
-  height: 22px;
-  background-color: var(--bg);
-}
-.nav-fab:active {
-  transform: translateX(-50%) scale(0.95);
 }
 
 /* ---- Photo review ---- */
