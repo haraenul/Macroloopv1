@@ -9,7 +9,103 @@
    signature element now: one dial that recontextualizes per screen
    instead of a different hero per screen. */
 
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+Arabic:wght@400;600;700&family=Space+Mono:wght@400;500;700&display=swap');
+/* Self-hosted, not a Google Fonts @import: the CDN round-trip was
+   render-blocking and silently failing under privacy-hardened mobile
+   browsers (content/tracker blockers routinely catch fonts.googleapis.com
+   and fonts.gstatic.com), which is what was landing the whole app on its
+   generic system-font fallback. Only the weights actually used anywhere
+   in this file are shipped — see the font-weight audit below each block. */
+@font-face {
+  font-family: 'Syne';
+  src: url('../fonts/syne-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Syne';
+  src: url('../fonts/syne-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Syne';
+  src: url('../fonts/syne-800.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Manrope';
+  src: url('../fonts/manrope-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Manrope';
+  src: url('../fonts/manrope-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Manrope';
+  src: url('../fonts/manrope-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Manrope';
+  src: url('../fonts/manrope-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Manrope';
+  src: url('../fonts/manrope-800.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Space Mono';
+  src: url('../fonts/space-mono-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Space Mono';
+  src: url('../fonts/space-mono-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Noto Sans Arabic';
+  src: url('../fonts/noto-sans-arabic-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Noto Sans Arabic';
+  src: url('../fonts/noto-sans-arabic-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Noto Sans Arabic';
+  src: url('../fonts/noto-sans-arabic-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
   --bg: #0c0d10;
@@ -126,10 +222,10 @@ h1 { font-size: var(--text-xl); }
 h2 { font-size: var(--text-lg); }
 
 .app-tagline {
-  font-family: var(--font-display);
-  font-weight: var(--weight-light);
-  font-size: var(--text-lg);
-  font-optical-sizing: auto;
+  font-family: var(--font-body);
+  font-weight: var(--weight-regular);
+  font-size: var(--text-base);
+  line-height: 1.5;
   letter-spacing: -0.005em;
   color: var(--text-secondary);
 }
@@ -249,9 +345,9 @@ p {
   margin-bottom: 8px;
 }
 .auth-hero .app-tagline {
-  font-weight: var(--weight-light, 300);
-  font-size: var(--text-lg);
-  margin: 0;
+  font-size: var(--text-base);
+  max-width: 30ch;
+  margin: 0 auto;
 }
 
 .exercise-burned-label {
@@ -607,21 +703,25 @@ input:focus-visible {
 .orbit-pivot {
   position: absolute;
   inset: 0;
-  animation: orbit-spin 90s linear infinite;
-  will-change: transform;
+  /* Fixed, not animated — each of the 5 pivots sets --orbit-angle
+     inline (0/72/144/216/288deg) via the standalone `rotate` property,
+     independent of the `transform` used for hover/press elsewhere. */
+  rotate: var(--orbit-angle, 0deg);
 }
 .orbit-moon {
   position: absolute;
-  top: -20px;
+  top: -4px;
   left: 50%;
-  margin-left: -20px;
-  width: 40px;
-  animation: orbit-counter 90s linear infinite;
-  will-change: transform;
+  margin-left: -22px;
+  width: 44px;
+  rotate: var(--orbit-angle-counter, 0deg);
+  opacity: 0;
+  animation: moon-settle 0.6s var(--ease-spring-soft) both;
+  animation-delay: var(--settle-delay, 0s);
 }
 .moon-dot {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: var(--surface);
   border: 1.5px solid var(--border-strong);
@@ -630,20 +730,20 @@ input:focus-visible {
   justify-content: center;
   margin: 0 auto;
   cursor: pointer;
-  transition: all 0.3s var(--ease-orbit);
+  transition: transform 0.25s var(--ease-spring), border-color 0.25s var(--ease-orbit), background 0.25s var(--ease-orbit), box-shadow 0.25s var(--ease-orbit), color 0.25s var(--ease-orbit);
   color: var(--text-secondary);
 }
 .moon-dot .icon {
-  width: 16px;
-  height: 16px;
+  width: 17px;
+  height: 17px;
 }
 .moon-dot:hover {
-  transform: scale(1.18);
+  transform: scale(1.1);
   border-color: var(--accent-brass);
   color: var(--text-primary);
 }
 .moon-dot:active {
-  transform: scale(0.94);
+  transform: scale(0.92);
 }
 .moon-dot.active-moon {
   background: var(--accent-energy);
@@ -658,29 +758,25 @@ input:focus-visible {
 .moon-label {
   text-align: center;
   font-family: var(--font-body);
-  font-size: 7.5px;
+  font-weight: 600;
+  font-size: 8px;
   color: var(--text-tertiary);
-  margin-top: 5px;
-  letter-spacing: 0.03em;
+  margin-top: 6px;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   white-space: nowrap;
 }
-@keyframes orbit-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+@keyframes moon-settle {
+  from { opacity: 0; scale: 0.4; }
+  to { opacity: 1; scale: 1; }
 }
-@keyframes orbit-counter {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(-360deg); }
-}
-/* Motion-sensitive users get the same layout, frozen — the design
-   itself (recontextualizing dial, moons as nav) is unchanged, only
-   the perpetual spin is paused, which is the least invasive way to
-   respect the OS-level preference without altering what anyone else
-   sees. */
+/* Motion-sensitive users still get every moon in its resting position —
+   rotate is a static value now, not an animation, so there's nothing to
+   pause there. Only the one-time settle-in scale/fade is skipped. */
 @media (prefers-reduced-motion: reduce) {
-  .orbit-pivot, .orbit-moon {
-    animation-play-state: paused;
+  .orbit-moon {
+    animation: none;
+    opacity: 1;
   }
 }
 
@@ -753,6 +849,63 @@ input:focus-visible {
   text-align: center;
   padding: 32px 16px;
   color: var(--text-tertiary);
+}
+
+/* ---- Today macro rings — three small dials instead of a flat text
+   line, echoing the orbit dial's own SVG-arc technique so the two
+   don't feel like two different design systems on the same screen. */
+
+.macro-rings-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px 18px 18px;
+  margin-bottom: 14px;
+  background: radial-gradient(120% 140% at 50% -20%, rgba(211, 27, 79, 0.05), transparent 60%), var(--surface);
+}
+.macro-ring {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+.macro-ring-svg {
+  width: 60px;
+  height: 60px;
+}
+.macro-ring-track {
+  fill: none;
+  stroke: var(--surface-raised);
+  stroke-width: 5;
+}
+.macro-ring-fill {
+  fill: none;
+  stroke-width: 5;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.9s var(--ease-orbit);
+}
+.macro-ring-value {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 15px;
+  fill: var(--text-primary);
+  text-anchor: middle;
+}
+.macro-ring-label {
+  margin-top: 8px;
+  text-align: center;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--text-tertiary);
+  letter-spacing: 0.01em;
+}
+.macro-ring-label span:first-child {
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-size: 9.5px;
+  letter-spacing: 0.05em;
 }
 
 /* ---- Quick add row — one dominant action, not three equal ones.
