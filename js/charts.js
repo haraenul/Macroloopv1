@@ -122,7 +122,7 @@ export function renderLineChart(svgEl, points, options = {}) {
   const width = options.width ?? 320;
   const height = options.height ?? 140;
   const padding = options.padding ?? 24;
-  const color = options.color ?? '#c8184a';
+  const color = options.color ?? 'var(--accent-energy)';
   const valueFormatter = options.valueFormatter ?? ((v) => String(Math.round(v)));
   const ns = 'http://www.w3.org/2000/svg';
 
@@ -259,7 +259,7 @@ function setupChartScrub(svgEl, plotted, { width, height, padding, color, ns, va
   const dot = document.createElementNS(ns, 'circle');
   dot.setAttribute('r', '5');
   dot.setAttribute('fill', color);
-  dot.setAttribute('stroke', '#1c0f14');
+  dot.setAttribute('stroke', 'var(--bg)');
   dot.setAttribute('stroke-width', '2');
   dot.style.opacity = '0';
   svgEl.appendChild(dot);
@@ -270,12 +270,12 @@ function setupChartScrub(svgEl, plotted, { width, height, padding, color, ns, va
   chipBg.setAttribute('rx', '7');
   chipBg.setAttribute('ry', '7');
   chipBg.setAttribute('height', '22');
-  chipBg.setAttribute('fill', '#40242f');
+  chipBg.setAttribute('fill', 'var(--surface-raised)');
   const chipText = document.createElementNS(ns, 'text');
-  chipText.setAttribute('fill', '#f3e9e6');
+  chipText.setAttribute('fill', 'var(--text-primary)');
   chipText.setAttribute('font-size', '11');
-  chipText.setAttribute('font-family', '"IBM Plex Mono", monospace');
-  chipText.setAttribute('font-weight', '600');
+  chipText.setAttribute('font-family', '"Space Mono", monospace');
+  chipText.setAttribute('font-weight', '700');
   chipText.setAttribute('y', '15');
   chipGroup.appendChild(chipBg);
   chipGroup.appendChild(chipText);
