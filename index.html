@@ -872,16 +872,21 @@
     currentPage = page;
     document.querySelectorAll('.app-page').forEach((el) => el.classList.toggle('active', el.id === `page-${page}`));
     document.querySelectorAll('.moon-dot').forEach((el) => el.classList.toggle('active-moon', el.dataset.page === page));
-    const orbitData = await computeOrbitDataForPage(page);
-    setOrbitDial(orbitData);
+    try {
+      const orbitData = await computeOrbitDataForPage(page);
+      setOrbitDial(orbitData);
 
-    // Lazy-load each page's own content the first time it's opened,
-    // same "don't fetch what you can't see yet" approach the old
-    // per-screen nav used.
-    if (page === 'exercise') await loadAndRenderExercise();
-    if (page === 'progress') await loadAndRenderProgress();
-    if (page === 'fixer') await loadAndRenderFixer();
-    if (page === 'flex') await loadAndRenderFlex();
+      // Lazy-load each page's own content the first time it's opened,
+      // same "don't fetch what you can't see yet" approach the old
+      // per-screen nav used.
+      if (page === 'exercise') await loadAndRenderExercise();
+      if (page === 'progress') await loadAndRenderProgress();
+      if (page === 'fixer') await loadAndRenderFixer();
+      if (page === 'flex') await loadAndRenderFlex();
+    } catch (err) {
+      console.error(`showPage(${page}) failed:`, err);
+      showToast(t('generic_load_error'));
+    }
   }
 
   document.querySelectorAll('.moon-dot').forEach((moon) => {
