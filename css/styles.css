@@ -197,17 +197,20 @@ body {
 }
 
 body {
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
   display: flex;
   justify-content: center;
+  overflow: hidden;
 }
 
 #app {
+  position: fixed;
+  inset: 0;
+  margin: 0 auto;
   width: 100%;
   max-width: var(--max-width);
-  min-height: 100vh;
-  padding: 20px 20px 96px;
-  position: relative;
+  overflow: hidden;
 }
 
 h1,
@@ -245,6 +248,11 @@ p {
 
 .screen {
   display: none;
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
+  padding: 20px 20px 96px;
   animation: fade-in 0.42s var(--ease-spring-soft);
 }
 .screen.active {
@@ -703,10 +711,9 @@ input:focus-visible {
 .orbit-pivot {
   position: absolute;
   inset: 0;
-  /* Fixed, not animated — each of the 5 pivots sets --orbit-angle
-     inline (0/72/144/216/288deg) via the standalone `rotate` property,
-     independent of the `transform` used for hover/press elsewhere. */
-  rotate: var(--orbit-angle, 0deg);
+  pointer-events: none; /* this 264px box is otherwise a full invisible
+    click-catcher — see the animation/pointer-events note below */
+  animation: orbit-drift 240s linear infinite;
 }
 .orbit-moon {
   position: absolute;
@@ -714,10 +721,14 @@ input:focus-visible {
   left: 50%;
   margin-left: -22px;
   width: 44px;
-  rotate: var(--orbit-angle-counter, 0deg);
+  pointer-events: none; /* re-enabled on .moon-dot only, 3 rules down —
+    without this, whichever pivot is last in DOM order (Flex) sits on
+    top of this same shared 264px square for every other moon and
+    silently swallows their taps. Only the small dot itself should be
+    a tap target, never the full rotated square around it. */
   opacity: 0;
-  animation: moon-settle 0.6s var(--ease-spring-soft) both;
-  animation-delay: var(--settle-delay, 0s);
+  animation: moon-settle 0.6s var(--ease-spring-soft) both, orbit-counter-drift 240s linear infinite;
+  animation-delay: var(--settle-delay, 0s), 0s;
 }
 .moon-dot {
   width: 44px;
@@ -730,6 +741,7 @@ input:focus-visible {
   justify-content: center;
   margin: 0 auto;
   cursor: pointer;
+  pointer-events: auto;
   transition: transform 0.25s var(--ease-spring), border-color 0.25s var(--ease-orbit), background 0.25s var(--ease-orbit), box-shadow 0.25s var(--ease-orbit), color 0.25s var(--ease-orbit);
   color: var(--text-secondary);
 }
@@ -770,12 +782,24 @@ input:focus-visible {
   from { opacity: 0; scale: 0.4; }
   to { opacity: 1; scale: 1; }
 }
-/* Motion-sensitive users still get every moon in its resting position —
-   rotate is a static value now, not an animation, so there's nothing to
-   pause there. Only the one-time settle-in scale/fade is skipped. */
+/* Each pivot animates a full turn starting from its own --orbit-angle
+   (0/72/144/216/288deg, set inline per moon), so the 5-point spacing
+   holds throughout the rotation instead of collapsing together —
+   and the moon counter-rotates the same amount the opposite way so
+   its icon and label stay upright rather than spinning in place. */
+@keyframes orbit-drift {
+  from { rotate: var(--orbit-angle, 0deg); }
+  to { rotate: calc(var(--orbit-angle, 0deg) + 360deg); }
+}
+@keyframes orbit-counter-drift {
+  from { rotate: var(--orbit-angle-counter, 0deg); }
+  to { rotate: calc(var(--orbit-angle-counter, 0deg) - 360deg); }
+}
 @media (prefers-reduced-motion: reduce) {
+  .orbit-pivot, .orbit-moon {
+    animation-play-state: paused;
+  }
   .orbit-moon {
-    animation: none;
     opacity: 1;
   }
 }
@@ -809,8 +833,9 @@ input:focus-visible {
 #screen-main-shell {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  height: 100dvh;
+  height: 100%;
+  padding: 0;
+  overflow: hidden;
 }
 
 /* ---- Food log list ---- */
