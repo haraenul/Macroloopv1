@@ -3,10 +3,12 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#1c0f14" />
+<meta name="theme-color" content="#0c0d10" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <title>MacroLoop</title>
+<link rel="preload" href="fonts/syne-800.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="fonts/manrope-600.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
@@ -256,23 +258,23 @@
           <div class="orbit-sub" id="orbit-sub"></div>
         </div>
 
-        <div class="orbit-pivot" style="animation-delay:0s;"><div class="orbit-moon" style="animation-delay:0s;">
+        <div class="orbit-pivot" style="--orbit-angle:0deg;"><div class="orbit-moon" style="--orbit-angle-counter:0deg; --settle-delay:0.02s;">
           <div class="moon-dot active-moon" data-page="today"><span class="icon icon-nav-today" aria-hidden="true"></span></div>
           <div class="moon-label" data-i18n="nav_today">Today</div>
         </div></div>
-        <div class="orbit-pivot" style="animation-delay:-18s;"><div class="orbit-moon" style="animation-delay:-18s;">
+        <div class="orbit-pivot" style="--orbit-angle:72deg;"><div class="orbit-moon" style="--orbit-angle-counter:-72deg; --settle-delay:0.08s;">
           <div class="moon-dot" data-page="exercise"><span class="icon icon-nav-exercise" aria-hidden="true"></span></div>
           <div class="moon-label" data-i18n="nav_exercise">Exercise</div>
         </div></div>
-        <div class="orbit-pivot" style="animation-delay:-36s;"><div class="orbit-moon" style="animation-delay:-36s;">
+        <div class="orbit-pivot" style="--orbit-angle:144deg;"><div class="orbit-moon" style="--orbit-angle-counter:-144deg; --settle-delay:0.14s;">
           <div class="moon-dot" data-page="progress"><span class="icon icon-nav-progress" aria-hidden="true"></span></div>
           <div class="moon-label" data-i18n="nav_progress">Progress</div>
         </div></div>
-        <div class="orbit-pivot" style="animation-delay:-54s;"><div class="orbit-moon" style="animation-delay:-54s;">
+        <div class="orbit-pivot" style="--orbit-angle:216deg;"><div class="orbit-moon" style="--orbit-angle-counter:-216deg; --settle-delay:0.2s;">
           <div class="moon-dot" data-page="fixer"><span class="icon icon-nav-fixer" aria-hidden="true"></span></div>
           <div class="moon-label" data-i18n="nav_fixer">Fixer</div>
         </div></div>
-        <div class="orbit-pivot" style="animation-delay:-72s;"><div class="orbit-moon" style="animation-delay:-72s;">
+        <div class="orbit-pivot" style="--orbit-angle:288deg;"><div class="orbit-moon" style="--orbit-angle-counter:-288deg; --settle-delay:0.26s;">
           <div class="moon-dot" data-page="flex"><span class="icon icon-nav-flex" aria-hidden="true"></span></div>
           <div class="moon-label" data-i18n="nav_flex">Flex</div>
         </div></div>
@@ -282,13 +284,30 @@
     <div class="pages-wrap">
       <!-- Today -->
       <div id="page-today" class="app-page">
-        <div class="card" style="padding:14px 16px; margin-bottom:14px;">
-          <div class="macro-summary-row numeric">
-            <span data-i18n="macro_protein">Protein</span> <span id="protein-consumed">0</span>/<span id="protein-target">0</span>g
-            <span class="macro-secondary-dot" aria-hidden="true">&middot;</span>
-            <span data-i18n="macro_carbs">Carbs</span> <span id="carb-consumed">0</span>/<span id="carb-target">0</span>g
-            <span class="macro-secondary-dot" aria-hidden="true">&middot;</span>
-            <span data-i18n="macro_fat">Fat</span> <span id="fat-consumed">0</span>/<span id="fat-target">0</span>g
+        <div class="card macro-rings-card">
+          <div class="macro-ring" data-macro="protein">
+            <svg viewBox="0 0 64 64" class="macro-ring-svg" aria-hidden="true">
+              <circle cx="32" cy="32" r="26" class="macro-ring-track"></circle>
+              <circle id="protein-ring-fill" cx="32" cy="32" r="26" class="macro-ring-fill" style="stroke:var(--accent-protein);" stroke-dasharray="163.36" stroke-dashoffset="163.36" transform="rotate(-90 32 32)"></circle>
+              <text x="32" y="37" class="macro-ring-value" id="protein-consumed">0</text>
+            </svg>
+            <div class="macro-ring-label"><span data-i18n="macro_protein">Protein</span><br /><span id="protein-target">0</span>g</div>
+          </div>
+          <div class="macro-ring" data-macro="carb">
+            <svg viewBox="0 0 64 64" class="macro-ring-svg" aria-hidden="true">
+              <circle cx="32" cy="32" r="26" class="macro-ring-track"></circle>
+              <circle id="carb-ring-fill" cx="32" cy="32" r="26" class="macro-ring-fill" style="stroke:var(--accent-carb);" stroke-dasharray="163.36" stroke-dashoffset="163.36" transform="rotate(-90 32 32)"></circle>
+              <text x="32" y="37" class="macro-ring-value" id="carb-consumed">0</text>
+            </svg>
+            <div class="macro-ring-label"><span data-i18n="macro_carbs">Carbs</span><br /><span id="carb-target">0</span>g</div>
+          </div>
+          <div class="macro-ring" data-macro="fat">
+            <svg viewBox="0 0 64 64" class="macro-ring-svg" aria-hidden="true">
+              <circle cx="32" cy="32" r="26" class="macro-ring-track"></circle>
+              <circle id="fat-ring-fill" cx="32" cy="32" r="26" class="macro-ring-fill" style="stroke:var(--accent-fat);" stroke-dasharray="163.36" stroke-dashoffset="163.36" transform="rotate(-90 32 32)"></circle>
+              <text x="32" y="37" class="macro-ring-value" id="fat-consumed">0</text>
+            </svg>
+            <div class="macro-ring-label"><span data-i18n="macro_fat">Fat</span><br /><span id="fat-target">0</span>g</div>
           </div>
         </div>
         <div class="quick-add-row">
@@ -706,7 +725,7 @@
   } from './js/photo-log.js';
   import { pickGapFixerCombos } from './js/gap-fixer.js';
   import {
-    getMostRecentCompletedWeekStart, computeFlexCardStats, computeStreak, drawFlexCard, exportCanvasAsPng,
+    getMostRecentCompletedWeekStart, computeFlexCardStats, computeStreak, drawFlexCard, exportCanvasAsPng, ensureFlexCardFonts,
   } from './js/flex-card.js';
   import { buildDataExport, downloadDataExport, shouldShowGapFixerNudge } from './js/settings.js';
   import { t, applyStrings } from './js/strings.js';
@@ -727,6 +746,16 @@
   // a direct port of the mockup's own easing and geometry.
 
   const ORBIT_CIRCUMFERENCE = 490.09; // 2 * pi * 78 — matches the dial's r="78"
+  const MACRO_RING_CIRCUMFERENCE = 163.36; // 2 * pi * 26 — matches the macro rings' r="26"
+
+  /** Fills a Today macro ring to consumed/target, clamped to a full circle at 100%+ — same dashoffset convention as the orbit dial itself (setOrbitDial, below). */
+  function setMacroRingFill(id, consumed, target) {
+    const fill = document.getElementById(id);
+    if (!fill) return;
+    const fraction = target > 0 ? Math.max(0, Math.min(1, consumed / target)) : 0;
+    fill.style.strokeDashoffset = MACRO_RING_CIRCUMFERENCE * (1 - fraction);
+  }
+
   let currentPage = 'today';
   let orbitValueRaf = null;
 
@@ -1259,10 +1288,13 @@
 
     animateNumber(document.getElementById('protein-consumed'), Math.round(proteinC));
     document.getElementById('protein-target').textContent = today.macros.proteinG;
+    setMacroRingFill('protein-ring-fill', proteinC, today.macros.proteinG);
     animateNumber(document.getElementById('carb-consumed'), Math.round(carbC));
     document.getElementById('carb-target').textContent = today.macros.carbG;
+    setMacroRingFill('carb-ring-fill', carbC, today.macros.carbG);
     animateNumber(document.getElementById('fat-consumed'), Math.round(fatC));
     document.getElementById('fat-target').textContent = today.macros.fatG;
+    setMacroRingFill('fat-ring-fill', fatC, today.macros.fatG);
 
     renderFoodLogList(today.foodEntries);
 
@@ -1631,7 +1663,7 @@
     document.getElementById('gap-fixer-nudge').style.display = 'none';
   });
   document.getElementById('gap-fixer-nudge-open').addEventListener('click', () => {
-    document.querySelector('.nav-item[data-screen="fixer"]').click();
+    showPage('fixer');
   });
 
   // ---- Sheets (shared backdrop, one active sheet at a time) ----
@@ -1932,9 +1964,9 @@
     const calorieSeries = await getDailyCalorieTotals(user.uid, startDate, endDate);
     const target = getState('today').target;
 
-    renderLineChart(document.getElementById('weight-chart'), weightSeries, { color: '#7c8a5c' });
+    renderLineChart(document.getElementById('weight-chart'), weightSeries, { color: 'var(--accent-protein)' });
     renderLineChart(document.getElementById('calorie-chart'), calorieSeries, {
-      color: '#c8184a',
+      color: 'var(--accent-energy)',
       referenceValue: target,
     });
 
@@ -2358,10 +2390,12 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     if (stats.daysLogged === 0) {
-      ctx.fillStyle = '#1c0f14';
+      await ensureFlexCardFonts();
+      const rootStyle = getComputedStyle(document.documentElement);
+      ctx.fillStyle = rootStyle.getPropertyValue('--bg').trim() || '#0c0d10';
       ctx.fillRect(0, 0, LOGICAL_W, LOGICAL_H);
-      ctx.fillStyle = '#a38990';
-      ctx.font = '400 16px "IBM Plex Sans", sans-serif';
+      ctx.fillStyle = rootStyle.getPropertyValue('--text-secondary').trim() || '#8b8f96';
+      ctx.font = '500 16px Manrope, sans-serif';
       ctx.fillText(t('flex_no_data'), 32, LOGICAL_H / 2);
       return;
     }
@@ -2371,7 +2405,7 @@
     // that logical size while the context underneath is the real,
     // dpr-scaled one, so nothing in that file needs to change for this.
     const canvasProxy = { width: LOGICAL_W, height: LOGICAL_H, getContext: () => ctx };
-    drawFlexCard(canvasProxy, {
+    await drawFlexCard(canvasProxy, {
       weekLabel: t('flex_week_label', { startDate: weekStartStr }),
       stats, streak, target,
       goal: getState('profile').goal,
@@ -2402,19 +2436,6 @@
   document.getElementById('intro-3-skip-btn').addEventListener('click', finishIntro);
   document.getElementById('intro-3-next-btn').addEventListener('click', finishIntro);
   document.getElementById('intro-3-signin-btn').addEventListener('click', finishIntro);
-
-  // ---- Nav ----
-
-  document.querySelectorAll('.nav-item').forEach((btn) => {
-    btn.addEventListener('click', async () => {
-      const target = btn.dataset.screen;
-      showScreen(`screen-${target}`);
-      if (target === 'exercise') await loadAndRenderExercise();
-      if (target === 'progress') await loadAndRenderProgress();
-      if (target === 'fixer') await loadAndRenderFixer();
-      if (target === 'flex') await loadAndRenderFlex();
-    });
-  });
 
   // ---- Boot ----
 
