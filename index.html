@@ -232,7 +232,7 @@
         <button class="icon-btn" id="open-settings-btn" aria-label="Settings" data-i18n-aria-label="aria_settings"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="7" stroke-dasharray="2.2 2.2"/></svg></button>
       </div>
 
-      <div class="orbit-system">
+      <div class="orbit-system" id="orbit-system" style="--ring-rotation:0deg;">
         <svg class="orbit-dial-svg" width="264" height="264" viewBox="0 0 264 264">
           <g stroke="#26282f" stroke-width="1.4">
             <line x1="130.0" y1="44.0" x2="130.0" y2="37.0"/>
@@ -258,28 +258,26 @@
           <div class="orbit-sub" id="orbit-sub"></div>
         </div>
 
-        <div class="orbit-ring" id="orbit-ring" style="--ring-rotation:0deg;">
-          <div class="orbit-moon-slot" style="--base-angle:0deg;"><div class="moon-face" style="--settle-delay:0.02s;">
-            <div class="moon-dot active-moon" data-page="today"><span class="icon icon-nav-today" aria-hidden="true"></span></div>
-            <div class="moon-label" data-i18n="nav_today">Today</div>
-          </div></div>
-          <div class="orbit-moon-slot" style="--base-angle:72deg;"><div class="moon-face" style="--settle-delay:0.08s;">
-            <div class="moon-dot" data-page="exercise"><span class="icon icon-nav-exercise" aria-hidden="true"></span></div>
-            <div class="moon-label" data-i18n="nav_exercise">Exercise</div>
-          </div></div>
-          <div class="orbit-moon-slot" style="--base-angle:144deg;"><div class="moon-face" style="--settle-delay:0.14s;">
-            <div class="moon-dot" data-page="progress"><span class="icon icon-nav-progress" aria-hidden="true"></span></div>
-            <div class="moon-label" data-i18n="nav_progress">Progress</div>
-          </div></div>
-          <div class="orbit-moon-slot" style="--base-angle:216deg;"><div class="moon-face" style="--settle-delay:0.2s;">
-            <div class="moon-dot" data-page="fixer"><span class="icon icon-nav-fixer" aria-hidden="true"></span></div>
-            <div class="moon-label" data-i18n="nav_fixer">Fixer</div>
-          </div></div>
-          <div class="orbit-moon-slot" style="--base-angle:288deg;"><div class="moon-face" style="--settle-delay:0.26s;">
-            <div class="moon-dot" data-page="flex"><span class="icon icon-nav-flex" aria-hidden="true"></span></div>
-            <div class="moon-label" data-i18n="nav_flex">Flex</div>
-          </div></div>
-        </div>
+        <div class="orbit-pivot" style="--base-angle:0deg; --settle-delay:0.02s;"><div class="orbit-moon">
+          <div class="moon-dot active-moon" data-page="today"><span class="icon icon-nav-today" aria-hidden="true"></span></div>
+          <div class="moon-label" data-i18n="nav_today">Today</div>
+        </div></div>
+        <div class="orbit-pivot" style="--base-angle:72deg; --settle-delay:0.08s;"><div class="orbit-moon">
+          <div class="moon-dot" data-page="exercise"><span class="icon icon-nav-exercise" aria-hidden="true"></span></div>
+          <div class="moon-label" data-i18n="nav_exercise">Exercise</div>
+        </div></div>
+        <div class="orbit-pivot" style="--base-angle:144deg; --settle-delay:0.14s;"><div class="orbit-moon">
+          <div class="moon-dot" data-page="progress"><span class="icon icon-nav-progress" aria-hidden="true"></span></div>
+          <div class="moon-label" data-i18n="nav_progress">Progress</div>
+        </div></div>
+        <div class="orbit-pivot" style="--base-angle:216deg; --settle-delay:0.2s;"><div class="orbit-moon">
+          <div class="moon-dot" data-page="fixer"><span class="icon icon-nav-fixer" aria-hidden="true"></span></div>
+          <div class="moon-label" data-i18n="nav_fixer">Fixer</div>
+        </div></div>
+        <div class="orbit-pivot" style="--base-angle:288deg; --settle-delay:0.26s;"><div class="orbit-moon">
+          <div class="moon-dot" data-page="flex"><span class="icon icon-nav-flex" aria-hidden="true"></span></div>
+          <div class="moon-label" data-i18n="nav_flex">Flex</div>
+        </div></div>
       </div>
     </div>
 
@@ -762,10 +760,10 @@
   const ORBIT_PAGE_ORDER = ['today', 'exercise', 'progress', 'fixer', 'flex'];
   let orbitRingRotation = 0; // continuous, unbounded degrees — not clamped to 0-360
 
-  /** Spins the 3D ring so `nextPage`'s moon comes to the front, taking whichever direction (forward/back around the 5-slot ring) is the shorter turn from `previousPage`. Called from showPage() so every way of navigating — tap, swipe, or a direct showPage() call elsewhere in the app — keeps the ring and the active page in sync from one single place. */
+  /** Rotates the moon ring so `nextPage`'s moon comes to the top/active position, taking whichever direction (forward/back around the 5-position ring) is the shorter turn from `previousPage`. Called from showPage() so every way of navigating — tap, swipe, or a direct showPage() call elsewhere in the app — keeps the ring and the active page in sync from one single place. */
   function updateOrbitRingRotation(previousPage, nextPage) {
-    const ring = document.getElementById('orbit-ring');
-    if (!ring) return;
+    const orbitSystemEl = document.getElementById('orbit-system');
+    if (!orbitSystemEl) return;
     const fromIndex = ORBIT_PAGE_ORDER.indexOf(previousPage);
     const toIndex = ORBIT_PAGE_ORDER.indexOf(nextPage);
     if (fromIndex === -1 || toIndex === -1) return;
@@ -773,7 +771,7 @@
     if (delta > 2) delta -= ORBIT_PAGE_ORDER.length;
     if (delta < -2) delta += ORBIT_PAGE_ORDER.length;
     orbitRingRotation -= delta * 72;
-    ring.style.setProperty('--ring-rotation', `${orbitRingRotation}deg`);
+    orbitSystemEl.style.setProperty('--ring-rotation', `${orbitRingRotation}deg`);
   }
 
   let orbitValueRaf = null;
