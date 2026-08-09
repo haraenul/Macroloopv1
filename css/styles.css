@@ -670,7 +670,6 @@ input:focus-visible {
   height: 264px;
   margin: 0 auto;
   max-width: 100%;
-  perspective: 600px;
 }
 .orbit-dial-svg {
   position: absolute;
@@ -715,47 +714,37 @@ input:focus-visible {
   min-height: 11px;
 }
 
-/* ---- 3D moon ring ----
-   .orbit-ring is the only thing that actually rotates, driven by
-   --ring-rotation (set inline, updated from JS in one place —
-   updateOrbitRingRotation — whether the trigger was a tap, a swipe,
-   or a showPage() call from somewhere else in the app entirely).
-   Each slot sits at a genuinely small, correctly-3D-positioned spot
-   around the ring rather than a full rotated square, so perspective
-   itself handles making the front moon read larger and the far ones
-   recede — and so there's nothing oversized left to accidentally
-   swallow taps meant for a neighboring moon. */
-.orbit-ring {
+/* ---- Moon ring (2D) ----
+   Deliberately flat, not 3D — a true rotateY/translateZ/perspective
+   version was tried here and it rendered as a broken vertical stack
+   instead of a ring, and there's no way to render-test a fix blind.
+   This is the same rotate-based positioning that was already verified
+   working. Each pivot's angle is --base-angle (fixed per moon) plus
+   the shared --ring-rotation (set once on #orbit-system, updated from
+   JS in updateOrbitRingRotation, inherited down to every pivot below)
+   — so swiping or tapping still rotates the whole arrangement
+   together, same navigation behavior the 3D version was going for,
+   on mechanics actually proven to render correctly. */
+.orbit-pivot {
   position: absolute;
   inset: 0;
-  transform-style: preserve-3d;
-  transform: rotateY(var(--ring-rotation, 0deg));
-  transition: transform 0.7s var(--ease-spring-soft);
   pointer-events: none;
+  rotate: calc(var(--base-angle, 0deg) + var(--ring-rotation, 0deg));
+  transition: rotate 0.6s var(--ease-spring-soft);
 }
-.orbit-moon-slot {
+.orbit-moon {
   position: absolute;
-  top: 50%;
+  top: -4px;
   left: 50%;
+  margin-left: -22px;
   width: 44px;
-  height: 44px;
-  margin: -22px 0 0 -22px;
-  transform-style: preserve-3d;
-  transform: rotateY(var(--base-angle, 0deg)) translateZ(112px);
-  pointer-events: none;
-}
-.moon-face {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transform-style: preserve-3d;
-  /* Cancel out the slot's own fixed angle AND the ring's current
-     rotation together, so the icon+label always face the viewer
-     head-on no matter where this moon currently sits on the ring. */
-  transform: rotateY(calc(-1 * (var(--ring-rotation, 0deg) + var(--base-angle, 0deg))));
-  pointer-events: none;
+  pointer-events: none; /* re-enabled on .moon-dot only — without this,
+    whichever pivot is last in DOM order sits on top of this same
+    264px square for every other moon and silently swallows their
+    taps (this was the round-3 bug; the fix stays regardless of how
+    the pivot itself is positioned). */
+  rotate: calc(-1 * (var(--base-angle, 0deg) + var(--ring-rotation, 0deg)));
+  transition: rotate 0.6s var(--ease-spring-soft);
   opacity: 0;
   animation: moon-settle 0.6s var(--ease-spring-soft) both;
   animation-delay: var(--settle-delay, 0s);
@@ -813,10 +802,10 @@ input:focus-visible {
   to { opacity: 1; scale: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .orbit-ring {
+  .orbit-pivot, .orbit-moon {
     transition: none;
   }
-  .moon-face {
+  .orbit-moon {
     animation: none;
     opacity: 1;
   }
