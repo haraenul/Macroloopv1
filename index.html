@@ -258,26 +258,28 @@
           <div class="orbit-sub" id="orbit-sub"></div>
         </div>
 
-        <div class="orbit-pivot" style="--orbit-angle:0deg;"><div class="orbit-moon" style="--orbit-angle-counter:0deg; --settle-delay:0.02s;">
-          <div class="moon-dot active-moon" data-page="today"><span class="icon icon-nav-today" aria-hidden="true"></span></div>
-          <div class="moon-label" data-i18n="nav_today">Today</div>
-        </div></div>
-        <div class="orbit-pivot" style="--orbit-angle:72deg;"><div class="orbit-moon" style="--orbit-angle-counter:-72deg; --settle-delay:0.08s;">
-          <div class="moon-dot" data-page="exercise"><span class="icon icon-nav-exercise" aria-hidden="true"></span></div>
-          <div class="moon-label" data-i18n="nav_exercise">Exercise</div>
-        </div></div>
-        <div class="orbit-pivot" style="--orbit-angle:144deg;"><div class="orbit-moon" style="--orbit-angle-counter:-144deg; --settle-delay:0.14s;">
-          <div class="moon-dot" data-page="progress"><span class="icon icon-nav-progress" aria-hidden="true"></span></div>
-          <div class="moon-label" data-i18n="nav_progress">Progress</div>
-        </div></div>
-        <div class="orbit-pivot" style="--orbit-angle:216deg;"><div class="orbit-moon" style="--orbit-angle-counter:-216deg; --settle-delay:0.2s;">
-          <div class="moon-dot" data-page="fixer"><span class="icon icon-nav-fixer" aria-hidden="true"></span></div>
-          <div class="moon-label" data-i18n="nav_fixer">Fixer</div>
-        </div></div>
-        <div class="orbit-pivot" style="--orbit-angle:288deg;"><div class="orbit-moon" style="--orbit-angle-counter:-288deg; --settle-delay:0.26s;">
-          <div class="moon-dot" data-page="flex"><span class="icon icon-nav-flex" aria-hidden="true"></span></div>
-          <div class="moon-label" data-i18n="nav_flex">Flex</div>
-        </div></div>
+        <div class="orbit-ring" id="orbit-ring" style="--ring-rotation:0deg;">
+          <div class="orbit-moon-slot" style="--base-angle:0deg;"><div class="moon-face" style="--settle-delay:0.02s;">
+            <div class="moon-dot active-moon" data-page="today"><span class="icon icon-nav-today" aria-hidden="true"></span></div>
+            <div class="moon-label" data-i18n="nav_today">Today</div>
+          </div></div>
+          <div class="orbit-moon-slot" style="--base-angle:72deg;"><div class="moon-face" style="--settle-delay:0.08s;">
+            <div class="moon-dot" data-page="exercise"><span class="icon icon-nav-exercise" aria-hidden="true"></span></div>
+            <div class="moon-label" data-i18n="nav_exercise">Exercise</div>
+          </div></div>
+          <div class="orbit-moon-slot" style="--base-angle:144deg;"><div class="moon-face" style="--settle-delay:0.14s;">
+            <div class="moon-dot" data-page="progress"><span class="icon icon-nav-progress" aria-hidden="true"></span></div>
+            <div class="moon-label" data-i18n="nav_progress">Progress</div>
+          </div></div>
+          <div class="orbit-moon-slot" style="--base-angle:216deg;"><div class="moon-face" style="--settle-delay:0.2s;">
+            <div class="moon-dot" data-page="fixer"><span class="icon icon-nav-fixer" aria-hidden="true"></span></div>
+            <div class="moon-label" data-i18n="nav_fixer">Fixer</div>
+          </div></div>
+          <div class="orbit-moon-slot" style="--base-angle:288deg;"><div class="moon-face" style="--settle-delay:0.26s;">
+            <div class="moon-dot" data-page="flex"><span class="icon icon-nav-flex" aria-hidden="true"></span></div>
+            <div class="moon-label" data-i18n="nav_flex">Flex</div>
+          </div></div>
+        </div>
       </div>
     </div>
 
@@ -757,6 +759,23 @@
   }
 
   let currentPage = 'today';
+  const ORBIT_PAGE_ORDER = ['today', 'exercise', 'progress', 'fixer', 'flex'];
+  let orbitRingRotation = 0; // continuous, unbounded degrees — not clamped to 0-360
+
+  /** Spins the 3D ring so `nextPage`'s moon comes to the front, taking whichever direction (forward/back around the 5-slot ring) is the shorter turn from `previousPage`. Called from showPage() so every way of navigating — tap, swipe, or a direct showPage() call elsewhere in the app — keeps the ring and the active page in sync from one single place. */
+  function updateOrbitRingRotation(previousPage, nextPage) {
+    const ring = document.getElementById('orbit-ring');
+    if (!ring) return;
+    const fromIndex = ORBIT_PAGE_ORDER.indexOf(previousPage);
+    const toIndex = ORBIT_PAGE_ORDER.indexOf(nextPage);
+    if (fromIndex === -1 || toIndex === -1) return;
+    let delta = toIndex - fromIndex;
+    if (delta > 2) delta -= ORBIT_PAGE_ORDER.length;
+    if (delta < -2) delta += ORBIT_PAGE_ORDER.length;
+    orbitRingRotation -= delta * 72;
+    ring.style.setProperty('--ring-rotation', `${orbitRingRotation}deg`);
+  }
+
   let orbitValueRaf = null;
 
   function animateOrbitValue(el, from, to, decimals) {
@@ -869,9 +888,11 @@
   }
 
   async function showPage(page) {
+    const previousPage = currentPage;
     currentPage = page;
     document.querySelectorAll('.app-page').forEach((el) => el.classList.toggle('active', el.id === `page-${page}`));
     document.querySelectorAll('.moon-dot').forEach((el) => el.classList.toggle('active-moon', el.dataset.page === page));
+    updateOrbitRingRotation(previousPage, page);
     try {
       const orbitData = await computeOrbitDataForPage(page);
       setOrbitDial(orbitData);
@@ -892,6 +913,41 @@
   document.querySelectorAll('.moon-dot').forEach((moon) => {
     moon.addEventListener('click', () => showPage(moon.dataset.page));
   });
+
+  (function setupOrbitSwipe() {
+    const orbitSystemEl = document.querySelector('.orbit-system');
+    if (!orbitSystemEl) return;
+    let startX = null;
+    let startY = null;
+
+    orbitSystemEl.addEventListener('touchstart', (e) => {
+      if (e.touches.length !== 1) { startX = null; return; }
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+    }, { passive: true });
+
+    orbitSystemEl.addEventListener('touchend', (e) => {
+      if (startX === null) return;
+      const touch = e.changedTouches[0];
+      const dx = touch.clientX - startX;
+      const dy = touch.clientY - startY;
+      startX = null;
+      startY = null;
+
+      // Require a clear, mostly-horizontal drag — well past normal
+      // finger jitter on a tap — before treating this as "change page"
+      // rather than "the user tapped a moon".
+      const SWIPE_MIN_DISTANCE = 36;
+      if (Math.abs(dx) < SWIPE_MIN_DISTANCE || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+
+      const currentIndex = ORBIT_PAGE_ORDER.indexOf(currentPage);
+      if (currentIndex === -1) return;
+      const nextIndex = dx < 0
+        ? (currentIndex + 1) % ORBIT_PAGE_ORDER.length
+        : (currentIndex - 1 + ORBIT_PAGE_ORDER.length) % ORBIT_PAGE_ORDER.length;
+      showPage(ORBIT_PAGE_ORDER[nextIndex]);
+    });
+  })();
 
   let toastTimer;
   function showToast(msg, ms = 3000) {
