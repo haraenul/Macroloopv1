@@ -364,11 +364,13 @@ p {
   margin-bottom: 8px;
 }
 .exercise-burned-number {
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: var(--text-3xl);
   font-weight: var(--weight-black, 800);
+  letter-spacing: -0.02em;
   color: var(--accent-protein);
   line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ---- Buttons ---- */
@@ -592,12 +594,13 @@ input:focus-visible {
   padding: 32px 20px;
 }
 .result-card .target-number {
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: var(--text-4xl);
   font-weight: var(--weight-black);
   letter-spacing: -0.02em;
   color: var(--accent-energy);
   line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 .result-card .target-unit {
   color: var(--text-secondary);
@@ -613,7 +616,7 @@ input:focus-visible {
 
 .orbit-header {
   flex-shrink: 0;
-  padding: 20px 20px 4px;
+  padding: 20px 20px 12px;
   position: relative;
 }
 .top-row {
@@ -637,6 +640,7 @@ input:focus-visible {
 .icon-btn {
   width: 34px;
   height: 34px;
+  flex-shrink: 0;
   border-radius: 50%;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -666,6 +670,7 @@ input:focus-visible {
   height: 264px;
   margin: 0 auto;
   max-width: 100%;
+  perspective: 600px;
 }
 .orbit-dial-svg {
   position: absolute;
@@ -685,11 +690,13 @@ input:focus-visible {
   pointer-events: none;
 }
 .orbit-number {
-  font-family: var(--font-display);
-  font-weight: 700;
+  font-family: var(--font-body);
+  font-weight: var(--weight-black, 800);
   font-size: 42px;
+  letter-spacing: -0.02em;
   color: var(--text-primary);
   line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 .orbit-label {
   font-family: var(--font-body);
@@ -708,27 +715,50 @@ input:focus-visible {
   min-height: 11px;
 }
 
-.orbit-pivot {
+/* ---- 3D moon ring ----
+   .orbit-ring is the only thing that actually rotates, driven by
+   --ring-rotation (set inline, updated from JS in one place —
+   updateOrbitRingRotation — whether the trigger was a tap, a swipe,
+   or a showPage() call from somewhere else in the app entirely).
+   Each slot sits at a genuinely small, correctly-3D-positioned spot
+   around the ring rather than a full rotated square, so perspective
+   itself handles making the front moon read larger and the far ones
+   recede — and so there's nothing oversized left to accidentally
+   swallow taps meant for a neighboring moon. */
+.orbit-ring {
   position: absolute;
   inset: 0;
-  pointer-events: none; /* this 264px box is otherwise a full invisible
-    click-catcher — see the animation/pointer-events note below */
-  animation: orbit-drift 240s linear infinite;
+  transform-style: preserve-3d;
+  transform: rotateY(var(--ring-rotation, 0deg));
+  transition: transform 0.7s var(--ease-spring-soft);
+  pointer-events: none;
 }
-.orbit-moon {
+.orbit-moon-slot {
   position: absolute;
-  top: -4px;
+  top: 50%;
   left: 50%;
-  margin-left: -22px;
   width: 44px;
-  pointer-events: none; /* re-enabled on .moon-dot only, 3 rules down —
-    without this, whichever pivot is last in DOM order (Flex) sits on
-    top of this same shared 264px square for every other moon and
-    silently swallows their taps. Only the small dot itself should be
-    a tap target, never the full rotated square around it. */
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  transform-style: preserve-3d;
+  transform: rotateY(var(--base-angle, 0deg)) translateZ(112px);
+  pointer-events: none;
+}
+.moon-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform-style: preserve-3d;
+  /* Cancel out the slot's own fixed angle AND the ring's current
+     rotation together, so the icon+label always face the viewer
+     head-on no matter where this moon currently sits on the ring. */
+  transform: rotateY(calc(-1 * (var(--ring-rotation, 0deg) + var(--base-angle, 0deg))));
+  pointer-events: none;
   opacity: 0;
-  animation: moon-settle 0.6s var(--ease-spring-soft) both, orbit-counter-drift 240s linear infinite;
-  animation-delay: var(--settle-delay, 0s), 0s;
+  animation: moon-settle 0.6s var(--ease-spring-soft) both;
+  animation-delay: var(--settle-delay, 0s);
 }
 .moon-dot {
   width: 44px;
@@ -782,24 +812,12 @@ input:focus-visible {
   from { opacity: 0; scale: 0.4; }
   to { opacity: 1; scale: 1; }
 }
-/* Each pivot animates a full turn starting from its own --orbit-angle
-   (0/72/144/216/288deg, set inline per moon), so the 5-point spacing
-   holds throughout the rotation instead of collapsing together —
-   and the moon counter-rotates the same amount the opposite way so
-   its icon and label stay upright rather than spinning in place. */
-@keyframes orbit-drift {
-  from { rotate: var(--orbit-angle, 0deg); }
-  to { rotate: calc(var(--orbit-angle, 0deg) + 360deg); }
-}
-@keyframes orbit-counter-drift {
-  from { rotate: var(--orbit-angle-counter, 0deg); }
-  to { rotate: calc(var(--orbit-angle-counter, 0deg) - 360deg); }
-}
 @media (prefers-reduced-motion: reduce) {
-  .orbit-pivot, .orbit-moon {
-    animation-play-state: paused;
+  .orbit-ring {
+    transition: none;
   }
-  .orbit-moon {
+  .moon-face {
+    animation: none;
     opacity: 1;
   }
 }
@@ -813,7 +831,7 @@ input:focus-visible {
   position: absolute;
   inset: 0;
   overflow-y: auto;
-  padding: 6px 20px 46px;
+  padding: 18px 20px 46px;
   display: none;
   -ms-overflow-style: none;
   scrollbar-width: none;
