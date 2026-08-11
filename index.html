@@ -24,6 +24,7 @@
   <!-- Intro 1: Welcome -->
   <div id="screen-intro-1" class="screen intro-screen">
     <div class="intro-ambient-glow" aria-hidden="true"></div>
+    <div class="intro-hero-photo" id="intro-hero-photo"></div>
     <div class="intro-hero-mark" aria-hidden="true"></div>
     <h1 class="intro-title" data-i18n="app_name">MacroLoop</h1>
     <p class="intro-tagline" data-i18n="intro1_tagline">The calorie tracker that learns your body, instead of guessing at it forever.</p>
@@ -267,23 +268,33 @@
           <div class="orbit-sub" id="orbit-sub"></div>
         </div>
 
-        <div class="orbit-pivot" style="--base-angle:0deg; --settle-delay:0.02s;"><div class="orbit-moon">
+        <div class="orbit-pivot" style="--base-angle:0deg; --settle-delay:0.02s;">
+          <div class="orbit-spoke"></div>
+          <div class="orbit-moon">
           <div class="moon-dot active-moon" data-page="today"><span class="icon icon-nav-today" aria-hidden="true"></span></div>
           <div class="moon-label" data-i18n="nav_today">Today</div>
         </div></div>
-        <div class="orbit-pivot" style="--base-angle:72deg; --settle-delay:0.08s;"><div class="orbit-moon">
+        <div class="orbit-pivot" style="--base-angle:72deg; --settle-delay:0.08s;">
+          <div class="orbit-spoke"></div>
+          <div class="orbit-moon">
           <div class="moon-dot" data-page="exercise"><span class="icon icon-nav-exercise" aria-hidden="true"></span></div>
           <div class="moon-label" data-i18n="nav_exercise">Exercise</div>
         </div></div>
-        <div class="orbit-pivot" style="--base-angle:144deg; --settle-delay:0.14s;"><div class="orbit-moon">
+        <div class="orbit-pivot" style="--base-angle:144deg; --settle-delay:0.14s;">
+          <div class="orbit-spoke"></div>
+          <div class="orbit-moon">
           <div class="moon-dot" data-page="progress"><span class="icon icon-nav-progress" aria-hidden="true"></span></div>
           <div class="moon-label" data-i18n="nav_progress">Progress</div>
         </div></div>
-        <div class="orbit-pivot" style="--base-angle:216deg; --settle-delay:0.2s;"><div class="orbit-moon">
+        <div class="orbit-pivot" style="--base-angle:216deg; --settle-delay:0.2s;">
+          <div class="orbit-spoke"></div>
+          <div class="orbit-moon">
           <div class="moon-dot" data-page="fixer"><span class="icon icon-nav-fixer" aria-hidden="true"></span></div>
           <div class="moon-label" data-i18n="nav_fixer">Fixer</div>
         </div></div>
-        <div class="orbit-pivot" style="--base-angle:288deg; --settle-delay:0.26s;"><div class="orbit-moon">
+        <div class="orbit-pivot" style="--base-angle:288deg; --settle-delay:0.26s;">
+          <div class="orbit-spoke"></div>
+          <div class="orbit-moon">
           <div class="moon-dot" data-page="flex"><span class="icon icon-nav-flex" aria-hidden="true"></span></div>
           <div class="moon-label" data-i18n="nav_flex">Flex</div>
         </div></div>
@@ -2593,6 +2604,26 @@
 
   const INTRO_SEEN_KEY = 'macroloop_seen_intro';
 
+  /** Best-effort — see the file-level comment on why failures here are silent rather than shown to the user. */
+  async function loadIntroHeroPhoto() {
+    const container = document.getElementById('intro-hero-photo');
+    if (!container) return;
+    try {
+      const response = await fetch('/.netlify/functions/food-photo?query=fresh%20healthy%20food%20flatlay&orientation=landscape');
+      if (!response.ok) return;
+      const photo = await response.json();
+      if (!photo.url) return;
+      container.innerHTML = `
+        <img src="${photo.url}" alt="" loading="eager" />
+        <div class="intro-hero-photo-credit">Photo: <a href="${photo.photographerUrl}" target="_blank" rel="noopener">${escapeHtml(photo.photographerName)}</a> / <a href="${photo.unsplashUrl}" target="_blank" rel="noopener">Unsplash</a></div>
+      `;
+      container.classList.add('intro-hero-photo--loaded');
+    } catch (err) {
+      // Network hiccup, hit rate limit, missing key server-side — none
+      // of these should surface to a brand-new user mid-onboarding.
+    }
+  }
+
   function finishIntro() {
     try { localStorage.setItem(INTRO_SEEN_KEY, '1'); } catch (err) { /* private browsing etc. — non-fatal, they'll just see intro again next time */ }
     showScreen('screen-auth');
@@ -2616,6 +2647,7 @@
       let hasSeenIntro = false;
       try { hasSeenIntro = !!localStorage.getItem(INTRO_SEEN_KEY); } catch (err) { /* private browsing — default to showing the intro */ }
       showScreen(hasSeenIntro ? 'screen-auth' : 'screen-intro-1');
+      if (!hasSeenIntro) loadIntroHeroPhoto();
       return;
     }
     try {
