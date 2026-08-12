@@ -847,17 +847,19 @@ select option {
    on mechanics actually proven to render correctly. */
 .orbit-spoke {
   position: absolute;
-  top: 22.5px;
+  top: 18.5px;
   left: 50%;
-  width: 14px;
-  height: 19px;
-  margin-left: -7px;
-  background: linear-gradient(to top, var(--border-strong), color-mix(in srgb, var(--border-strong) 30%, transparent));
-  clip-path: polygon(35% 0%, 65% 0%, 100% 100%, 0% 100%);
+  width: 26px;
+  height: 27px;
+  margin-left: -13px;
+  background: linear-gradient(to top, var(--accent-brass), color-mix(in srgb, var(--accent-brass) 35%, transparent));
+  clip-path: polygon(38% 0%, 62% 0%, 88% 32%, 100% 100%, 0% 100%, 12% 32%);
   pointer-events: none;
+  opacity: 0.55;
+  transition: opacity 0.3s var(--ease-orbit), background 0.3s var(--ease-orbit);
 }
 .orbit-pivot:has(.active-moon) .orbit-spoke {
-  background: linear-gradient(to top, var(--accent-energy), color-mix(in srgb, var(--accent-energy) 25%, transparent));
+  background: linear-gradient(to top, var(--accent-energy), color-mix(in srgb, var(--accent-energy) 40%, transparent));
 }
 .orbit-pivot {
   position: absolute;
@@ -1028,6 +1030,37 @@ select option {
   width: 32px;
   height: 32px;
   padding: 0;
+}
+
+.daily-photo-strip {
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  margin-bottom: 0;
+  transition: max-height 0.5s var(--ease-spring-soft), opacity 0.5s var(--ease-spring-soft), margin-bottom 0.5s var(--ease-spring-soft);
+}
+.daily-photo-strip--loaded {
+  max-height: 90px;
+  opacity: 1;
+  margin-bottom: 18px;
+}
+.daily-photo-strip img {
+  display: block;
+  width: 100%;
+  height: 72px;
+  object-fit: cover;
+  background: var(--surface-2);
+}
+.daily-photo-strip-credit {
+  font-size: 9px;
+  color: var(--text-tertiary);
+  text-align: right;
+  padding: 3px 2px 0;
+}
+.daily-photo-strip-credit a {
+  color: var(--text-tertiary);
+  text-decoration: underline;
 }
 
 .empty-state {
