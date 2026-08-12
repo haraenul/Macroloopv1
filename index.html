@@ -347,6 +347,8 @@
           </div>
         </div>
 
+        <div class="daily-photo-strip" id="daily-photo-strip"></div>
+
         <h3 data-i18n="todays_log_heading">Today's log</h3>
         <div id="food-log-list"></div>
       </div>
@@ -1404,6 +1406,55 @@
       algoMode: algoState.mode,
     });
     checkGapFixerNudge();
+    loadDailyPhotoStrip();
+  }
+
+  const DAILY_PHOTO_QUERIES = [
+    'fresh vegetables colorful', 'grilled chicken healthy meal', 'whole grains bread oats',
+    'fresh fruit bowl', 'salmon fish healthy', 'greek yogurt berries', 'avocado toast healthy',
+  ];
+  const DAILY_PHOTO_CACHE_KEY = 'macroloopDailyPhoto';
+
+  /** Fetches at most once per calendar day (cached in localStorage with the date), not once per page view — Today gets reloaded constantly during normal use, and the free Unsplash tier is 50 requests/hour. Fails completely silently, same reasoning as the intro screen's photo: this is a nice-to-have, never something that should be visible as broken. */
+  async function loadDailyPhotoStrip() {
+    const container = document.getElementById('daily-photo-strip');
+    if (!container) return;
+    const today = todayLocalDate();
+
+    let cached = null;
+    try {
+      const raw = localStorage.getItem(DAILY_PHOTO_CACHE_KEY);
+      if (raw) cached = JSON.parse(raw);
+    } catch (err) { /* corrupt or unavailable cache — just refetch */ }
+
+    if (cached && cached.date === today && cached.photo) {
+      renderDailyPhotoStrip(cached.photo);
+      return;
+    }
+
+    try {
+      const dayIndex = Math.floor(Date.now() / 86400000) % DAILY_PHOTO_QUERIES.length;
+      const query = DAILY_PHOTO_QUERIES[dayIndex];
+      const response = await fetch(`/.netlify/functions/food-photo?query=${encodeURIComponent(query)}&orientation=landscape`);
+      if (!response.ok) return;
+      const photo = await response.json();
+      if (!photo.url) return;
+      try { localStorage.setItem(DAILY_PHOTO_CACHE_KEY, JSON.stringify({ date: today, photo })); } catch (err) { /* non-fatal */ }
+      renderDailyPhotoStrip(photo);
+    } catch (err) {
+      // Network hiccup, rate limit, missing key — Today's real content
+      // (the numbers, the log) doesn't depend on this succeeding.
+    }
+  }
+
+  function renderDailyPhotoStrip(photo) {
+    const container = document.getElementById('daily-photo-strip');
+    if (!container) return;
+    container.innerHTML = `
+      <img src="${photo.urlSmall || photo.url}" alt="" loading="lazy" />
+      <div class="daily-photo-strip-credit"><a href="${photo.photographerUrl}" target="_blank" rel="noopener">${escapeHtml(photo.photographerName)}</a> / <a href="${photo.unsplashUrl}" target="_blank" rel="noopener">Unsplash</a></div>
+    `;
+    container.classList.add('daily-photo-strip--loaded');
   }
 
   function renderToday() {
