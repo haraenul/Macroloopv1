@@ -364,7 +364,7 @@
 
       <!-- Progress -->
       <div id="page-progress" class="app-page">
-        <div class="card card--data">
+        <div class="card card--data" id="progress-tutorial-target">
           <div class="top-bar" style="margin-bottom:12px;">
             <h3 style="margin:0;" data-i18n="weight_card_title">Weight</h3>
             <button class="btn-icon" id="add-weight-btn" aria-label="Log weight" data-i18n-aria-label="aria_log_weight">+</button>
@@ -385,7 +385,7 @@
 
       <!-- Gap Fixer -->
       <div id="page-fixer" class="app-page">
-        <p data-i18n="fixer_subtitle">Realistic options that fit what's left of today's budget.</p>
+        <p id="fixer-tutorial-target" data-i18n="fixer_subtitle">Realistic options that fit what's left of today's budget.</p>
         <p class="numeric" id="fixer-remaining-summary" style="margin-bottom:16px;"></p>
         <div id="fixer-combo-list"></div>
         <button class="btn-secondary" id="fixer-refresh-btn" data-i18n="fixer_refresh_button" style="margin-top:8px;">Show me other options</button>
@@ -397,7 +397,7 @@
           <button class="btn-icon" id="flex-refresh-btn" aria-label="Regenerate" data-i18n-aria-label="aria_regenerate">&#8635;</button>
         </div>
         <p data-i18n="flex_subtitle_current">This week's card generates automatically each Monday — or tap refresh anytime.</p>
-        <div class="card" style="padding:0; overflow:hidden;">
+        <div class="card" id="flex-tutorial-target" style="padding:0; overflow:hidden;">
           <canvas id="flex-canvas" width="384" height="440" style="width:100%; display:block;"></canvas>
         </div>
         <button class="btn-primary" id="flex-share-btn" data-i18n="flex_share_button" style="margin-top:16px;">Save image</button>
@@ -422,6 +422,17 @@
         <button type="button" class="theme-swatch" data-theme="ocean" style="--swatch-color:#2f6ba8;" aria-label="Ocean"></button>
         <button type="button" class="theme-swatch" data-theme="verdant" style="--swatch-color:#18855f;" aria-label="Verdant"></button>
         <button type="button" class="theme-swatch" data-theme="amethyst" style="--swatch-color:#9450c9;" aria-label="Amethyst"></button>
+      </div>
+    </div>
+
+    <!-- Tour -->
+    <div class="card card--action" id="settings-replay-tour-btn">
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <div>
+          <h3 style="margin-bottom:2px;" data-i18n="settings_tour_title">App tour</h3>
+          <p class="settings-note" style="margin:0;" data-i18n="settings_tour_note">A quick walk through what everything does.</p>
+        </div>
+        <span class="icon icon-chevron-right" aria-hidden="true" style="flex-shrink:0; margin-left:12px; color:var(--text-tertiary);"></span>
       </div>
     </div>
 
@@ -637,6 +648,23 @@
 
   <!-- Log Meal sheet -->
   <div class="sheet-backdrop" id="sheet-backdrop"></div>
+
+  <!-- Feature tour -->
+  <div class="tutorial-overlay" id="tutorial-overlay" style="display:none;">
+    <div class="tutorial-spotlight" id="tutorial-spotlight"></div>
+    <div class="tutorial-card" id="tutorial-card">
+      <div class="tutorial-step-count" id="tutorial-step-count"></div>
+      <h3 class="tutorial-title" id="tutorial-title"></h3>
+      <p class="tutorial-body" id="tutorial-body"></p>
+      <div class="tutorial-actions">
+        <button class="btn-ghost" id="tutorial-skip-btn" data-i18n="tutorial_skip">Skip</button>
+        <div class="tutorial-actions-spacer"></div>
+        <button class="btn-ghost" id="tutorial-back-btn" data-i18n="tutorial_back">Back</button>
+        <button class="btn-primary" id="tutorial-next-btn" data-i18n="tutorial_next">Next</button>
+      </div>
+    </div>
+  </div>
+
   <div class="sheet" id="log-meal-sheet" style="display:none;">
     <div class="top-bar">
       <h3 id="sheet-title" style="margin:0;" data-i18n="sheet_title_add_food">Add food</h3>
@@ -1301,6 +1329,10 @@
     patchState('today', { date, target, macros, foodEntries: {} });
     showScreen('screen-main-shell');
     await showPage('today');
+
+    let hasSeenTutorial = false;
+    try { hasSeenTutorial = !!localStorage.getItem(TUTORIAL_SEEN_KEY); } catch (err) { /* private browsing — skip auto-tour, still reachable from Settings */ }
+    if (!hasSeenTutorial) setTimeout(startTutorial, 700);
   }
 
   document.getElementById('onboarding-finish-btn').addEventListener('click', () => {
@@ -1561,6 +1593,102 @@
     loadSettingsScreen();
   });
   document.getElementById('settings-back-btn').addEventListener('click', () => { showScreen('screen-main-shell'); showPage('today'); });
+
+  // ---- Feature tour ----
+
+  const TUTORIAL_SEEN_KEY = 'macroloop_seen_tutorial';
+  const TUTORIAL_STEPS = [
+    { screen: 'screen-main-shell', page: 'today', selector: '#orbit-system', round: true, titleKey: 'tutorial_step_orbit_title', bodyKey: 'tutorial_step_orbit_body' },
+    { screen: 'screen-main-shell', page: 'today', selector: '.quick-add-primary', round: false, titleKey: 'tutorial_step_photo_title', bodyKey: 'tutorial_step_photo_body' },
+    { screen: 'screen-main-shell', page: 'today', selector: '.macro-rings-card', round: false, titleKey: 'tutorial_step_macros_title', bodyKey: 'tutorial_step_macros_body' },
+    { screen: 'screen-main-shell', page: 'exercise', selector: '#add-exercise-btn', round: true, titleKey: 'tutorial_step_exercise_title', bodyKey: 'tutorial_step_exercise_body' },
+    { screen: 'screen-main-shell', page: 'progress', selector: '#progress-tutorial-target', round: false, titleKey: 'tutorial_step_progress_title', bodyKey: 'tutorial_step_progress_body' },
+    { screen: 'screen-main-shell', page: 'fixer', selector: '#fixer-tutorial-target', round: false, titleKey: 'tutorial_step_fixer_title', bodyKey: 'tutorial_step_fixer_body' },
+    { screen: 'screen-main-shell', page: 'flex', selector: '#flex-tutorial-target', round: false, titleKey: 'tutorial_step_flex_title', bodyKey: 'tutorial_step_flex_body' },
+    { screen: 'screen-main-shell', page: 'today', selector: '#open-settings-btn', round: true, titleKey: 'tutorial_step_settings_title', bodyKey: 'tutorial_step_settings_body' },
+  ];
+  let tutorialStepIndex = 0;
+
+  function positionTutorialSpotlight(target, round) {
+    const rect = target.getBoundingClientRect();
+    const pad = round ? 10 : 8;
+    const spotlight = document.getElementById('tutorial-spotlight');
+    spotlight.style.top = `${rect.top - pad}px`;
+    spotlight.style.left = `${rect.left - pad}px`;
+    spotlight.style.width = `${rect.width + pad * 2}px`;
+    spotlight.style.height = `${rect.height + pad * 2}px`;
+    spotlight.style.borderRadius = round ? '50%' : '16px';
+  }
+
+  function positionTutorialCard(target) {
+    const rect = target.getBoundingClientRect();
+    const card = document.getElementById('tutorial-card');
+    const viewportHeight = window.innerHeight;
+    const cardHeight = card.offsetHeight || 200;
+    const spaceBelow = viewportHeight - rect.bottom;
+    const spaceAbove = rect.top;
+    let top = spaceBelow > cardHeight + 24 || spaceBelow > spaceAbove
+      ? rect.bottom + 16
+      : rect.top - cardHeight - 16;
+    top = Math.max(16, Math.min(top, viewportHeight - cardHeight - 16));
+    card.style.top = `${top}px`;
+  }
+
+  function renderTutorialCardContent(step, index) {
+    document.getElementById('tutorial-step-count').textContent = `${index + 1} / ${TUTORIAL_STEPS.length}`;
+    document.getElementById('tutorial-title').textContent = t(step.titleKey);
+    document.getElementById('tutorial-body').textContent = t(step.bodyKey);
+    document.getElementById('tutorial-back-btn').style.visibility = index === 0 ? 'hidden' : 'visible';
+    document.getElementById('tutorial-next-btn').textContent = index === TUTORIAL_STEPS.length - 1 ? t('tutorial_finish') : t('tutorial_next');
+  }
+
+  async function goToTutorialStep(index) {
+    if (index < 0 || index >= TUTORIAL_STEPS.length) return;
+    const step = TUTORIAL_STEPS[index];
+
+    if (step.screen) showScreen(step.screen);
+    if (step.page) await showPage(step.page);
+
+    // Two rAFs: the first runs after the browser's next style/layout
+    // pass following the display change above, the second confirms
+    // layout has actually settled before we measure anything —
+    // getBoundingClientRect() immediately after a display:none->block
+    // swap can occasionally still reflect pre-change geometry otherwise.
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+    const target = document.querySelector(step.selector);
+    if (!target) {
+      if (index < TUTORIAL_STEPS.length - 1) await goToTutorialStep(index + 1);
+      else endTutorial();
+      return;
+    }
+
+    tutorialStepIndex = index;
+    renderTutorialCardContent(step, index);
+    positionTutorialSpotlight(target, step.round);
+    positionTutorialCard(target);
+  }
+
+  function startTutorial() {
+    document.getElementById('tutorial-overlay').style.display = 'block';
+    goToTutorialStep(0);
+  }
+
+  function endTutorial() {
+    document.getElementById('tutorial-overlay').style.display = 'none';
+    try { localStorage.setItem(TUTORIAL_SEEN_KEY, '1'); } catch (err) { /* non-fatal */ }
+  }
+
+  document.getElementById('tutorial-next-btn').addEventListener('click', () => {
+    if (tutorialStepIndex === TUTORIAL_STEPS.length - 1) endTutorial();
+    else goToTutorialStep(tutorialStepIndex + 1);
+  });
+  document.getElementById('tutorial-back-btn').addEventListener('click', () => goToTutorialStep(tutorialStepIndex - 1));
+  document.getElementById('tutorial-skip-btn').addEventListener('click', endTutorial);
+  document.getElementById('settings-replay-tour-btn').addEventListener('click', () => {
+    showScreen('screen-main-shell');
+    startTutorial();
+  });
 
   let settingsUnit = 'metric';
   let settingsSex = 'female';
