@@ -499,6 +499,14 @@ button:focus-visible {
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4'/%3E%3Cpolyline points='16 17 21 12 16 7'/%3E%3Cline x1='21' y1='12' x2='9' y2='12'/%3E%3C/svg%3E");
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4'/%3E%3Cpolyline points='16 17 21 12 16 7'/%3E%3Cline x1='21' y1='12' x2='9' y2='12'/%3E%3C/svg%3E");
 }
+.icon-back {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='15 18 9 12 15 6'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='15 18 9 12 15 6'/%3E%3C/svg%3E");
+}
+.icon-chevron-right {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'/%3E%3C/svg%3E");
+}
 .search-with-scan { display: flex; align-items: center; gap: 8px; }
 .search-with-scan input { flex: 1; }
 
@@ -1284,6 +1292,63 @@ select option {
 }
 
 /* ---- Toast ---- */
+
+.tutorial-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  pointer-events: auto;
+}
+.tutorial-spotlight {
+  position: absolute;
+  border-radius: 16px;
+  box-shadow: 0 0 0 9999px rgba(6, 6, 8, 0.82);
+  pointer-events: none;
+  transition: top 0.4s var(--ease-spring-soft), left 0.4s var(--ease-spring-soft), width 0.4s var(--ease-spring-soft), height 0.4s var(--ease-spring-soft), border-radius 0.4s var(--ease-spring-soft);
+}
+.tutorial-card {
+  position: absolute;
+  width: calc(100% - 40px);
+  max-width: 340px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: var(--shadow-lg);
+  transition: top 0.4s var(--ease-spring-soft), left 0.4s var(--ease-spring-soft);
+}
+.tutorial-step-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--accent-energy);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.tutorial-title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.tutorial-body {
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+.tutorial-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tutorial-actions-spacer {
+  flex: 1;
+}
+.tutorial-actions .btn-primary {
+  width: auto;
+  padding: 10px 22px;
+}
 
 .toast {
   position: fixed;
