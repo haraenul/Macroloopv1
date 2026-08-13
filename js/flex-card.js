@@ -129,7 +129,8 @@ function cssVar(name, fallback) {
 export async function ensureFlexCardFonts() {
   await Promise.all([
     document.fonts.load('700 24px Syne'),
-    document.fonts.load('800 76px Syne'),
+    document.fonts.load('800 76px Manrope'),
+    document.fonts.load('700 22px Manrope'),
     document.fonts.load('400 16px Manrope'),
     document.fonts.load('500 14px Manrope'),
     document.fonts.load('400 12px "Space Mono"'),
@@ -199,7 +200,7 @@ export async function drawFlexCard(canvas, { weekLabel, stats, streak, target, g
 
   // ---- Hero number ----
   ctx.fillStyle = energy;
-  ctx.font = '800 76px Syne, sans-serif';
+  ctx.font = '800 76px Manrope, sans-serif';
   ctx.fillText(`${stats.daysLogged}/7`, M, 190);
   ctx.fillStyle = inkSoft;
   ctx.font = '500 15px Manrope, sans-serif';
@@ -208,7 +209,7 @@ export async function drawFlexCard(canvas, { weekLabel, stats, streak, target, g
   // ---- Streak + adherence, side by side instead of stacked lines ----
   const statY = 258;
   ctx.fillStyle = ink;
-  ctx.font = '700 22px Syne, sans-serif';
+  ctx.font = '700 22px Manrope, sans-serif';
   ctx.fillText(`${streak}`, M, statY);
   const streakNumWidth = ctx.measureText(`${streak}`).width;
   ctx.fillStyle = inkSoft;

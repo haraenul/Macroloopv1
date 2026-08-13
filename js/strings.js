@@ -55,6 +55,34 @@ export const STRINGS = {
   // ---- Settings ----
   settings_screen_title: 'Settings',
 
+  settings_section_appearance: 'Appearance',
+  settings_appearance_note: 'Pick the accent that feels like you — it carries through the whole app.',
+
+  settings_tour_title: 'App tour',
+  settings_tour_note: 'A quick walk through what everything does.',
+
+  tutorial_skip: 'Skip',
+  tutorial_back: 'Back',
+  tutorial_next: 'Next',
+  tutorial_finish: 'Done',
+
+  tutorial_step_orbit_title: 'Your dial',
+  tutorial_step_orbit_body: 'The number in the middle is what matters most right now — it changes meaning depending on which page you\u2019re on. Tap a moon, or swipe left and right on the dial, to move between sections.',
+  tutorial_step_photo_title: 'Log a meal',
+  tutorial_step_photo_body: 'Take a photo of your food and MacroLoop estimates the calories and macros for you \u2014 no manual lookup needed.',
+  tutorial_step_macros_title: 'Your macros',
+  tutorial_step_macros_body: 'Protein, carbs, and fat, tracked separately from calories \u2014 each ring fills as you log food today.',
+  tutorial_step_exercise_title: 'Exercise',
+  tutorial_step_exercise_body: 'Log a workout here and MacroLoop adds the calories back to your budget for the day.',
+  tutorial_step_progress_title: 'Progress over time',
+  tutorial_step_progress_body: 'Your weight and calorie trends, plus how the adaptive algorithm is adjusting your target as it learns your body.',
+  tutorial_step_fixer_title: 'Gap Fixer',
+  tutorial_step_fixer_body: 'Behind on protein with not much of your budget left? Fixer finds realistic combinations that actually fit.',
+  tutorial_step_flex_title: 'Your week, summarized',
+  tutorial_step_flex_body: 'A shareable weekly recap \u2014 days logged, your streak, and how consistent you\u2019ve been.',
+  tutorial_step_settings_title: 'Make it yours',
+  tutorial_step_settings_body: 'Update your profile and goals any time, and pick an accent color that feels like you.',
+
   settings_section_profile: 'Profile',
   settings_profile_note: "Updating these recalculates your target — same formula as onboarding.",
   settings_save_profile_button: 'Save changes',

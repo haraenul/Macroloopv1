@@ -17,10 +17,10 @@
 // editing this file for an unrelated reason, leave this line untouched.
 //
 // The domain itself has also drifted more than once (gleaming-sunflower →
-// soft-liger-d65c1e → vermillion-panda-850b87) as the Netlify site got
-// recreated. If this feature 404s again, check the domain is still
-// current before assuming the code broke.
-const PHOTO_FUNCTION_URL = 'https://vermillion-panda-850b87.netlify.app/.netlify/functions/analyze-meal-photo';
+// soft-liger-d65c1e → vermillion-panda-850b87 → magnificent-truffle-0d1dc1)
+// as the Netlify site got recreated. If this feature 404s again, check the
+// domain is still current before assuming the code broke.
+const PHOTO_FUNCTION_URL = 'https://magnificent-truffle-0d1dc1.netlify.app/.netlify/functions/analyze-meal-photo';
 
 const MAX_DIMENSION = 1024; // plenty for food recognition; keeps the payload (and API cost) small
 const JPEG_QUALITY = 0.8;
